@@ -14,7 +14,7 @@ class Performance_daily_qa_model extends CI_Model {
     	$this->db->insert_batch( $this->table, $daily_qa );
     }
 
-    public function get_daily_qa( $limit = 0, $offset = 0, $order_by = "import_date", $sort_order = "desc", $search_data = array() ) {
+    public function get_daily_qa( $limit = 0, $offset = 0, $order_by = "import_date", $sort_order = "desc", $search_data = array() , $status = 1) {
 
         $this->db->select($this->fields);
         $this->db->from($this->table);
@@ -27,7 +27,7 @@ class Performance_daily_qa_model extends CI_Model {
         
         $this->db->order_by($order_by, $sort_order);
         $this->db->limit($limit, $offset);
-        $this->db->where('status', 1);
+        $this->db->where('status', $status);
 
         $q = $this->db->get();
 
@@ -70,6 +70,23 @@ class Performance_daily_qa_model extends CI_Model {
 
         $this->db->where('daily_qa_id', $record_id);
         $this->db->update($this->table, $data); 
+    }
+
+    public function pending_list() {
+
+        $this->db->select(array('import_date', 'import_by'));
+        $this->db->from($this->table);
+        $this->db->where('status', 0);
+        $this->db->group_by('import_by');
+
+        $q = $this->db->get();
+
+        if($q->num_rows() > 0) {
+            return $q;
+        }
+
+        return false;
+
     }
 
 }

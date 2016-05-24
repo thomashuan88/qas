@@ -7,13 +7,15 @@
 <script src="<?php print base_url(); ?>assets/js/vendor/plupload-2.1.9/js/jquery.ui.plupload/jquery.ui.plupload.min.js"></script>
 
 <div class="row">
-    <div class="col-md-2">
+    <div class="col-md-6">
+        <div id="pending_list" style="display:none;"></div>
         <button id="js-search" type="button" class="btn btn-default" data-toggle="collapse" data-target="#search_wrapper">
-            <span id="js-search-text"><i class="fa fa-compress pd-r-5"></i> <?php print $this->lang->line('collapse'); ?></span> <i class="fa fa-search pd-l-5"></i>
+            <span id="js-search-text"><i class="fa fa-compress pd-r-6"></i> <?php print $this->lang->line('collapse'); ?></span> <i class="fa fa-search pd-l-5"></i>
         </button>
     </div>
-    <div class="col-md-10" style="text-align: right;">
+    <div class="col-md-6" style="text-align: right;">
         <button type="button" name="pending" id="pending" class="btn btn-default btn-md" ><i class="fa fa-step-forward"></i> &nbsp; <?php print $this->lang->line('pending'); ?></button>
+        <button type="button" name="confirmed" id="confirmed" class="btn btn-default btn-md" style="display:none;" ><i class="fa fa-check"></i> &nbsp; <?php print $this->lang->line('import_done'); ?></button>
          &nbsp; &nbsp; &nbsp;
         <button type="button" name="import_btn" id="import_btn" class="btn btn-default btn-md" ><i class="fa fa-download"></i> &nbsp; <?php print $this->lang->line('import'); ?></button>
          &nbsp; &nbsp; &nbsp;
@@ -55,6 +57,7 @@
         </div>
     </form>
 </div>
+<button type="button" name="confirm_import" id="confirm_import" class="btn btn-default btn-md" style="display:none;" ><i class="fa fa-play"></i> &nbsp; <?php print $this->lang->line('confirm_import'); ?></button>
 
 <div id="uploader" style="display:none;"></div>
 
@@ -128,7 +131,6 @@
     .plupload_message {
         display: none;
     }
-
 </style>
 
 <script type="text/javascript">
@@ -195,7 +197,102 @@ var paging = {
     order_by : 'import_date',
     sort_order : 'desc',
     search_data : {},
-    ajaxUrl: "<?php print base_url('adminpanel/daily_qa/get_report'); ?>"
+    ajaxUrl: '<?php print base_url('adminpanel/daily_qa/get_report'); ?>'
+}
+
+$("#pending").click(function() {
+    $("#pending_list").css("display", "block");
+    $("#js-search").css("display", "none");
+    // $("#search_wrapper").removeClass("classtoremove");
+    
+    $("#confirmed").css("display", "");
+    $("#pending").css("display", "none");
+    $("#confirm_import").css("display", "");
+        
+    paging = {
+        offset : 0,
+        order_by : 'import_date',
+        sort_order : 'desc',
+        ajaxUrl: '<?php print base_url('adminpanel/daily_qa/get_pending'); ?>',
+        search_data : {
+            status: 0,
+            import_by : '<?php print $this->session->userdata('username'); ?>'
+        }
+    }
+
+    getPendingList();
+    getNewData();
+    setHeaderIcon();
+});
+
+$("#confirmed").click(function() {
+    $("#pending_list").css("display", "none");
+    $("#js-search").css("display", "block");
+    $("#search_wrapper").removeClass("classtoremove");
+    
+    $("#pending").css("display", "");
+    $("#confirmed").css("display", "none");
+    $("#confirm_import").css("display", "none");
+
+    paging = {
+        offset : 0,
+        order_by : 'import_date',
+        sort_order : 'desc',
+        search_data : {},
+        ajaxUrl: '<?php print base_url('adminpanel/daily_qa/get_report'); ?>'
+    }
+
+    getNewData();
+    setHeaderIcon();
+});
+
+$('#confirm_import').click(function() {
+    var requestData = {
+        import_by: paging.search_data.import_by,
+    }
+
+    $.ajax({
+        url: '<?php print base_url('adminpanel/daily_qa/confirm_pending'); ?>',
+        data: requestData,
+        success: function(data) {
+            console.log(data)
+            // var jsonData = JSON.parse(data);
+        },
+        error: function(data) {
+            // console.log(data);
+        }
+    });
+})
+
+var getPendingList = function() {
+    $.ajax({
+        url: '<?php print base_url('adminpanel/daily_qa/pending_list'); ?>',
+        success: function(data) {
+            var jsonData = JSON.parse(data);
+
+            if (jsonData.length > 0) {
+                var html = '<div class="form-group"><select name="status" id="status" class="form-control">';
+
+                $.each( jsonData, function( key, value ) {
+                    html += '<option ';
+
+                    if( value['import_by'] == paging.search_data.import_by ) {
+                        html += 'selected';
+                    }
+
+                    html += '>User: ' + value['import_by'] + 
+                        ' Import Date: ' + value['import_date'] + '</option>';
+                });
+
+                html += '</select></div>';
+
+                $('#pending_list').html(html);
+            }
+        },
+        error: function(data) {
+            // console.log(data);
+        }
+    });
 }
 
 var searchData = function() {
@@ -350,6 +447,11 @@ var drawTable = function (data) {
     }
 
     $.each( data, function( key, value ) {
+
+        var date = new Date( Date.parse( value['import_date'] ) );
+        var dateYMD = new Date(date).toISOString().slice(0, 10).replace(/-/g, '/');
+        var dateHSi = (date.getHours() % 12) + ':' + date.getMinutes() + ' ' + ( ( date.getHours() >= 12 ) ? 'PM' : 'AM' );
+        
         html +='<tr data_id="' + value['daily_qa_id'] + '">';
         html +='<td>' + value['daily_qa_id'] + '</td>';
         html +='<td>' + value['username'] + '</td>';
@@ -359,9 +461,9 @@ var drawTable = function (data) {
         html +='<td>' + value['art'] + '</td>';
         html +='<td>' + value['aht'] + '</td>';
         html +='<td>' + value['quantity'] + '</td>';
-        html +='<td>' + value['import_date'].substring(0,10) + '<br />' + value['import_date'].substring(11,16) + '</td>';
+        html +='<td>' + dateYMD + '<br />' + dateHSi + '</td>';
         html +='<td>' + value['import_by'] + '</td>';
-        html +='<td style="white-space: nowrap;"><a href="#" onclick="deleteData(' + value['daily_qa_id'] + ')" class="btn btn-danger btn-circle" ><i class="fa fa-trash"></i></a></td>';
+        html +='<td><a href="#" onclick="deleteData(' + value['daily_qa_id'] + ')" class="btn btn-danger btn-circle" ><i class="fa fa-trash"></i></a></td>';
         html +='</tr>';
     });
 

@@ -29,19 +29,16 @@ class Roster_management extends Admin_Controller {
         $result = $this->select_shift();
         $result = array();
         //log_message('error', print_r($result,true));
-        //log_message('error', print_r($this->lang->line('day_of_week_short'),true));
         $content_data['dow_arr'] = $this->lang->line('day_of_week_short');
         (empty($result)) ? $content_data['data'] = '' : $content_data['data'] = $result;
-        // if(!$result){
-        //     $content_data['data'] = '';
-        // }else{
-        //     $content_data['data'] = $result;
-        // }
 
         $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel', $this->lang->line('roster'), 'roster', 'header', 'footer', '', $content_data);
     }
 
     public function set_roster_page() {
+        $action_result = self::check_action(21);
+        ($action_result->add != 'yes') ?  redirect("/private/no_access") : "";
+
         $content_data = array();
         //$username = $this->session->userdata['username'];
         //$user_id = $this->session->userdata['user_id'];
@@ -58,15 +55,19 @@ class Roster_management extends Admin_Controller {
 
             foreach ($pairdata AS $child => $parent) {
                 if (!isset($flat[$child])) {
-                    $flat[$child] = "";
+                    $flat[$child] = array();
                 }
                 if (!empty($parent)) {
                     $flat[$parent][$child] =& $flat[$child];
                 } else {
                     $tree[$child] =& $flat[$child];
+                    //$new_array[] = $flat[$child];
                 }
             }
-            //log_message('error', print_r($tree,true));
+            log_message('error', print_r($tree,true));
+            //log_message('error', print_r($new_array,true));
+            //$result_rec = $this->traverseArray($tree);
+            //log_message('error', print_r($result_rec,true));
 
             $content_data['active_member'] = $tree;
         }else{
@@ -78,9 +79,8 @@ class Roster_management extends Admin_Controller {
     }
 
     public function set_roster() {
-        if (! self::check_permissions(4)) {
-            redirect("/private/no_access");
-        }
+        $action_result = self::check_action(21);
+        ($action_result->add != 'yes') ?  redirect("/private/no_access") : "";
     }
 
 
@@ -96,6 +96,19 @@ class Roster_management extends Admin_Controller {
         $result = $this->roster_management_model->get_shift($search_data);
 
         return $result;
+    }
+
+    // Recursively traverses a multi-dimensional array.
+    private function traverseArray($array){
+        // Loops through each element. If element again is array, function is recalled. If not, result is echoed.
+        foreach($array as $key=>$value){ 
+            if(is_array($value)){ 
+                log_message('error', $key."<br />\n");
+                $this->traverseArray($value); 
+            }else{
+                log_message('error', $key." = ".$value."<br />\n"); 
+            }
+        }
     }
 }
 

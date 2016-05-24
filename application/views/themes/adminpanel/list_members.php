@@ -161,7 +161,7 @@ $.each( data, function( key, value ) {
     html +='<td>' + value['status'] + '</td>';
     // html +='<td><a href="#" class="btn btn-info btn-circle" title="" data-toggle="tooltip" data-placement="top" data-original-title="User Sessions"><i class="fa fa-list"></i></a>'
     html +='<td><a href="<?php print base_url(); ?>adminpanel/member_detail/'+value['user_id']+'" class="btn btn-success btn-circle" title="" data-toggle="tooltip" data-placement="top" data-original-title="View User"><i class="fa fa-eye"></i></a>'
-    // html +='<a href="<?php print base_url(); ?>adminpanel/member_detail/'+value['user_id']+'" class="btn btn-primary btn-circle edit" title="" data-toggle="tooltip" data-placement="top" data-original-title="Edit User"><i class="fa fa-pencil-square"></i></a>'
+    html +='<a href="<?php print base_url(); ?>adminpanel/Edit_member_detail/'+value['user_id']+'" class="btn btn-primary btn-circle edit" title="" data-toggle="tooltip" data-placement="top" data-original-title="Edit User"><i class="fa fa-pencil-square"></i></a>'
     html +='<a href="#" onclick="inactiveUser(&quot;' +value['username'] + '&quot;,&quot;'+ value['status']+'&quot; )" class="btn btn-danger btn-circle" title="" data-toggle="tooltip" data-placement="top" data-original-title="Delete User"><i class="fa fa-power-off"></i></a></td>';
     html +='</tr>';
 });

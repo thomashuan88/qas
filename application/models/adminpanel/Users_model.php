@@ -131,6 +131,7 @@ class Users_model extends CI_Model {
     }
 
     public function check_leader($role_name){
+        log_message("error",$role_name."model");
         $this->db->select('username');
         $this->db->from('users');
         $this->db->where('role',$role_name);

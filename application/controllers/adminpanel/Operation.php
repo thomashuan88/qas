@@ -40,7 +40,7 @@ class Operation extends Admin_Controller {
         $data = $this->category_group_model->get_types();
         if (!empty($data)) {
             $output = '<select class="form-control" id="category_id" name="category_id">';
-            $output .= '<option>'.$this->lang->line('select').'</option>';
+            $output .= '<option value="">'.$this->lang->line('select').'</option>';
             if ($key) {
                 foreach ($data->result() as $data) {
                     $output .= '<option value="' . $data->category_group_id . '"' . ($key == $data->category_group_id ? "selected" : "") . '>' . $data->content . '</option>';
@@ -61,7 +61,7 @@ class Operation extends Admin_Controller {
         $data = $this->category_list_model->get_lists();
         if (!empty($data)) {
             $output = '<select class="form-control" id="sub_category_id" name="sub_category_id">';
-            $output .= '<option>'.$this->lang->line('select').'</option>';
+            $output .= '<option value="">'.$this->lang->line('select').'</option>';
             if ($key) {
                 foreach ($data->result() as $data) {
                     $output .= '<option value="' . $data->category_list_id . '"' . ($key == $data->category_list_id ? "selected" : "") . '>' . $data->content . '</option>';
@@ -82,7 +82,7 @@ class Operation extends Admin_Controller {
         $data = $this->setting_model->get_product();
         if (!empty($data)) {
             $output = '<select class="form-control" id="product" name="product">';
-            $output .= '<option>'.$this->lang->line('select').'</option>';
+            $output .= '<option value="">'.$this->lang->line('select').'</option>';
             if ($key) {
                 foreach ($data->result() as $data) {
                     $output .= '<option value="' . $data->key . '"' . ($key == $data->key ? "selected" : "") . '>' . $data->value . '</option>';
@@ -103,14 +103,14 @@ class Operation extends Admin_Controller {
         $data = $this->setting_model->get_shift();
         if (!empty($data)) {
             $output = '<select class="form-control" id="shift" name="shift">';
-            $output .= '<option>' . $this->lang->line('select') . '</option>';
+            $output .= '<option value="">' . $this->lang->line('select') . '</option>';
             if ($key) {
                 foreach ($data->result() as $data) {
-                    $output .= '<option value="' . $data->key . '"' . ($key == $data->key ? "selected" : "") . '>' . $data->value . '</option>';
+                    $output .= '<option value="' . $data->key . '"' . ($key == $data->key ? "selected" : "") . '>' . $data->key . '</option>';
                 }
             } else {
                 foreach ($data->result() as $data) {
-                    $output .= '<option value="' . $data->key . '"' . ($this->session->flashdata('shift') == $data->key ? "selected" : "") . '>' . $data->value . '</option>';
+                    $output .= '<option value="' . $data->key . '"' . ($this->session->flashdata('shift') == $data->key ? "selected" : "") . '>' . $data->key . '</option>';
                 }
             }
         } else {
@@ -174,6 +174,18 @@ class Operation extends Admin_Controller {
         } else {
             return false;
         }
+    }
+
+    private function change_date_format($date_time, $line = true) {
+        $time = strtotime($date_time);
+        $res = date('Y', $time) . '/' . date('m', $time) . '/' . date('d', $time);
+        if ($line) {
+            $res .= '<br/>';
+        } else {
+            $res .= '&nbsp;';
+        }
+        $res .= date('h', $time) . ':' . date('i', $time) . ' ' . date('A', $time);
+        return $res;
     }
 //==================================================== shift_report ====================================================
     public function shift_report($order_by = "shift_reports_id", $sort_order = "desc", $search = "all", $offset = 0) {
@@ -428,12 +440,12 @@ class Operation extends Admin_Controller {
 //===================================================== Time sheet =====================================================
     public function time_sheet() {
         $this->check_permission(17);
-
-        $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel', $this->lang->line('time_sheet'), 'operation/time_sheet', 'header', 'footer');
+        $content_data['add'] = $this->check_page_action(17, 'add');
+        $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel', $this->lang->line('time_sheet'), 'operation/time_sheet', 'header', 'footer', '', $content_data);
     }
 
     public function get_time_sheet() {
-        if ( $this->input->post() ) {
+        if ($this->input->post()) {
             $array = $this->input->post();
             $array1 = array_keys($array);
             $paging = json_decode($array1[0], true);
@@ -443,18 +455,18 @@ class Operation extends Admin_Controller {
             }
 
             $this->session->set_flashdata($paging['search_data']);
+            $content_data['table_data'] = array();
+            $content_data['permission']['delete'] = $this->check_page_action(17, 'delete');
+            $content_data['total_rows'] = '0';
 
-            $content_data['table_data']['add'] = $this->check_page_action(17, 'add');
-            $content_data['table_data']['delete'] = $this->check_page_action(17, 'delete');
-            
             $content_data['time_sheet'] = $this->time_sheet_model->get_all_time_sheets($paging['order_by'], $paging['sort_order'], $paging['search_data'], $this->limit_per_page, $paging['offset']);
             if (!empty($content_data['time_sheet'])) {
+                foreach($content_data['time_sheet']->result() as $value) {
+                    $value->status = $this->lang->line($value->status);
+                    $value->created_time = $this->change_date_format($value->created_time);
+                }
                 $content_data['table_data'] = $content_data['time_sheet']->result();
-
                 $content_data['total_rows'] = $content_data['time_sheet']->total_rows;
-            } else {
-                $content_data['table_data'] = array();
-                $content_data['total_rows'] = '0';
             }
 
             $content_data['offset'] = $paging['offset'];
@@ -474,7 +486,7 @@ class Operation extends Admin_Controller {
         $content_data = array();
         $content_data['shift_list'] = $this->get_shift_list();
         $post_data = $this->input->post();
-        if (!empty($post_data)) {
+        if (!empty($post_data)) {log_message("error",print_r($post_data,true));
             $this->form_validation->set_error_delimiters('<p>', '</p>');
             $this->form_validation->set_rules('shift', $this->lang->line('shift'), 'trim|required');
             $this->form_validation->set_rules('remarks', $this->lang->line('remarks'), 'trim|required');
@@ -504,23 +516,19 @@ class Operation extends Admin_Controller {
 
     public function time_sheet_details($key) {
         $this->check_permission(17);
-        if (!$this->check_page_action(17, 'view')) {
-            $this->session->set_flashdata('error', $this->lang->line('no_access_view_record'));
-            redirect('/adminpanel/operation/time_sheet');
-        }
 
         if (!empty($key)) {
             $content_data = array();
             $content_data['time_sheet'] = $this->time_sheet_model->get_one_time_sheet($key);
             if (!empty($content_data['time_sheet'])) {
-                return $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel', $this->lang->line('time_sheet_details'), 'operation/time_sheet_details', 'header', 'footer', '', $content_data);
+                $content_data['time_sheet']->created_time = $this->change_date_format($content_data['time_sheet']->created_time,false);
+               echo json_encode($content_data['time_sheet']);
             } else {
-                $this->session->set_flashdata('error', $this->lang->line('no_result'));
+               echo $this->lang->line('no_result');
             }
         } else {
-            $this->session->set_flashdata('error', $this->lang->line('invalid_data'));
+            echo $this->lang->line('invalid_data');
         }
-        redirect('/adminpanel/operation/time_sheet');
     }
 
     public function time_sheet_delete($key) {
@@ -536,67 +544,60 @@ class Operation extends Admin_Controller {
                 if ($this->user == $time_sheet->created_by) {
                     $res = $this->time_sheet_model->delete_time_sheet($key);
                     if ($res) {
-                        $this->session->set_flashdata('success', $this->lang->line('delete_success'));
+                        echo $this->lang->line('delete_success');
                     } else {
-                        $this->session->set_flashdata('error', $this->lang->line('delete_failure'));
+                        echo $this->lang->line('delete_failure');
                     }
                 } else {
-                    $this->session->set_flashdata('error', $this->lang->line('no_access_delete_record'));
+                    echo $this->lang->line('no_access_delete_record');
                 }
             } else {
-                $this->session->set_flashdata('error', $this->lang->line('no_result'));
+                echo $this->lang->line('no_result');
             }
         } else {
-            $this->session->set_flashdata('error', $this->lang->line('invalid_data'));
+            echo $this->lang->line('invalid_data');
         }
-        redirect('/adminpanel/operation/time_sheet');
-
     }
 //=================================================== End Time sheet ===================================================
 
 //=================================================== question type ====================================================
-    public function question_type($order_by = "category_group_id", $sort_order = "asc", $search = "all", $offset = 0) {
-        $content_data = array();
+    public function question_type() {
         $this->check_permission(18);
-        $content_data['add'] = $this->check_page_action(17, 'add');
-        $content_data['edit'] = $this->check_page_action(17, 'edit');
-        $content_data['delete'] = $this->check_page_action(17, 'delete');
-
-        if (!is_numeric($offset)) {
-            redirect('/adminpanel/operation/question_type');
-        }
-
-        $post_data = $this->input->post();
-
-        $content_data['search'] = $search;
-        $content_data['order_by'] = $order_by;
-        $content_data['sort_order'] = $sort_order;
-        $content_data['offset'] = $offset;
-
-        $this->session->set_flashdata($post_data);
-
-        $content_data['types'] = $this->category_group_model->get_all_category_group($order_by, $sort_order, $post_data, $this->limit_per_page, $offset);
-        if (!empty($content_data['types'])) {
-            $content_data['total_rows'] = $content_data['types']->total_rows;
-        } else {
-            $content_data['total_rows'] = '0';
-        }
-
-        // set pagination config data
-        $config['total_rows'] = $content_data['total_rows'];
-        $config['uri_segment'] = '7';
-        $config['base_url'] = site_url('adminpanel/operation/question_type/' . $order_by . '/' . $sort_order . '/' . $search);
-        $config['per_page'] = $this->limit_per_page;
-        $config['prev_tag_open'] = ''; // removes &nbsp; at beginning of pagination output
-        $config['full_tag_open'] = '<div><ul class="pagination">';
-        $config['full_tag_close'] = '</ul></div>';
-        $config['num_tag_open'] = $config['first_tag_open'] = $config['last_tag_open'] = $config['next_tag_open'] = $config['prev_tag_open'] = '<li>';
-        $config['num_tag_close'] = $config['first_tag_close'] = $config['last_tag_close'] = $config['next_tag_close'] = $config['prev_tag_close'] = '</li>';
-        $config['cur_tag_open'] = '<li class="active"><a href="javascript:"><strong>';
-        $config['cur_tag_close'] = '</strong></a></li>';
-        $this->pagination->initialize($config);
-
+        $content_data['add'] = $this->check_page_action(18, 'add');
         $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel', $this->lang->line('question_type'), 'operation/question_type', 'header', 'footer', '', $content_data);
+    }
+
+    public function get_question_type() {
+        if ($this->input->post()) {
+            $array = $this->input->post();
+            $array1 = array_keys($array);
+            $paging = json_decode($array1[0], true);
+
+            if (!is_numeric($paging['offset'])) {
+                redirect('/adminpanel/operation/question_type');
+            }
+
+            $this->session->set_flashdata($paging['search_data']);
+            $content_data['table_data'] = array();
+            $content_data['permission']['edit'] = $this->check_page_action(18, 'edit');
+            $content_data['permission']['delete'] = $this->check_page_action(18, 'delete');
+            $content_data['total_rows'] = '0';
+
+            $content_data['types'] = $this->category_group_model->get_all_category_group($paging['order_by'], $paging['sort_order'], $paging['search_data'], $this->limit_per_page, $paging['offset']);
+            if (!empty($content_data['types'])) {
+                foreach($content_data['types']->result() as $value) {
+                    $value->status = $this->lang->line($value->status);
+                    $value->created_time = $this->change_date_format($value->created_time);
+                }
+                $content_data['table_data'] = $content_data['types']->result();
+                $content_data['total_rows'] = $content_data['types']->total_rows;
+            }
+
+            $content_data['offset'] = $paging['offset'];
+            $content_data['per_page'] = $this->limit_per_page;
+
+            echo json_encode($content_data, true);
+        }
     }
 
     public function question_type_insert() {
@@ -752,6 +753,39 @@ class Operation extends Admin_Controller {
         $this->pagination->initialize($config);
 
         $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel', $this->lang->line('question_content'), 'operation/question_content', 'header', 'footer', '', $content_data);
+    }
+
+    public function get_question_content() {
+        if ($this->input->post()) {
+            $array = $this->input->post();
+            $array1 = array_keys($array);
+            $paging = json_decode($array1[0], true);
+
+            if (!is_numeric($paging['offset'])) {
+                redirect('/adminpanel/operation/question_type');
+            }
+
+            $this->session->set_flashdata($paging['search_data']);
+            $content_data['table_data'] = array();
+            $content_data['permission']['edit'] = $this->check_page_action(18, 'edit');
+            $content_data['permission']['delete'] = $this->check_page_action(18, 'delete');
+            $content_data['total_rows'] = '0';
+
+            $content_data['types'] = $this->category_group_model->get_all_category_group($paging['order_by'], $paging['sort_order'], $paging['search_data'], $this->limit_per_page, $paging['offset']);
+            if (!empty($content_data['types'])) {
+                foreach($content_data['types']->result() as $value) {
+                    $value->status = $this->lang->line($value->status);
+                    $value->created_time = $this->change_date_format($value->created_time);
+                }
+                $content_data['table_data'] = $content_data['types']->result();
+                $content_data['total_rows'] = $content_data['types']->total_rows;
+            }
+
+            $content_data['offset'] = $paging['offset'];
+            $content_data['per_page'] = $this->limit_per_page;
+
+            echo json_encode($content_data, true);
+        }
     }
 
     public function question_content_insert() {

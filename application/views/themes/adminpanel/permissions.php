@@ -42,22 +42,22 @@
                             <th></th>
                         </tr>
                         <?php }else{  ?>
-                        <tr>
+                        <tr id ="<?php print $id; ?>" name="check_list">
                             <!-- <td style="text-align:center;"><?php echo $i;?></td> -->
                             <td><?php print $permission['description']; ?></td>
                             <td style="text-align:center;">
                             <label class="checkbox inline">
-                                <?php print form_checkbox(array('name' => 'add[]', 'class' => 'check_action', 'value' => $id, 'checked' => ($permission['add'] == 'yes' ? true : false))); ?> Add</label>
+                                <?php print form_checkbox(array('name' => 'add[]', 'class' => 'check_action_'.$role_id.'_'.$id, 'value' => $id, 'checked' => ($permission['add'] == 'yes' ? true : false))); ?> Add</label>
                             <label class="checkbox inline">
-                                <?php print form_checkbox(array('name' => 'edit[]', 'class' => 'check_action', 'value' => $id, 'checked' => ($permission['edit'] == 'yes' ? true : false))); ?> Edit</label>
+                                <?php print form_checkbox(array('name' => 'edit[]', 'class' => 'check_action_'.$role_id.'_'.$id, 'value' => $id, 'checked' => ($permission['edit'] == 'yes' ? true : false))); ?> Edit</label>
                             <label class="checkbox inline">
-                                <?php print form_checkbox(array('name' => 'delete[]', 'class' => 'check_action', 'value' => $id, 'checked' => ($permission['delete'] == 'yes' ? true : false))); ?> Delete</label>
+                                <?php print form_checkbox(array('name' => 'delete[]', 'class' => 'check_action_'.$role_id.'_'.$id, 'value' => $id, 'checked' => ($permission['delete'] == 'yes' ? true : false))); ?> Delete</label>
                             <label class="checkbox inline"> 
-                                <?php print form_checkbox(array('name' => 'view[]', 'class' => 'check_action', 'value' => $id, 'checked' => ($permission['view'] == 'yes' ? true : false))); ?>view</label>
+                                <?php print form_checkbox(array('name' => 'view[]', 'class' => 'check_action_'.$role_id.'_'.$id, 'value' => $id, 'checked' => ($permission['view'] == 'yes' ? true : false))); ?>view</label>
                             </td>
                             <td style="text-align:center;">
                             <label class="checkbox inline">
-                                <input type="checkbox" name="check_all" id="check_all" value="" onclick="check_all();" />
+                                <input type="checkbox" name="check_all" class="check_all" id="check_all_<?php print $role_id; ?>_<?php print $id; ?>" />
                              </label>
                             </td>
                         </tr>
@@ -84,19 +84,18 @@ $(document).ready(function(){
     if(role_id != ""){
         $('.nav-tabs a[href="#' + role_id + '"]').tab('show');
     }
-    // $("#check_all").change(function(){
-    //   $(".check_action").prop('checked', $(this).prop("checked"));
-    // });
 
-    $('#check_all').click (function () {
-     alert();
-     var checkedStatus = this.checked;
+    // var permi_id = $("input[name=check_all]").attr("id");
+    // alert(permi_id);
     
-    // $('.check_action').each(function () {
-
-    //     $(this).prop('checked', checkedStatus);
-    //  });
+    $(".check_all").change(function(e){
+        var permission_id = $(this).attr("id");
+       // alert(permission_id);
+      //$(".check_action").prop('checked', $(this).prop("checked"));
     });
-})
+
+   
+});
+
 
 </script>

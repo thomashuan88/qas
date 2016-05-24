@@ -26,7 +26,42 @@ class Daily_Qa extends Admin_Controller {
             $search_data = $paging['search_data'];
 
             $per_page = Settings_model::$db_config['members_per_page'];
-            $dailyQaObj = $this->Performance_daily_qa_model->get_daily_qa($per_page, $offset, $order_by, $sort_order, $search_data);
+            $dailyQaObj = $this->Performance_daily_qa_model->get_daily_qa($per_page, $offset, $order_by, $sort_order, $search_data, 1);
+            $content_data['total_rows'] = $this->Performance_daily_qa_model->count_all_daily_qa($search_data);
+
+            $content_data['table_data'] = ( $content_data['total_rows'] > 0 ) ? $dailyQaObj->result() : array();
+
+            $content_data['offset'] = $offset;
+            $content_data['per_page'] = Settings_model::$db_config['members_per_page'];
+
+            echo json_encode($content_data, true);
+        }
+    }
+
+    public function pending_list() {
+        $dailyQaObj = $this->Performance_daily_qa_model->pending_list();
+        $pendingList = ( $dailyQaObj->num_rows() > 0 ) ? $dailyQaObj->result('array') : array();
+
+        if ( $this->input->is_ajax_request() ) {
+            echo json_encode($pendingList, true);
+        } else {
+            return $pendingList;    
+        }
+    }
+
+    public function get_pending() {
+        if ( $this->input->post() ) {
+            $array = $this->input->post();
+            $array1 = array_keys($array);
+            $paging = json_decode($array1[0], true);
+            
+            $offset = $paging['offset'];
+            $order_by = $paging['order_by'];
+            $sort_order = $paging['sort_order'];
+            $search_data = $paging['search_data'];
+
+            $per_page = Settings_model::$db_config['members_per_page'];
+            $dailyQaObj = $this->Performance_daily_qa_model->get_daily_qa($per_page, $offset, $order_by, $sort_order, $search_data, 0);
             $content_data['total_rows'] = $this->Performance_daily_qa_model->count_all_daily_qa($search_data);
 
             if ( $content_data['total_rows'] > 0 ) {
@@ -35,11 +70,19 @@ class Daily_Qa extends Admin_Controller {
                 $content_data['table_data'] = array();
             }
 
-            $content_data['total_rows'] = $this->Performance_daily_qa_model->count_all_daily_qa($search_data);
             $content_data['offset'] = $offset;
             $content_data['per_page'] = Settings_model::$db_config['members_per_page'];
 
             echo json_encode($content_data, true);
+        }
+    }
+
+    public function confirm_pending() {
+        if ( $this->input->post() ) {
+            $array = $this->input->post();
+            $array1 = array_keys($array);
+            $arr = json_decode($array1[0], true);
+
         }
     }
 

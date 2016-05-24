@@ -31,4 +31,7 @@
             </table>
         </div>
     </div>
+    <div>
+        <a href="<?php print base_url('adminpanel/operation/time_sheet/'); ?>"><button type="button" class="btn btn-danger"><i class="fa fa-reply pd-r-5"></i>&nbsp;<?php print $this->lang->line('cancel'); ?></button></a>
+    </div>
 </div>

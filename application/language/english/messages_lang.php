@@ -107,8 +107,8 @@ $lang['remarks'] = 'Remarks';
 $lang['status'] = 'Status';
 $lang['nickname'] = 'Nickname';
 $lang['dob'] = 'Date of Birth';
-$lang['emergency_name'] = 'Emergency Name';
-$lang['emergency_contact'] = 'Emergency Contact';
+$lang['emergency_name'] = 'Emergency Contact Name';
+$lang['emergency_contact'] = 'Emergency Contact Number';
 $lang['relationship'] = 'Relationship';
 
 
@@ -248,14 +248,14 @@ $lang['total_question_type'] = 'Total question types';
 $lang['total_question_content'] = 'Total question contents';
 $lang['information_update'] = 'Information Update';
 $lang['time_sheet'] = 'Time Sheet';
-$lang['time_sheet_insert'] = 'Insert time Sheet';
-$lang['time_sheet_details'] = 'Time Sheet details';
+$lang['time_sheet_insert'] = 'Insert time sheet';
+$lang['time_sheet_details'] = 'Time sheet details';
 $lang['question_type'] = 'Question Type';
-$lang['question_type_insert'] = 'Add question Type';
-$lang['question_type_edit'] = 'Edit question Type';
+$lang['question_type_insert'] = 'Add question type';
+$lang['question_type_edit'] = 'Edit question type';
 $lang['question_content'] = 'Question Content';
-$lang['question_content_insert'] = 'Add question Content';
-$lang['question_content_edit'] = 'Edit question Content';
+$lang['question_content_insert'] = 'Add question content';
+$lang['question_content_edit'] = 'Edit question content';
 $lang['submit_by'] = 'Submit by';
 $lang['submit_time'] = 'Submit time';
 $lang['player_name'] = 'Player name';
@@ -279,6 +279,7 @@ $lang['invalid_data'] = 'Invalid data.';
 $lang['invalid_post_data'] = 'Invalid post data.';
 $lang['select'] = 'Please select';
 $lang['back'] = 'Back';
+$lang['close'] = 'Close';
 
 // backup & export
 $lang['backup_text'] = "This e-mail will be sent to the admin e-mail entered in site settings.";
@@ -317,6 +318,17 @@ $lang['number'] = "No";
 $lang['system'] = "System";
 $lang['site_language'] = "Site Language";
 $lang['site_title'] = "Site Title";
+$lang['live_person'] = "Live Person";
+$lang['consumer_key'] = "Consumer Key";
+$lang['consumer_secret'] = "Consumer Secret";
+$lang['access_token'] = "Access Token";
+$lang['access_token_secret'] = "Access Token Secret";
+$lang['add_live_person'] = "Add Live Person";
+$lang['account_id'] = "Accound ID";
+
+
+
+
 
 $lang['clear_sessions_title'] = "Clear your sessions";
 $lang['clear_sessions'] = "Clear sessions";
@@ -375,7 +387,6 @@ $lang['enable_oauth_p'] = "Disable or enable the social login integration comple
 $lang['active'] = "Active";
 $lang['inactive'] = "Inactive";
 $lang['role_name'] = "Role Name";
-$lang['no_num'] = "No";
 $lang['status'] = "Status";
 $lang['add_role'] = "Add Role";
 $lang['submit'] = "Submit";
@@ -402,7 +413,9 @@ $lang['qa_evaluation'] = "QA Evaluation";
 $lang['operation_utilization'] = "Operation Utilization";
 $lang['daily_qa'] = "Daily QA";
 $lang['total_record'] = "Record No";
-$lang['pending'] = "Pending";
+$lang['pending'] = "Pending Import";
+$lang['confirm_import'] = "Confirm Import";
+$lang['import_done'] = "Successful Import";
 $lang['import'] = "Import";
 $lang['export'] = "Export";
 $lang['template'] = "Template";
@@ -468,11 +481,6 @@ $lang['view'] = "View";
 
 //Operation
 $lang['operation'] = "Operation";
-$lang['shift_report'] = "Shift Report";
-$lang['information_update'] = "Information Update";
-$lang['time_sheet'] = "Time Sheet";
-$lang['question_type'] = "Question Type";
-$lang['question_content'] = "Question Content";
 
 //page 404
 $lang['page_not_found'] = "Page Not Found";

@@ -25,6 +25,15 @@ class Settings extends Admin_Controller {
         $this->load->model('adminpanel/setting_model');
         $content_data['shift'] = $this->setting_model->get_shift();
         $content_data['product'] = $this->setting_model->get_product();
+        $live_person = $this->setting_model->get_live_person();
+        
+        $arr = array();
+          foreach($live_person as $value){
+              $arr[$value->group][$value->key] = $value->value;
+          }
+        
+        $content_data["live_person"] = $arr; 
+
 
         $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel', $this->lang->line('settings'), 'settings', 'header', 'footer', '', $content_data);
     }
@@ -199,5 +208,52 @@ class Settings extends Admin_Controller {
       $this->lang->load("messages_lang", $language);
     }
     redirect('/adminpanel/settings/'.'?tab=system');
+   }
+
+  public function live_person_settings_add()
+   {
+        $content_data = array();
+
+        $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel', $this->lang->line('settings'), 'live_person_settings_add', 'header', 'footer', '', $content_data);
+
+   }
+  
+  public function save_live_person(){
+
+    $this->form_validation->set_error_delimiters('<p>', '</p>');
+    $this->form_validation->set_rules('product','Product Type','trim|required');
+    $this->form_validation->set_rules('account_id','Account ID','trim|required');
+    $this->form_validation->set_rules('consumer_key','Consumer Key','trim|required');
+    $this->form_validation->set_rules('consumer_secret','Consumer Secret','trim|required');
+    $this->form_validation->set_rules('access_token','Access Token','trim|required');
+    $this->form_validation->set_rules('access_token_secret','Access Token Secret','trim|required');
+
+    if (!$this->form_validation->run()) {
+            $this->session->set_flashdata('error', validation_errors());
+            redirect('/adminpanel/settings/'.'?tab=live_person');
+            exit();
+    }
+
+    $this->load->model('adminpanel/setting_model');
+    $key = array('account_id', 'consumer_key', 'consumer_secret', 'access_token', 'access_token_secret');
+
+    foreach($key as $value){
+      $data = array(
+            'type' => 'live_person',
+            'group' => $this->input->post('product'),
+            'key' => $value,
+            // 'value' => $this->input->post($value)
+          );
+
+      $this->setting_model->save_setting($data);
+    }
+ 
+    if ($this->setting_model->save_setting($data)) {
+          $this->session->set_flashdata('success', '<p>'. $this->lang->line('settings_update') .'</p>');
+          $this->load->library('cache');
+          $this->cache->delete('settings');
+    }
+    redirect('/adminpanel/settings/'.'?tab=live_person');
+
    }
 }

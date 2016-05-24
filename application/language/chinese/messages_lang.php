@@ -263,6 +263,16 @@ $lang['number'] = "序";
 $lang['system'] = "系统";
 $lang['site_language'] = "网站语言";
 $lang['site_title'] = "网站标题";
+$lang['live_person'] = "线人";
+$lang['consumer_key'] = "消费者钥";
+$lang['consumer_secret'] = "消费者秘密";
+$lang['access_token'] = "进入象征";
+$lang['access_token_secret'] = "进入象征秘密";
+$lang['add_live_person'] = "添加线人";
+$lang['account_id'] = "账户ID"; 
+
+
+
 
 $lang['clear_sessions_title'] = "Clear your sessions";
 $lang['clear_sessions'] = "Clear sessions";
@@ -321,7 +331,6 @@ $lang['enable_oauth_p'] = "Disable or enable the social login integration comple
 $lang['active'] = "有效";
 $lang['inactive'] = "无效";
 $lang['role_name'] = "职位名称";
-$lang['no_num'] = "序";
 $lang['status'] = "状态";
 $lang['add_role'] = "添加职位";
 $lang['submit'] = "提交";
@@ -347,6 +356,9 @@ $lang['ops_monthly'] = "每月OPS";
 $lang['log_in_out'] = "登录/注销";
 $lang['qa_evaluation'] = "QA评估";
 $lang['operation_utilization'] = "利用操作";
+$lang['pending'] = "待处理导入";
+$lang['confirm_import'] = "确认导入";
+$lang['import_done'] = "已完成导入";
 $lang['import'] = "导入";
 $lang['export'] = "导出";
 $lang['template'] = "模板";

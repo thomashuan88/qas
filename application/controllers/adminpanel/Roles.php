@@ -84,6 +84,7 @@ class Roles extends Admin_Controller {
         }
 
         if($active == "active"){
+            $role_name = urldecode($role_name);
             $result = $this->users_model->check_leader($role_name);
             if($result != ""){
                 $this->session->set_flashdata('error', $this->lang->line('deactivated_error'));

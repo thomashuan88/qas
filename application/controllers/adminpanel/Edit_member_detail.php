@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Member_detail extends Admin_Controller {
+class Edit_member_detail extends Admin_Controller {
 
     public function __construct()
     {
@@ -41,45 +41,10 @@ class Member_detail extends Admin_Controller {
             redirect('adminpanel/list_members');
         }
 
-        $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel', $this->lang->line('member_detail'), 'member_detail', 'header', 'footer', '', $content_data);
+        $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel', $this->lang->line('member_detail'), 'edit_member_detail', 'header', 'footer', '', $content_data);
 
         return $this;
     }
-
-    public function get_remarks() {
-        $this->load->model('adminpanel/remarks_model');
-
-       if ( $this->input->post() ) {
-           $array = $this->input->post();
-           $array1 = array_keys($array);
-           $paging = json_decode($array1[0], true);
-
-           $offset = $paging['offset'];
-           $order_by = $paging['order_by'];
-           $sort_order = $paging['sort_order'];
-           $search_data = $paging['search_data'];
-           $per_page = Settings_model::$db_config['members_per_page'];
-
-           $remarks = $this->remarks_model->get_remarks($per_page, $offset, $order_by, $sort_order, $search_data);
-           $content_data['total_rows'] = $this->remarks_model->count_all_search_remarks($search_data);
-           $content_data['table_data']['offset'] = $offset;
-
-           if ( $content_data['total_rows'] > 0 ) {
-               $content_data['table_data'] = $remarks->result();
-           } else {
-               $content_data['table_data'] = array();
-           }
-
-           $content_data['total_rows'] = $this->remarks_model->count_all_search_remarks($search_data);
-           $content_data['offset'] = $offset;
-           $content_data['per_page'] = Settings_model::$db_config['members_per_page'];
-           echo json_encode($content_data, true);
-
-       }
-   }
-
-
-
     /**
      *
      * save: store data about member
@@ -101,7 +66,7 @@ class Member_detail extends Admin_Controller {
         $this->form_validation->set_rules('windows_id', 'windows_id', 'trim');
         if (!$this->form_validation->run()) {
             $this->session->set_flashdata('error', validation_errors());
-            redirect('/adminpanel/member_detail/'. $this->input->post('user_id'));
+            redirect('/adminpanel/edit_member_detail/'. $this->input->post('user_id'));
             exit();
         }
 
@@ -126,7 +91,7 @@ class Member_detail extends Admin_Controller {
 
         $this->session->set_flashdata('success', sprintf($this->lang->line('member_updated'), $this->input->post('username')));
 
-        redirect('/adminpanel/member_detail/'. $this->input->post('user_id'));
+        redirect('/adminpanel/edit_member_detail/'. $this->input->post('user_id'));
     }
 
     public function save_profile() {
@@ -140,7 +105,7 @@ class Member_detail extends Admin_Controller {
 
         if (!$this->form_validation->run()) {
             $this->session->set_flashdata('error', validation_errors());
-            redirect('/adminpanel/member_detail/'. $this->input->post('user_id').'?tab=profile');
+            redirect('/adminpanel/edit_member_detail/'. $this->input->post('user_id').'?tab=profile');
             exit();
         }
 
@@ -157,7 +122,7 @@ class Member_detail extends Admin_Controller {
 
         $this->session->set_flashdata('success', sprintf($this->lang->line('member_updated'), $this->input->post('username')));
 
-        redirect('/adminpanel/member_detail/'. $this->input->post('user_id').'?tab=profile');
+        redirect('/adminpanel/edit_member_detail/'. $this->input->post('user_id').'?tab=profile');
     }
 
     public function save_ids() {
@@ -183,7 +148,7 @@ class Member_detail extends Admin_Controller {
 
         $this->session->set_flashdata('success', sprintf($this->lang->line('member_updated'), $this->input->post('username')));
 
-        redirect('/adminpanel/member_detail/'. $this->input->post('user_id').'?tab=ids');
+        redirect('/adminpanel/edit_member_detail/'. $this->input->post('user_id').'?tab=ids');
     }
 
     public function save_remarks(){
@@ -201,7 +166,7 @@ class Member_detail extends Admin_Controller {
 
         $this->session->set_flashdata('success', sprintf($this->lang->line('member_updated'), $this->input->post('username')));
 
-        redirect('/adminpanel/member_detail/'. $this->input->post('user_id').'?tab=remark');
+        redirect('/adminpanel/edit_member_detail/'. $this->input->post('user_id').'?tab=remark');
     }
 
     public function save_password(){
@@ -213,7 +178,7 @@ class Member_detail extends Admin_Controller {
 
         if (!$this->form_validation->run()) {
             $this->session->set_flashdata('error', validation_errors());
-            redirect('adminpanel/member_detail/'.$this->input->post('user_id').'?tab=password');
+            redirect('adminpanel/edit_member_detail/'.$this->input->post('user_id').'?tab=password');
         }
 
         $this->load->model('adminpanel/users_model');
@@ -226,7 +191,7 @@ class Member_detail extends Admin_Controller {
             else{
                 $this->session->set_flashdata('error', '<p>'. $this->lang->line('change_password_failed') .'</p>');
             }
-        redirect('/adminpanel/member_detail/'. $this->input->post('user_id').'?tab=password');
+        redirect('/adminpanel/edit_member_detail/'. $this->input->post('user_id').'?tab=password');
 
     }
 

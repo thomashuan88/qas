@@ -58,7 +58,7 @@ var getNewData = function() {
         type: "post",
         success: function(data) {
             var jsonData = JSON.parse(data);
-
+            paging.permission = jsonData.permission;
             drawTable(jsonData.table_data);
             drawPager(jsonData);
         },

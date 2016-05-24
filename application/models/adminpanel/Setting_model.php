@@ -37,8 +37,20 @@ class Setting_model extends CI_Model {
         return false;
     }
 
+    public function get_live_person(){
+
+        $this->db->select('sid, type, group, key, value');
+        $this->db->from('system_setting');
+        $this->db->where('type', 'live_person');
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        }
+        return false;
+    }
+
     public function get_one_record($key)
-    {
+    { 
     	$this->db->select('sid, type, key, value');
         $this->db->from('system_setting');
         $this->db->where('sid', $key);

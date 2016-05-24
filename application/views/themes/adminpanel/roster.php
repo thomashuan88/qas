@@ -76,10 +76,9 @@
             </div>
 
             <div class="col-sm-3">
-                <div class="form-group">
+                <div class="form-group contain-datepicker">
                     <label for="submit_time_from"><?php print $this->lang->line('submit_time'); ?></label>
                     <input type="datetime" name="submit_time_from" id="submit_time_from" class="form-control datetimepicker" style="display:inline;">
-                    <i class="fa fa-calendar" aria-hidden="true" style="display:inline; position: absolute; top: 35px; color: black; right: 20px;"></i>
                 </div>
             </div>
 
@@ -90,10 +89,9 @@
             </div>
 
             <div class="col-sm-3">
-                <div class="form-group">
+                <div class="form-group contain-datepicker">
                     <label for="submit_time_to"><?php print $this->lang->line('submit_time'); ?></label>
                     <input type="datetime" name="submit_time_to" id="submit_time_to" class="form-control datetimepicker" style="display:inline;">
-                    <i class="fa fa-calendar" aria-hidden="true" style="display:inline; position: absolute; top: 35px; color: black; right: 20px;"></i>
                 </div>
             </div>
         </div>
@@ -125,7 +123,7 @@
                     <th class="month_date"><?php print $this->lang->line('date'); ?></th>
                 </tr>
                 <tr>
-                    <th style="width:20px;"><?php print $this->lang->line('number'); ?></th>
+                    <th><?php print $this->lang->line('number'); ?></th>
                     <th><?php print $this->lang->line('name'); ?></th>
                     <th><?php print $this->lang->line('designation'); ?></th>
                     <th><?php print $this->lang->line('schedule'); ?></th>

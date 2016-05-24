@@ -57,17 +57,17 @@
                 <?php $i=1; foreach ($roles as $role_id => $role) {  ?>
                     <tr>
                         <td class="text-center"><?php echo $i; ?></td>
-                        <td name="role_name" id="role_name_<?php print $role_id; ?>"><?php print $role['role_name']; ?></td>
+                        <td name="role_name" id="role_name_<?php print $role_id; ?>" value=""><?php print $role['role_name']; ?></td>
                         <td class="text-center">
                             <?php if($role['status'] == "active") : ?>
-                            <a class = "label label-success" style="font-size: 11px;cursor:default;" href="#" title="<?php print ($role['status'] == "active" ? "de" : ""); ?>activate account">
+                            <a class = "status_name" id="inactive" name="<?php print $role['role_name']; ?>" style="font-size: 14px;cursor:default;color:black;" href="#" title="activate account">
                             <?php echo $this->lang->line('active'); ?></a>
                             <?php else: ?>
-                            <a class = "label label-danger" style="font-size: 11px;cursor:default;" href="#" title="<?php print ($role['status'] == "active" ? "de" : ""); ?>inactivate account">
+                            <a class = "status_name" id="active" name="<?php print $role['role_name']; ?>"  style="font-size: 14px;cursor:default;color:black;" href="#" title="inactivate account">
                             <?php echo $this->lang->line('inactive'); ?></a>
                             <?php endif; ?>
                         </td>
-                        <td ><a href="<?php print site_url('adminpanel/roles/toggle_active/'. $role_id ."/". $role['status']."/".  $role['role_name']); ?>" style="margin: 0 5px;" class="btn btn-danger btn-circle" title="" data-toggle="tooltip" data-placement="top"><i class="fa fa-power-off"></i></a></td>
+                        <td ><a href="<?php print site_url('adminpanel/roles/toggle_active/'. $role_id ."/". $role['status']."/".  $role['role_name']); ?>" style="margin: 0 5px;" class="btn btn-danger btn-circle status" name="<?php print $role['role_name']; ?>" title="" data-toggle="tooltip" data-placement="top"><i class="fa fa-power-off"></i></a></td>
                     </tr>
                     <?php $i++; } ?>
                 </tbody>
@@ -87,6 +87,18 @@ if(error != ""){
     $("#role_name").val(role_name);
 }
 
+$(".status").on("click", function (e) {
+    var status = $(".status_name").attr("id");
+    var role_name = $(this).attr("name");
+    var status_link = $(this).attr('href');
+    e.preventDefault();
+    bootbox.confirm("Are you sure to "+status+" "+role_name+"?", function (confirmed) {
+        if (confirmed) {
+            window.location.href = status_link;
+        }
+    });
+});
+
 	$('select').on('change', function() {
 		var html ='';
 		var status = this.value;
@@ -100,24 +112,36 @@ if(error != ""){
                 if(result != "norecord"){
                     var i = 1;
                     $.each( result, function( key, value ) {
+                        var rolename = encodeURIComponent(value['role_name']);
                             html += "<tr>";
                             html += "<td class=\"text-center\">"+i+"</td>";
                             html += "<td name=\"role_name\" id=\"role_name_"+value['role_id']+"\">"+value['role_name']+"</td>";
                             html += "<td class=\"text-center\">";
                             if(value['status'] == "active"){
-                                html += "<a class = \"label label-success\" style=\"font-size: 11px;cursor:default;\" href=\"#\" title=\"activate account\"><?php print $this->lang->line('active'); ?></a>"
+                                html += "<a class = \"status_name\" id=\"inactive\" style=\"font-size: 14px;cursor:default;color:black;\" href=\"#\" title=\"activate account\"><?php print $this->lang->line('active'); ?></a>"
                             }else{
-                                html += "<a class = \"label label-danger\" style=\"font-size: 11px;cursor:default;\" href=\"#\" title=\"inactivate account\"><?php print $this->lang->line('inactive'); ?></a>"
+                                html += "<a class = \"status_name\" id=\"active\"  name=\""+value['role_name']+"\" style=\"font-size: 14px;cursor:default;color:black;\" href=\"#\" title=\"inactivate account\"><?php print $this->lang->line('inactive'); ?></a>"
                             }
                             html += "</td>";
                             html += "<td>";
-                            html += "<a href=\"<?php print base_url(); ?>adminpanel/roles/toggle_active/"+value['role_id']+"/"+value['status']+"\" style=\"margin: 0 5px;\" class=\"btn btn-danger btn-circle\" title=\"\" data-toggle=\"tooltip\" data-placement=\"top\"><i class=\"fa fa-power-off\"></i></a>";
+                            html += "<a href=\"<?php print base_url(); ?>adminpanel/roles/toggle_active/"+value['role_id']+"/"+value['status']+"/"+rolename+"\" style=\"margin: 0 5px;\" name=\""+value['role_name']+"\" class=\"btn btn-danger btn-circle status\" title=\"\" data-toggle=\"tooltip\" data-placement=\"top\"><i class=\"fa fa-power-off\"></i></a>";
                             html += "</td>";
                             html += "</tr>";
                         
                         i++;
                     });
                     $('tbody').html(html);
+                    $(".status").on("click", function (e) {
+                        var status = $(".status_name").attr("id");
+                        var role_name = $(this).attr("name");
+                        var status_link = $(this).attr('href');
+                        e.preventDefault();
+                        bootbox.confirm("Are you sure to "+status+" "+role_name+"?", function (confirmed) {
+                            if (confirmed) {
+                                window.location.href = status_link;
+                            }
+                        });
+                    });
                 }else{
                     html += "<tr>";
                     html += "<td colspan=\"4\" class=\"text-center\">no record</td>";
