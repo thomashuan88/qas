@@ -1,0 +1,123 @@
+.contain-datepicker {
+    position: relative;
+    z-index: 1;
+}
+ 
+.contain-datepicker:after  {
+    content: "\f073";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+    color: #555555;
+    font-size: 18px;
+    padding-right: 0.5em;
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    z-index: 0;
+}
+/*** user details left tabs ***/
+.tabs-left > .nav-tabs {
+    border-bottom: 0;
+}
+
+.tab-content > .tab-pane,
+.pill-content > .pill-pane {
+    display: none;
+}
+
+.tab-content > .active,
+.pill-content > .active {
+    display: block;
+}
+
+.tabs-left > .nav-tabs > li {
+    float: none;
+}
+
+.tabs-left > .nav-tabs > li > a {
+    min-width: 74px;
+    margin-right: 0;
+    margin-bottom: 3px;
+}
+
+.tabs-left > .nav-tabs {
+    float: left;
+    margin-right: 19px;
+    border-right: 1px solid #DDDDDD;
+}
+
+.tabs-left > .nav-tabs > li > a {
+    margin-right: -1px;
+    -webkit-border-radius: 4px 0 0 4px;
+    -moz-border-radius: 4px 0 0 4px;
+    border-radius: 4px 0 0 4px;
+}
+
+.tabs-left > .nav-tabs > li > a:hover,
+.tabs-left > .nav-tabs > li > a:focus {
+    border-color: #EEEEEE #DDDDDD #EEEEEE #EEEEEE;
+}
+
+.tabs-left > .nav-tabs .active > a,
+.tabs-left > .nav-tabs .active > a:hover,
+.tabs-left > .nav-tabs .active > a:focus {
+    border-color: #DDDDDD transparent #DDDDDD #DDDDDD;
+    *border-right-color: #FFFFFF;
+}
+
+/*** status label ***/
+.label-success {
+    background: #5CB85C;
+}
+
+.label-danger {
+    background: #DC323C;
+}
+
+.btn-circle {
+    width: 30px;
+    height: 30px;
+    padding: 6px 0;
+    border-radius: 15px;
+    text-align: center;
+    font-size: 12px;
+    margin: 0 2px;
+}
+
+.info {
+    display: inline-block;
+    max-width: 100%;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #9D9D9D;
+}
+
+.no-border{
+    border: none;
+}
+
+/*** no access page ***/
+.disco_cat {
+    border-radius: 25px;
+    /*border: 1px solid #DC2828;*/
+    padding: 20px;
+    width: 500px;
+    height: 200px;
+    /*box-shadow: 0 0 15px 5px #DC2828;*/
+}
+/*** performance report ***/
+.daily-qa  {
+    text-align: center;
+}
+.daily-qa th {
+    text-align: center;
+}
+.monthly-qa  {
+    text-align: center;
+}
+.monthly-qa th {
+    text-align: center;
+}
+
