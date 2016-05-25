@@ -140,6 +140,8 @@ $lang['is_db_cell_available_by_id'] = 'That %s already exists in our database.';
 $lang['check_captcha'] = 'Verification code is incorrect (reCaptcha).';
 $lang['is_member_password'] = 'Your password is incorrect';
 $lang['is_valid_time'] = "时间格式不正确。";
+$lang['is_valid_phone'] = "无效的电话号码.";
+
 
 // e-mail greetings
 $lang['email_not_found'] = '找不到电子邮件地址。';
@@ -269,7 +271,7 @@ $lang['consumer_secret'] = "消费者秘密";
 $lang['access_token'] = "进入象征";
 $lang['access_token_secret'] = "进入象征秘密";
 $lang['add_live_person'] = "添加线人";
-$lang['account_id'] = "账户ID"; 
+$lang['account_id'] = "账户ID";
 
 
 
@@ -358,7 +360,7 @@ $lang['qa_evaluation'] = "QA评估";
 $lang['operation_utilization'] = "利用操作";
 $lang['pending'] = "待处理导入";
 $lang['confirm_import'] = "确认导入";
-$lang['import_done'] = "已完成导入";
+$lang['import_done'] = "已导入记录";
 $lang['import'] = "导入";
 $lang['export'] = "导出";
 $lang['template'] = "模板";

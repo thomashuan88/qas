@@ -8,6 +8,7 @@ class Setting_model extends CI_Model {
 
     public function save_setting($data)
     {
+        log_message("error", print_r($data,true));
         $this->db->insert('system_setting', $data);
         return $this->db->affected_rows();
 
@@ -48,10 +49,12 @@ class Setting_model extends CI_Model {
         }
         return false;
     }
+    // update(value)
+    // where(type = liveperson, group = 1, key = consumer_secret)
 
     public function get_one_record($key)
     { 
-    	$this->db->select('sid, type, key, value');
+    	$this->db->select('sid, type, group, key, value');
         $this->db->from('system_setting');
         $this->db->where('sid', $key);
         $query = $this->db->get();

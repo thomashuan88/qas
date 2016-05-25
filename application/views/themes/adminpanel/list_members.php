@@ -158,7 +158,13 @@ $.each( data, function( key, value ) {
     html +='<td>' + value['role'] + '</td>';
     html +='<td>' + value['phone'] + '</td>';
     html +='<td>' + value['leader'] + '</td>';
-    html +='<td>' + value['status'] + '</td>';
+    if(value['status'] == "active"){
+        html +='<td><i class="label label-success">' + value['status'] + '</i></td>';
+
+    } else {
+        html +='<td><i class="label label-danger">' + value['status'] + '</i></td>';
+
+    }
     // html +='<td><a href="#" class="btn btn-info btn-circle" title="" data-toggle="tooltip" data-placement="top" data-original-title="User Sessions"><i class="fa fa-list"></i></a>'
     html +='<td><a href="<?php print base_url(); ?>adminpanel/member_detail/'+value['user_id']+'" class="btn btn-success btn-circle" title="" data-toggle="tooltip" data-placement="top" data-original-title="View User"><i class="fa fa-eye"></i></a>'
     html +='<a href="<?php print base_url(); ?>adminpanel/Edit_member_detail/'+value['user_id']+'" class="btn btn-primary btn-circle edit" title="" data-toggle="tooltip" data-placement="top" data-original-title="Edit User"><i class="fa fa-pencil-square"></i></a>'

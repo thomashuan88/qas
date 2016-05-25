@@ -235,25 +235,68 @@ class Settings extends Admin_Controller {
     }
 
     $this->load->model('adminpanel/setting_model');
-    $key = array('account_id', 'consumer_key', 'consumer_secret', 'access_token', 'access_token_secret');
+    $key = array('account_id', 'consumer_key', 'consumer_secret' ,'access_token_secret','access_token');
+
+  log_message("error", $key);
 
     foreach($key as $value){
+        log_message("error", "hi");
+
       $data = array(
             'type' => 'live_person',
             'group' => $this->input->post('product'),
             'key' => $value,
-            // 'value' => $this->input->post($value)
+            'value' => $this->input->post($value)
           );
-
-      $this->setting_model->save_setting($data);
-    }
- 
-    if ($this->setting_model->save_setting($data)) {
+       if ($this->setting_model->save_setting($data)) {
           $this->session->set_flashdata('success', '<p>'. $this->lang->line('settings_update') .'</p>');
-          $this->load->library('cache');
-          $this->cache->delete('settings');
+        }
     }
     redirect('/adminpanel/settings/'.'?tab=live_person');
+   }
+
+  
+
+    public function edit_live_person($key)
+   {
+      if (!empty($key)) {
+
+        $content_data = array();
+        $content_data['live_person'] = $this->setting_model->get_one_record($key);
+        if (!empty($content_data['product'])) {
+            $post_data = $this->input->post();
+
+            if (!empty($post_data)) {
+                $this->form_validation->set_error_delimiters('<p>', '</p>');
+                $this->form_validation->set_rules('product','product type','trim|required|is_db_cell_available[system_setting.value]');
+
+                if (!$this->form_validation->run()) {
+                        $this->session->set_flashdata('error', validation_errors());
+                        redirect('/adminpanel/settings/edit_product/'.$key);
+                }
+                $post_data['id'] = $key;
+
+                $res = $this->setting_model->edit_product($post_data);
+                if ($res) {
+                    $this->session->set_flashdata('success', $this->lang->line('update_success'));
+                } else {
+                    $this->session->set_flashdata('error', $this->lang->line('update_failure'));
+                }
+            }else {
+                return $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel', $this->lang->line('settings'), 'product_settings_edit', 'header', 'footer', '', $content_data);
+            }
+        } else {
+            $this->session->set_flashdata('error', $this->lang->line('no_result'));
+        }
+    } else {
+            $this->session->set_flashdata('error', $this->lang->line('invalid_data'));
+    }
+
+    redirect('/adminpanel/settings/'.'?tab=product');
 
    }
+
+
+
+
 }

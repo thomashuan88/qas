@@ -46,6 +46,7 @@
                         <select name="status" id="status" class="form-control">
                             <option value="active" <?php print ($this->session->flashdata('status') == 'active') ? "selected" : ""; ?>><?php print $this->lang->line('active'); ?></option>
                             <option value="inactive" <?php print ($this->session->flashdata('status') == 'inactive') ? "selected" : ""; ?>><?php print $this->lang->line('inactive'); ?></option>
+                            <option value="all" <?php print ($this->session->flashdata('status') == 'all') ? "selected" : ""; ?>><?php print $this->lang->line('show_all'); ?></option>
                         </select>
                     </div>
                 </div>
@@ -113,11 +114,61 @@
         return false;
     };
 
+    var editData = function(id) {
+        $.ajax({
+            url: "/adminpanel/operation/question_type_edit/" + id,
+            type: "post",
+            dataType: "json",
+            success: function (data) {
+                bootbox.dialog({
+                        title: "<?php print $this->lang->line('question_type_edit'); ?>",
+                        message: '<div class="row"><div class="col-md-12"><form class="form-horizontal" id="edit_form"><div class="panel"><div class="panel-body"><div class="form-group"><label for="content">' +
+                        '<?php print $this->lang->line('content'); ?>' +'</label><input type="text" class="form-control" id="content" name="content" value="' + data['content'] + '"/></div>' +
+                        '<div class="form-group"><label for="status">' + '<?php print $this->lang->line('status'); ?>' + '</label><select name="status" id="status" class="form-control">' +
+                        '<<option value="active"' + ((data['content'] == 'active') ? selected : "") + '>' + '<?php print $this->lang->line('active'); ?>' + '</option><option value="inactive"' +
+                        ((data['content'] == 'inactive') ? selected : "") + '>' + '<?php print $this->lang->line('inactive'); ?>' + '</option></select></div></div></div></form></div></div>',
+                        buttons: {
+                            success: {
+                                label: "<?php print $this->lang->line('save'); ?>",
+                                className: "btn-primary",
+                                callback: function () {
+                                    $.ajax({
+                                        url: "/adminpanel/operation/question_type_edit/" + id,
+                                        data: $('#edit_form').serialize(),
+                                        dataType: "json",
+                                        type: "post",
+                                        success: function(data) {
+                                            bootbox.alert(data['responseText']);
+                                        },
+                                        error: function(data) {
+                                            console.log(data);
+                                            bootbox.alert(data['responseText']);
+                                            getNewData();
+                                        }
+                                    });
+                                    $('body').css('padding-right', '');
+                                }
+                            },
+                            cancel: {
+                                label: "<?php print $this->lang->line('cancel'); ?>",
+                                className: "btn-default",
+                                callback: function () {}
+                            }
+                        }
+                    }
+                );
+            },
+            error: function (data) {
+                bootbox.alert(data['responseText']);
+            }
+        });
+    };
+
     var deleteData = function (id) {
         bootbox.confirm(delete_message, function (confirmed) {
             if (confirmed) {
                 $.ajax({
-                    url: "/adminpanel/operation/time_sheet_delete/" + id,
+                    url: "/adminpanel/operation/question_type_delete/" + id,
                     type: "post",
                     success: function (data) {
                         getNewData();
@@ -127,6 +178,7 @@
                         bootbox.alert(data);
                     }
                 });
+                $('body').css('padding-right', '');
             }
         });
     };
@@ -151,10 +203,10 @@
             html += '<td>' + value['created_time'] + '</td>';
             html += '<td style="white-space: nowrap;">';
             if (paging.permission['edit']) {
-                html += '<a href="<?php print base_url('adminpanel/operation/question_type_edit'); ?>/' + value['category_group_id'] + '" class="btn btn-primary btn-circle edit" title="edit" data-toggle="tooltip" data-placement="top" data-original-title="Edit"><i class="fa fa-pencil-square"></i></a>';
+                html += '<a href="#" onclick="editData(' + value['category_group_id'] + ');" class="btn btn-primary btn-circle edit" title="edit" data-toggle="tooltip" data-placement="top" data-original-title="Edit"><i class="fa fa-pencil-square"></i></a>';
             }
             if (paging.permission['delete']) {
-                html += '<a href="<?php print base_url('adminpanel/operation/question_type_delete'); ?>/' + value['category_group_id'] + '" class="btn btn-danger btn-circle delete" title="delete" data-toggle="tooltip" data-placement="top" data-method="DELETE"><i class="fa fa-trash"></i></a>';
+                html += '<a <a href="#" onclick="deleteData(' + value['category_group_id'] + ');" class="btn btn-danger btn-circle delete" title="delete" data-toggle="tooltip" data-placement="top" data-method="DELETE"><i class="fa fa-trash"></i></a>';
             }
             html += '</td></tr>';
         });

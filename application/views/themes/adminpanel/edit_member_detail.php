@@ -12,9 +12,15 @@
           <div class="col-xs-11">
             <div class="panel with-nav-tabs panel-default">
                 <div class="panel-heading">
+                    <div class="pull-right">
+        				<button type="submit" name="add_user_submit" id="add_user_submit" class="btn btn-default js-btn-loading pd-r-5" data-loading-text="Going Back.."><i class="fa fa-reply pd-r-5"></i> Back</button>
+                    </div>
                     <ul class="nav nav-tabs">
                         <li class="active"><a href="<?php print base_url() ."adminpanel/member_detail/".$member->user_id; ?>" >User Information</a></li>
                     </ul>
+
+
+                <div class="clearfix"></div>
                 </div>
                 <div class="panel-body">
                     <div class="tab-content">
@@ -200,6 +206,7 @@
                                             <div class="col-sm-12 form-group">
                                                 <label for="new password"><?php print $this->lang->line('new_password'); ?></label>
                                                 <input type="password" name="new_password" id="new_password" class="form-control">
+                                                <label style="color:#9C9696; font-size:12px;">min 6 characters, contain uppercase, alphanumeric and symbol("@#$%^&+=.-_*). eg. qw#e3r </label>
                                             </div>
                                              <div class="col-sm-12 form-group">
                                                 <label for="confirm password"><?php print $this->lang->line('confirm_password'); ?></label>

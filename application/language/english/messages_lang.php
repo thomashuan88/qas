@@ -139,6 +139,8 @@ $lang['is_db_cell_available_by_id'] = 'That %s already exists in our database.';
 $lang['check_captcha'] = 'Verification code is incorrect (reCaptcha).';
 $lang['is_member_password'] = 'Your password is incorrect';
 $lang['is_valid_time'] = "Time format is incorrect.";
+$lang['is_valid_phone'] = "Invalid phone number.";
+
 
 
 // e-mail greetings
@@ -280,6 +282,7 @@ $lang['invalid_post_data'] = 'Invalid post data.';
 $lang['select'] = 'Please select';
 $lang['back'] = 'Back';
 $lang['close'] = 'Close';
+$lang['save'] = 'Save';
 
 // backup & export
 $lang['backup_text'] = "This e-mail will be sent to the admin e-mail entered in site settings.";
@@ -413,9 +416,9 @@ $lang['qa_evaluation'] = "QA Evaluation";
 $lang['operation_utilization'] = "Operation Utilization";
 $lang['daily_qa'] = "Daily QA";
 $lang['total_record'] = "Record No";
-$lang['pending'] = "Pending Import";
-$lang['confirm_import'] = "Confirm Import";
-$lang['import_done'] = "Successful Import";
+$lang['pending'] = "View Pending";
+$lang['confirm_import'] = "Confirm Upload";
+$lang['import_done'] = "View Confirm";
 $lang['import'] = "Import";
 $lang['export'] = "Export";
 $lang['template'] = "Template";

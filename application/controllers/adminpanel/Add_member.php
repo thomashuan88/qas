@@ -36,7 +36,7 @@ class Add_member extends Admin_Controller {
          $this->form_validation->set_rules('leader', $this->lang->line('leader'), 'trim|is_value_exists[users.username]');
          $this->form_validation->set_rules('email', $this->lang->line('email_address'), 'trim|required|max_length[255]|is_valid_email|is_db_cell_available[users.email]');
          $this->form_validation->set_rules('role', $this->lang->line('role'), 'trim|required|is_value_exists[role.role_name]');
-         $this->form_validation->set_rules('phone', $this->lang->line('phone'), 'trim|regex_match[/(\\d{3})\\D{0,2}(\\d{3})\\D{0,2}(\\d{4})[x\\.\\s]{0,2}(\\d{4}|\\d{0})/]');
+         $this->form_validation->set_rules('phone', $this->lang->line('phone'), 'is_valid_phone');
 
          if (!$this->form_validation->run()) {
              echo json_encode($this->form_validation->error_array(), true);
@@ -57,7 +57,7 @@ class Add_member extends Admin_Controller {
         $this->form_validation->set_rules('leader', $this->lang->line('leader'), 'trim|is_value_exists[users.username]');
         $this->form_validation->set_rules('email', $this->lang->line('email_address'), 'trim|required|max_length[255]|is_valid_email|is_db_cell_available[users.email]');
         $this->form_validation->set_rules('role', $this->lang->line('role'), 'trim|required|is_value_exists[role.role_name]');
-        $this->form_validation->set_rules('phone', $this->lang->line('phone'), 'trim|regex_match[/^((((\\+[\\d\\-.]{1,5})?[ \\-.]?\\d{3})|(\\+[\\d\\-.]{1,5})?[ \\-.]?\\((\\d{3}\\)))?[ \\-.]?\\d{3}[ \\-.]?\\d{4}\\s?(e?x?t?\\.?\\s?\\d{1,7})?)?$/]');
+        $this->form_validation->set_rules('phone', $this->lang->line('phone'), 'trim|is_valid_phone');
         //validation fail
 
         if (!$this->form_validation->run()) {

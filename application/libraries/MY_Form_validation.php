@@ -50,7 +50,14 @@ class MY_Form_validation extends CI_Form_validation {
     public function is_valid_password($password) {
         if(preg_match('/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=.\-_*])([a-zA-Z0-9@#$%^&+=*.\-_]){6,20}$/',$password)){
 
-        // if (preg_match("/[.@#\$\[\]\|\(\)\?\*\+\{\}\!\=\:\-]/", $password) && (strcspn($password, '0123456789') != strlen($password))) {
+            return true;
+        }
+        return false;
+    }
+
+    public function is_valid_phone($phone) {
+        if(preg_match('/^((((\\+[\\d\\-.]{1,5})?[ \\-.]?\\d{3})|(\\+[\\d\\-.]{1,5})?[ \\-.]?\\((\\d{3}\\)))?[ \\-.]?\\d{3}[ \\-.]?\\d{4}\\s?(e?x?t?\\.?\\s?\\d{1,7})?)?$/',$phone)){
+
             return true;
         }
         return false;

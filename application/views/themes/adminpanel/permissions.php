@@ -23,7 +23,7 @@
     <?php foreach ($roles as $role_id => $role) { ?>
             <div class="tab-pane" id="<?php print $role_id; ?>">
             <?php print form_open('adminpanel/roles/save_role_permissions', 'id="save_role_permissions_form_'. $role_id .'"') ."\r\n"; ?>
-                <table class="table table-bordered table-hover list table-condensed table-striped">
+                <table class="table table-bordered table-hover list table-condensed table-striped" id="table_list">
                     <thead>
                         <tr >
                         <!-- <th style="width: 30px;cursor:default; color:#333333;text-shadow: 0 1px 0 #FFFFFF;background-color: #e6e6e6;text-align: center;">No.</th> -->
@@ -42,22 +42,23 @@
                             <th></th>
                         </tr>
                         <?php }else{  ?>
-                        <tr id ="<?php print $id; ?>" name="check_list">
+                        <tr id ="<?php print $id; ?>" name="check_list" class="check_list">
                             <!-- <td style="text-align:center;"><?php echo $i;?></td> -->
                             <td><?php print $permission['description']; ?></td>
                             <td style="text-align:center;">
                             <label class="checkbox inline">
-                                <?php print form_checkbox(array('name' => 'add[]', 'class' => 'check_action_'.$role_id.'_'.$id, 'value' => $id, 'checked' => ($permission['add'] == 'yes' ? true : false))); ?> Add</label>
+                                <?php print form_checkbox(array('name' => 'add[]', 'class' => 'check_action', 'value' => $id, 'checked' => ($permission['add'] == 'yes' ? true : false))); ?> Add</label>
                             <label class="checkbox inline">
-                                <?php print form_checkbox(array('name' => 'edit[]', 'class' => 'check_action_'.$role_id.'_'.$id, 'value' => $id, 'checked' => ($permission['edit'] == 'yes' ? true : false))); ?> Edit</label>
+                                <?php print form_checkbox(array('name' => 'edit[]', 'class' => 'check_action', 'value' => $id, 'checked' => ($permission['edit'] == 'yes' ? true : false))); ?> Edit</label>
                             <label class="checkbox inline">
-                                <?php print form_checkbox(array('name' => 'delete[]', 'class' => 'check_action_'.$role_id.'_'.$id, 'value' => $id, 'checked' => ($permission['delete'] == 'yes' ? true : false))); ?> Delete</label>
+                                <?php print form_checkbox(array('name' => 'delete[]', 'class' => 'check_action', 'value' => $id, 'checked' => ($permission['delete'] == 'yes' ? true : false))); ?> Delete</label>
                             <label class="checkbox inline"> 
-                                <?php print form_checkbox(array('name' => 'view[]', 'class' => 'check_action_'.$role_id.'_'.$id, 'value' => $id, 'checked' => ($permission['view'] == 'yes' ? true : false))); ?>view</label>
+                                <?php print form_checkbox(array('name' => 'view[]', 'class' => 'check_action', 'value' => $id, 'checked' => ($permission['view'] == 'yes' ? true : false))); ?>view</label>
                             </td>
                             <td style="text-align:center;">
+                            
                             <label class="checkbox inline">
-                                <input type="checkbox" name="check_all" class="check_all" id="check_all_<?php print $role_id; ?>_<?php print $id; ?>" />
+                                <input type="checkbox" name="<?php print $role_id; ?>" class="check_all" id="<?php print $id; ?>" <?php if($permission['view'] == "yes" && $permission['add'] == "yes" && $permission['edit'] == "yes" && $permission['delete'] == "yes"){ echo "checked"; }else{ echo "";}?> />
                              </label>
                             </td>
                         </tr>
@@ -89,12 +90,31 @@ $(document).ready(function(){
     // alert(permi_id);
     
     $(".check_all").change(function(e){
-        var permission_id = $(this).attr("id");
-       // alert(permission_id);
-      //$(".check_action").prop('checked', $(this).prop("checked"));
+        var checkedStatus = this.checked;
+        var abc = $(this).attr("id");
+        var def = $(this).attr("name");
+        $("#"+def).find("#"+abc+" td label input").each(function () {
+            $(this).prop('checked', checkedStatus);
+        });
+
+        /*
+         var checkedStatus = this.checked;
+         var permission_id = $(this).attr("id");
+         alert(permission_id);
+        $('#permission_id').parent().find('.check_action').each(function () {
+            $(this).prop('checked', checkedStatus);
+        });
+        */
+        
+       
     });
 
-   
+    $(".check_action")change(function(e){
+        alert();
+    });
+
+   //alert(permission_id);
+      //$(".check_action").prop('checked', $(this).prop("checked"));
 });
 
 

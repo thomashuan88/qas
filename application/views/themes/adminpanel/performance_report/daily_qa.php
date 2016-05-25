@@ -7,24 +7,27 @@
 <script src="<?php print base_url(); ?>assets/js/vendor/plupload-2.1.9/js/jquery.ui.plupload/jquery.ui.plupload.min.js"></script>
 
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-4">
         <div id="pending_list" style="display:none;"></div>
+        <button type="button" name="confirm_import" id="confirm_import" class="btn btn-default btn-md" style="display:none;" ><i class="fa fa-play"></i> &nbsp; <?php print $this->lang->line('confirm_import'); ?></button>
+
         <button id="js-search" type="button" class="btn btn-default" data-toggle="collapse" data-target="#search_wrapper">
             <span id="js-search-text"><i class="fa fa-compress pd-r-6"></i> <?php print $this->lang->line('collapse'); ?></span> <i class="fa fa-search pd-l-5"></i>
         </button>
     </div>
-    <div class="col-md-6" style="text-align: right;">
-        <button type="button" name="pending" id="pending" class="btn btn-default btn-md" ><i class="fa fa-step-forward"></i> &nbsp; <?php print $this->lang->line('pending'); ?></button>
-        <button type="button" name="confirmed" id="confirmed" class="btn btn-default btn-md" style="display:none;" ><i class="fa fa-check"></i> &nbsp; <?php print $this->lang->line('import_done'); ?></button>
-         &nbsp; &nbsp; &nbsp;
-        <button type="button" name="import_btn" id="import_btn" class="btn btn-default btn-md" ><i class="fa fa-download"></i> &nbsp; <?php print $this->lang->line('import'); ?></button>
-         &nbsp; &nbsp; &nbsp;
+    <div class="col-md-8" style="text-align: right;">
         <button type="button" name="export_btn" id="export_btn" class="btn btn-default btn-md"><i class="fa fa-upload"></i> &nbsp; <?php print $this->lang->line('export'); ?></button>
         &nbsp; &nbsp; &nbsp;
+        <button type="button" name="import_btn" id="import_btn" class="btn btn-default btn-md" ><i class="fa fa-download"></i> &nbsp; <?php print $this->lang->line('import'); ?></button>
+        &nbsp; &nbsp; &nbsp;
         <a href="<?php print base_url() . '/tmp/report_template/daily_qa.xls' ;?>" target="_self"><button type="button" name="template_btn" id="template_btn" class="btn btn-default btn-md"><i class="fa fa-file-text"></i> &nbsp; <?php print $this->lang->line('template'); ?></button></a>
+        &nbsp; &nbsp; &nbsp;
+        <button type="button" name="pending" id="pending" class="btn btn-default btn-md" ><i class="fa fa-step-forward"></i> &nbsp; <?php print $this->lang->line('pending'); ?></button>
+        <button type="button" name="confirmed" id="confirmed" class="btn btn-default btn-md" style="display:none;" ><i class="fa fa-check"></i> &nbsp; <?php print $this->lang->line('import_done'); ?></button>
     </div>
 </div>
 
+<!-- search -->
 <div id="search_wrapper" class="collapse in">
     <form name="daily_qa_form" id="daily_qa_form" onsubmit="return searchData();">
         <div class="pd-15 bg-primary mg-t-15 mg-b-10">
@@ -57,7 +60,6 @@
         </div>
     </form>
 </div>
-<button type="button" name="confirm_import" id="confirm_import" class="btn btn-default btn-md" style="display:none;" ><i class="fa fa-play"></i> &nbsp; <?php print $this->lang->line('confirm_import'); ?></button>
 
 <div id="uploader" style="display:none;"></div>
 
@@ -180,7 +182,6 @@ $(function(){
 });
 
 $("#export_btn").click(function(){
-
     var searchDataUrl = "";
     for (var key in paging.search_data) {
         if (searchDataUrl != "") {
@@ -203,11 +204,15 @@ var paging = {
 $("#pending").click(function() {
     $("#pending_list").css("display", "block");
     $("#js-search").css("display", "none");
-    // $("#search_wrapper").removeClass("classtoremove");
+
+    $("#search_wrapper").removeClass("collapse in");
+    $("#search_wrapper").addClass("collapse");
     
     $("#confirmed").css("display", "");
     $("#pending").css("display", "none");
     $("#confirm_import").css("display", "");
+
+    $("#export_btn").css("display", "none");
         
     paging = {
         offset : 0,
@@ -221,18 +226,21 @@ $("#pending").click(function() {
     }
 
     getPendingList();
-    getNewData();
-    setHeaderIcon();
 });
 
 $("#confirmed").click(function() {
     $("#pending_list").css("display", "none");
     $("#js-search").css("display", "block");
-    $("#search_wrapper").removeClass("classtoremove");
+
+    $("#search_wrapper").removeClass("collapse");
+    $("#search_wrapper").addClass("collapse in");
+    $("#search_wrapper").attr("aria-expanded", true);
     
     $("#pending").css("display", "");
     $("#confirmed").css("display", "none");
     $("#confirm_import").css("display", "none");
+
+    $("#export_btn").css("display", "");
 
     paging = {
         offset : 0,
@@ -247,22 +255,38 @@ $("#confirmed").click(function() {
 });
 
 $('#confirm_import').click(function() {
-    var requestData = {
-        import_by: paging.search_data.import_by,
-    }
+    bootbox.confirm('Are you sure to confirm this import?', function(confirmed){
+        if (confirmed) {
 
-    $.ajax({
-        url: '<?php print base_url('adminpanel/daily_qa/confirm_pending'); ?>',
-        data: requestData,
-        success: function(data) {
-            console.log(data)
-            // var jsonData = JSON.parse(data);
-        },
-        error: function(data) {
-            // console.log(data);
+            var requestData = { import_by: paging.search_data.import_by }
+
+            $.ajax({
+                url: '<?php print base_url('adminpanel/daily_qa/confirm_pending'); ?>',
+                data: requestData,
+                type: 'post',
+                success: function(data) {
+                    var jsonData = JSON.parse(data);
+                    
+                    if (!jsonData.error) {
+                        bootbox.alert("Order has confirmed.")
+                    } else {
+                        bootbox.alert(jsonData.message);
+                    }
+
+                    getNewData();
+                },
+                error: function(data) {
+                    bootbox.alert("Unknown error has occur.")
+                }
+            });
         }
     });
 })
+
+var chgImportSession = function(selected) {
+    paging.search_data.import_by = selected.value;
+    getNewData();
+}
 
 var getPendingList = function() {
     $.ajax({
@@ -271,23 +295,31 @@ var getPendingList = function() {
             var jsonData = JSON.parse(data);
 
             if (jsonData.length > 0) {
-                var html = '<div class="form-group"><select name="status" id="status" class="form-control">';
+                var html = '<div class="form-group"><select name="select_import_session" id="select_import_session" class="form-control" onchange="chgImportSession(this);">';
 
                 $.each( jsonData, function( key, value ) {
-                    html += '<option ';
+                    html += '<option value = "' + value['import_by'] + '"';
 
                     if( value['import_by'] == paging.search_data.import_by ) {
                         html += 'selected';
                     }
 
-                    html += '>User: ' + value['import_by'] + 
-                        ' Import Date: ' + value['import_date'] + '</option>';
+                    html += '>' + value['import_by'] + 
+                        ' - ' + value['import_date'] + '</option>';
                 });
 
                 html += '</select></div>';
 
                 $('#pending_list').html(html);
+                
+                paging.search_data.import_by = $('#select_import_session option:selected').val();
+                
+            } else {
+                $('#confirm_import').prop('disabled', true);
             }
+            getNewData();
+            setHeaderIcon();
+
         },
         error: function(data) {
             // console.log(data);

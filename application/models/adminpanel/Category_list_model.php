@@ -39,7 +39,15 @@ class Category_list_model extends CI_Model {
                 'content' => $search_data['content'] ? $search_data['content'] : ""
             );
         }
-        $cond = array('status' => !empty($search_data['status']) ? $search_data['status'] : 'active');
+        if (!empty($search_data['status'])) {
+            if($search_data['status'] == "all"){
+                $cond = array('status !=' => 'delete');
+            } else {
+                $cond = array('status' => $search_data['status']);
+            }
+        } else {
+            $cond = array('status' => 'active');
+        }
 
         $this->db->select($this->fields);
         $this->db->from($this->table);

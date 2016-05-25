@@ -27,9 +27,9 @@ class Daily_Qa extends Admin_Controller {
 
             $per_page = Settings_model::$db_config['members_per_page'];
             $dailyQaObj = $this->Performance_daily_qa_model->get_daily_qa($per_page, $offset, $order_by, $sort_order, $search_data, 1);
-            $content_data['total_rows'] = $this->Performance_daily_qa_model->count_all_daily_qa($search_data);
+            $content_data['total_rows'] = $this->Performance_daily_qa_model->count_confirm_daily_qa($search_data);
 
-            $content_data['table_data'] = ( $content_data['total_rows'] > 0 ) ? $dailyQaObj->result() : array();
+            $content_data['table_data'] = ( $dailyQaObj != false ) ? $dailyQaObj->result() : array();
 
             $content_data['offset'] = $offset;
             $content_data['per_page'] = Settings_model::$db_config['members_per_page'];
@@ -40,7 +40,8 @@ class Daily_Qa extends Admin_Controller {
 
     public function pending_list() {
         $dailyQaObj = $this->Performance_daily_qa_model->pending_list();
-        $pendingList = ( $dailyQaObj->num_rows() > 0 ) ? $dailyQaObj->result('array') : array();
+
+        $pendingList = ( $dailyQaObj != false ) ? $dailyQaObj->result('array') : array();
 
         if ( $this->input->is_ajax_request() ) {
             echo json_encode($pendingList, true);
@@ -62,7 +63,7 @@ class Daily_Qa extends Admin_Controller {
 
             $per_page = Settings_model::$db_config['members_per_page'];
             $dailyQaObj = $this->Performance_daily_qa_model->get_daily_qa($per_page, $offset, $order_by, $sort_order, $search_data, 0);
-            $content_data['total_rows'] = $this->Performance_daily_qa_model->count_all_daily_qa($search_data);
+            $content_data['total_rows'] = $this->Performance_daily_qa_model->count_pending_daily_qa($search_data);
 
             if ( $content_data['total_rows'] > 0 ) {
                 $content_data['table_data'] = $dailyQaObj->result();
@@ -79,10 +80,16 @@ class Daily_Qa extends Admin_Controller {
 
     public function confirm_pending() {
         if ( $this->input->post() ) {
-            $array = $this->input->post();
-            $array1 = array_keys($array);
-            $arr = json_decode($array1[0], true);
+            $arr = $this->input->post();
 
+            try {
+                $this->Performance_daily_qa_model->confirm_dailyqa_import($arr['import_by']);
+
+                echo json_encode( array('error' => false), true );
+
+            } catch ( Exception $e ){
+                echo json_encode( array('error' => true), true ); 
+            }
         }
     }
 

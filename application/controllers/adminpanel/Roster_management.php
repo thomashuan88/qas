@@ -27,12 +27,12 @@ class Roster_management extends Admin_Controller {
         ($action_result->add == 'yes') ?  $content_data['scheduler'] = TRUE : $content_data['scheduler'] = FALSE;
         
         $result = $this->select_shift();
-        $result = array();
+        //$result = array();
         //log_message('error', print_r($result,true));
         $content_data['dow_arr'] = $this->lang->line('day_of_week_short');
         (empty($result)) ? $content_data['data'] = '' : $content_data['data'] = $result;
 
-        $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel', $this->lang->line('roster'), 'roster', 'header', 'footer', '', $content_data);
+        $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel', $this->lang->line('roster'), 'roster_page', 'header', 'footer', '', $content_data);
     }
 
     public function set_roster_page() {
@@ -64,7 +64,7 @@ class Roster_management extends Admin_Controller {
                     //$new_array[] = $flat[$child];
                 }
             }
-            log_message('error', print_r($tree,true));
+            //log_message('error', print_r($tree,true));
             //log_message('error', print_r($new_array,true));
             //$result_rec = $this->traverseArray($tree);
             //log_message('error', print_r($result_rec,true));

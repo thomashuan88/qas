@@ -38,7 +38,7 @@
     }
     .fixedTable-body {
       overflow: auto;
-      width: 66%; /*folo this*/
+      width: 60%; /*folo this*/
       height: 400px;
       float: left;
     }
@@ -109,7 +109,7 @@
 
 <?php if(empty($data)){ ?>
     <br>
-    <div style="width:100%;">
+    <div class="row" style="width:100%;">
         <div id="demo" class="fixedTable">
           <header class="fixedTable-header">
             <table class="table table-bordered">

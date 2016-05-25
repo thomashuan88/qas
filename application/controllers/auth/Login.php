@@ -65,7 +65,7 @@ class Login extends Auth_Controller {
         // log_message("error", $session_id);
 
         // if($session_id){
-
+            
         //     $this->login_model->delete_session($session_id);
         // }
 

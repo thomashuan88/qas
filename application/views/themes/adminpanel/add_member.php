@@ -1,9 +1,11 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
 <?php $this->load->view('themes/'. Settings_model::$db_config['adminpanel_theme'] .'/partials/content_head.php'); ?>
+<link href="<?php print base_url(); ?>assets/js/vendor/intl-tel-input/build/css/intlTelInput.css" rel="stylesheet" >
 
 <?php $this->load->view('generic/flash_error'); ?>
 <?php $tab = (isset($_GET['tab'])) ? $_GET['tab'] : ""; ?>
+
 <style>
 
  .lock-overlay {
@@ -13,6 +15,7 @@
     height:100%;
 }
 </style>
+
 <div class="col-md-10 col-md-offset-1">
     <?php print form_open('adminpanel/add_member/add', array('id' => 'add_user_form')) ."\r\n"; ?>
 
@@ -98,8 +101,9 @@
 										<div class="form-group">
 											<label for="role"><?php print $this->lang->line('role'); ?></label>
                                             <label style="color:red; font-size:14px;">*</label>
-											<select class="form-control" id="role" name="role" data-parsley-errors-messages-disabled required>
-												<option style="display:none;" value="<?php print $this->session->flashdata('role'); ?>" selected><?php print $this->session->flashdata('role'); ?></option>
+											<select class="form-control" id="role" name="role" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled required>
+                                                <option value=" ">ffff</option>
+                                                <option style="display:none;" value="<?php print $this->session->flashdata('role'); ?>" selected><?php print $this->session->flashdata('role'); ?></option>
 												<?php foreach($roles as $role) {?>
 												<option value="<?php print $role->role_name; ?>"><?php print $role->role_name; ?></option>
 												<?php } ?>
@@ -127,7 +131,14 @@
 										</div>
 										<div class="col-sm-12 form-group">
 											<label for="phone"><?php print $this->lang->line('phone'); ?></label>
-											<input type="text" name="phone" id="phone"class="form-control" value="<?php print $this->session->flashdata('phone'); ?>">
+											<input type="tel"  style="width :100%" name="phone" id="phone"class="form-control"
+                                            value="<?php print $this->session->flashdata('phone'); ?>"
+                                            data-parsley-trigger="change keyup"
+
+                                            data-parsley-errors-messages-disabled
+                                            >
+                                            <span id="valid-msg" class="hide">✓ Valid</span>
+                                            <span id="error-msg" class="hide">Invalid number</span>
 										</div>
 									</div>
 									<div class="col-sm-6">
@@ -221,47 +232,100 @@
 	</div>
 
 </div>
+<script src="<?php print base_url(); ?>assets/js/vendor/intl-tel-input/build/js/intlTelInput.js"></script>
+
 
 
 <script type="text/javascript">
-//
-// $("#add_user_submit").click(function(e){
-//     e.preventDefault();
-// validation('Add_member/validate_input', '#add_member_form')
-//
-// })
-// function validation(url, form){
-//     data = $(form).serialize();
-//     console.log(data);
-//     $.ajax({
-//         dataType: 'json',
-//         type: 'POST',
-//         url: url,
-//         data: data,
-//         error: function() {
-//             console.log('there was a problem checking the fields');
-//         },
-//         success: function(resp) {
-//             console.log(resp);
-//             // if (resp === true) {
-//             //       //successful validation
-//             //         $('form').submit();
-//             //       return false;
-//             // } else {
-//                 $.each(resp, function(i, v) {
-//                     console.log(i + " => " + v); // view in console for error messages
-//                     // var msg = '<label class="error" for="'+i+'">'+v+'</label>';
-//                     // $('input[name="' + i + '"], select[name="' + i + '"]').addClass('inputTxtError').after(msg);
-//
-//                 });
-//                 var keys = Object.keys(resp);
-//                 $('input[name="'+keys[0]+'"]').focus();
-//             // }
-//             // return false;
-//         }
-//
+
+// $("#phone").intlTelInput({
+//       // allowDropdown: false,
+//       // autoHideDialCode: false,
+//       // autoPlaceholder: false,
+//       // dropdownContainer: "body",
+//       // excludeCountries: ["us"],
+//       geoIpLookup: function(callback) {
+//         $.get("http://ipinfo.io", function() {}, "jsonp").always(function(resp) {
+//           var countryCode = (resp && resp.country) ? resp.country : "";
+//           callback(countryCode);
+//         });
+//       },
+//       initialCountry: "auto",
+//       // nationalMode: false,
+//       // numberType: "MOBILE",
+//       // onlyCountries: ['us', 'gb', 'ch', 'ca', 'do'],
+//       // preferredCountries: ['cn', 'jp'],
+//       separateDialCode: true,
+//       utilsScript: "<?php print base_url(); ?>assets/js/vendor/intl-tel-input/build/js/utils.js"
 //     });
-// }
+
+    var telInput = $("#phone"),
+  errorMsg = $("#error-msg"),
+  validMsg = $("#valid-msg");
+
+// initialise plugin
+telInput.intlTelInput({
+    geoIpLookup: function(callback) {
+      $.get("http://ipinfo.io", function() {}, "jsonp").always(function(resp) {
+        var countryCode = (resp && resp.country) ? resp.country : "";
+        callback(countryCode);
+      });
+    },
+    initialCountry: "auto",
+    // nationalMode: false,
+    // numberType: "MOBILE",
+    // onlyCountries: ['us', 'gb', 'ch', 'ca', 'do'],
+    // preferredCountries: ['cn', 'jp'],
+    separateDialCode: true,
+    utilsScript: "<?php print base_url(); ?>assets/js/vendor/intl-tel-input/build/js/utils.js"
+});
+
+var reset = function() {
+  telInput.removeClass("error");
+  errorMsg.addClass("hide");
+  validMsg.addClass("hide");
+};
+
+// on blur: validate
+telInput.blur(function() {
+  reset();
+  if ($.trim(telInput.val())) {
+    if (telInput.intlTelInput("isValidNumber")) {
+        telInput.removeClass("parsley-error");
+
+        telInput.addClass("parsley-success");
+
+    } else {
+      telInput.removeClass("parsley-success");
+      telInput.addClass("parsley-error");
+
+    }
+  }
+});
+
+// on keyup / change flag: reset
+telInput.on("keyup change", reset);
+
+    $("#emergency_contact").intlTelInput({
+          // allowDropdown: false,
+          // autoHideDialCode: false,
+          // autoPlaceholder: false,
+          // dropdownContainer: "body",
+          // excludeCountries: ["us"],
+          geoIpLookup: function(callback) {
+            $.get("http://ipinfo.io", function() {}, "jsonp").always(function(resp) {
+              var countryCode = (resp && resp.country) ? resp.country : "";
+              callback(countryCode);
+            });
+          },
+          initialCountry: "auto",
+          // nationalMode: false,
+          // numberType: "MOBILE",
+          // onlyCountries: ['us', 'gb', 'ch', 'ca', 'do'],
+          // preferredCountries: ['cn', 'jp'],
+          separateDialCode: true,
+          utilsScript: "<?php print base_url(); ?>assets/js/vendor/intl-tel-input/build/js/utils.js"
+        });
 
 var form_lock = true;
 $(document).ready(function() {

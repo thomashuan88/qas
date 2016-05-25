@@ -1,4 +1,12 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed'); ?>
+<style>
+.dropdown-menu > li > a:hover {
+    background-color: #2a2f36;
+    background-image: none;
+}
+
+</style>
+
 
     <header class="navbar header" role="menu">
         <div class="navbar-header">
@@ -22,9 +30,24 @@
             <i class="fa fa-sticky-note-o"></i>
         </a>
         
+
+
+        <li class = "btn navbar-btn dropdown pull-right">
+            <a href = "#" class = "dropdown-toggle" data-toggle = "dropdown" >
+                <i class="fa fa-language"></i> Language <b class = "caret"></b>
+            </a>
+            <ul class = "dropdown-menu pull-right" style="border:none;min-width:107px;background-color:#2a2f36;color:#979797;">    
+                <li style="">
+                    <a href ="english" style="color:#979797;">English </a>
+                </li>
+                <li>
+                    <a href ="chinese" style="color:#979797;">中文</a>
+                </li>
+            </ul>
+        </li>
+
         <a class="btn navbar-btn pull-right">
-            <select class="form-control" name="language" id="language" >
-            <!-- style="color:#979797;background-color:#2a2f36;border:none;width:100%" -->
+            <select name="language" id="language" >
                 <option value="english">English</option>
                 <option value="chinese">中文</option>
             </select>
@@ -40,30 +63,34 @@
 
 $(document).ready(function() {
 
-    var lang = "<?php echo $this->session->userdata['language']; ?>";
-
-    if(lang != ""){
-        $("option[value='"+lang+"']").attr("selected", true);
-    }
+    var link = $(this).attr('href');
+  
+    console.log(link);
 });
 
 //change language
- $("select[name='language']").change(function(){
-
-    var language = $(this).val();
-    var data = "language=" + language;
-    console.log(language);
 
 
-    $.ajax({
-        url: 'Header/change_language',
-        data: data,
-        type: 'post',
-        dataType: 'text',
-        success: function(result){
-            window.location.reload();
-        }
-    });
-});
+   // var lang = "<?php echo $this->session->userdata['language']; ?>";
+
+    // if(lang != ""){
+    //     $("option[value='"+lang+"']").attr("selected", true);
+    // }
+//  $("select[name='language']").change(function(){
+
+  
+  // var language = $(this).text;
+    // var data = "language=" + language;
+
+//     $.ajax({
+//         url: 'Header/change_language',
+//         data: data,
+//         type: 'post',
+//         dataType: 'text',
+//         success: function(result){
+//             window.location.reload();
+//         }
+//     });
+// });
 
 </script>

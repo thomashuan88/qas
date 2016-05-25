@@ -351,6 +351,8 @@ var waitForFinalEvent = (function() {
             parsleyFactory( $oauth2FinalizeForm, $("#oauth2_finalize_submit") );
         }
 
+        
+
 
         // profile picture upload
         // -------------------------------------------------------------------------------------------------------------

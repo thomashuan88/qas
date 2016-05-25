@@ -38,7 +38,21 @@ class Performance_daily_qa_model extends CI_Model {
         return false;
     }
 
-    public function count_all_daily_qa($search_data = array()) {
+    public function count_confirm_daily_qa($search_data = array()) {
+        $this->db->select($this->fields);
+        $this->db->from($this->table);
+
+        if(!empty($search_data)) {
+            foreach ($search_data as $searchKey => $searchValue) {
+                $this->db->like( $searchKey, $searchValue );
+            }
+        }
+        $this->db->where('status', 1);
+
+        return $this->db->get()->num_rows();
+    }
+
+    public function count_pending_daily_qa($search_data = array()) {
     	$this->db->select($this->fields);
         $this->db->from($this->table);
 
@@ -47,6 +61,7 @@ class Performance_daily_qa_model extends CI_Model {
 	        	$this->db->like( $searchKey, $searchValue );
 	        }
         }
+        $this->db->where('status', 0);
 
         return $this->db->get()->num_rows();
     }
@@ -86,7 +101,15 @@ class Performance_daily_qa_model extends CI_Model {
         }
 
         return false;
+    }
 
+    public function confirm_dailyqa_import($update_by) {
+        $data = array(
+               'status' => 1
+            );
+
+        $this->db->where('import_by' , $update_by);
+        $this->db->update($this->table, $data); 
     }
 
 }

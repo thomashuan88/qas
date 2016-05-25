@@ -78,6 +78,7 @@ var drawTable = function (data) {
         $('#no_result').css('display', 'block');
     }
     var count = 1;
+    console.log(data);
     $.each( data, function( key, value ) {
         html +='<tr data_id="' + value['id'] + '">';
         html +='<td>' + count + '</td>';

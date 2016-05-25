@@ -23,9 +23,9 @@
        <div class="form-group" id="roles_status">
         <label for="status"><?php print $this->lang->line('status'); ?> </label>
         <select name="status" id="status" class="form-control" style="width:10%;display: inline-block;">
-            <option value="active"><?php print $this->lang->line('active'); ?></option>
+            <option value="all" ><?php print $this->lang->line('show_all'); ?></option>
+            <option value="active" selected><?php print $this->lang->line('active'); ?></option>
             <option value="inactive"><?php print $this->lang->line('inactive'); ?></option>
-            <option value="all"><?php print $this->lang->line('show_all'); ?></option>
         </select>
     </div>
 </div>
@@ -60,10 +60,10 @@
                         <td name="role_name" id="role_name_<?php print $role_id; ?>" value=""><?php print $role['role_name']; ?></td>
                         <td class="text-center">
                             <?php if($role['status'] == "active") : ?>
-                            <a class = "status_name" id="inactive" name="<?php print $role['role_name']; ?>" style="font-size: 14px;cursor:default;color:black;" href="#" title="activate account">
+                            <a class = "label label-success status_name" id="inactive" name="<?php print $role['role_name']; ?>" style="font-size: 11px;cursor:default;" href="#" title="activate account">
                             <?php echo $this->lang->line('active'); ?></a>
                             <?php else: ?>
-                            <a class = "status_name" id="active" name="<?php print $role['role_name']; ?>"  style="font-size: 14px;cursor:default;color:black;" href="#" title="inactivate account">
+                            <a class = "label label-danger status_name" id="active" name="<?php print $role['role_name']; ?>"  style="font-size: 11px;cursor:default;" href="#" title="inactivate account">
                             <?php echo $this->lang->line('inactive'); ?></a>
                             <?php endif; ?>
                         </td>
@@ -118,9 +118,9 @@ $(".status").on("click", function (e) {
                             html += "<td name=\"role_name\" id=\"role_name_"+value['role_id']+"\">"+value['role_name']+"</td>";
                             html += "<td class=\"text-center\">";
                             if(value['status'] == "active"){
-                                html += "<a class = \"status_name\" id=\"inactive\" style=\"font-size: 14px;cursor:default;color:black;\" href=\"#\" title=\"activate account\"><?php print $this->lang->line('active'); ?></a>"
+                                html += "<a class = \"label label-success status_name\" id=\"inactive\" style=\"font-size: 11px;cursor:default;\" href=\"#\" title=\"activate account\"><?php print $this->lang->line('active'); ?></a>"
                             }else{
-                                html += "<a class = \"status_name\" id=\"active\"  name=\""+value['role_name']+"\" style=\"font-size: 14px;cursor:default;color:black;\" href=\"#\" title=\"inactivate account\"><?php print $this->lang->line('inactive'); ?></a>"
+                                html += "<a class = \"label label-danger status_name\" id=\"active\"  name=\""+value['role_name']+"\" style=\"font-size: 11px;cursor:default;\" href=\"#\" title=\"inactivate account\"><?php print $this->lang->line('inactive'); ?></a>"
                             }
                             html += "</td>";
                             html += "<td>";

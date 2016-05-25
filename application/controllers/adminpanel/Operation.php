@@ -534,8 +534,8 @@ class Operation extends Admin_Controller {
     public function time_sheet_delete($key) {
         $this->check_permission(17);
         if (!$this->check_page_action(17, 'delete')) {
-            $this->session->set_flashdata('error', $this->lang->line('no_access_delete_record'));
-            redirect('/adminpanel/operation/time_sheet');
+            echo $this->lang->line('no_access_delete_record');
+            exit();
         }
 
         if (!empty($key)) {
@@ -586,7 +586,11 @@ class Operation extends Admin_Controller {
             $content_data['types'] = $this->category_group_model->get_all_category_group($paging['order_by'], $paging['sort_order'], $paging['search_data'], $this->limit_per_page, $paging['offset']);
             if (!empty($content_data['types'])) {
                 foreach($content_data['types']->result() as $value) {
-                    $value->status = $this->lang->line($value->status);
+                    if ($value->status == 'active') {
+                        $value->status = '<label class = "label label-success">'.$this->lang->line($value->status).'</label>';
+                    } else {
+                        $value->status = '<label class = "label label-danger">'.$this->lang->line($value->status).'</label>';
+                    }
                     $value->created_time = $this->change_date_format($value->created_time);
                 }
                 $content_data['table_data'] = $content_data['types']->result();
@@ -650,37 +654,37 @@ class Operation extends Admin_Controller {
                         $this->form_validation->set_rules('status', $this->lang->line('status'), 'trim|required');
 
                         if (!$this->form_validation->run()) {
-                            $this->session->set_flashdata('error', validation_errors());
-                            redirect('/adminpanel/operation/question_type_edit/' . $key);
+                            echo json_encode($this->session->set_flashdata('error', validation_errors()));
+                            exit();
+                            //redirect('/adminpanel/operation/question_type');
                         }
 
                         $post_data['id'] = $key;
                         $res = $this->category_group_model->edit_category_group($post_data);
                         if ($res) {
-                            $this->session->set_flashdata('success', $this->lang->line('update_success'));
+                            echo $this->lang->line('update_success');
                         } else {
-                            $this->session->set_flashdata('error', $this->lang->line('update_failure'));
+                            echo $this->lang->line('update_failure');
                         }
                     } else {
-                        return $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel', $this->lang->line('question_type_edit'), 'operation/question_type_edit', 'header', 'footer', '', $content_data);
+                        echo json_encode($content_data['type']);
                     }
                 } else {
-                    $this->session->set_flashdata('error', $this->lang->line('no_access_edit_record'));
+                    echo $this->lang->line('no_access_edit_record');
                 }
             } else {
-                $this->session->set_flashdata('error', $this->lang->line('no_result'));
+                echo $this->lang->line('no_result');
             }
         } else {
-            $this->session->set_flashdata('error', $this->lang->line('invalid_data'));
+            echo $this->lang->line('invalid_data');
         }
-        redirect('/adminpanel/operation/question_type');
     }
 
     public function question_type_delete($key) {
         $this->check_permission(18);
         if (!$this->check_page_action(18, 'delete')) {
-            $this->session->set_flashdata('error', $this->lang->line('no_access_delete_record'));
-            redirect('/adminpanel/operation/question_type');
+            echo $this->lang->line('no_access_delete_record');
+            exit();
         }
 
         if (!empty($key)) {
@@ -691,66 +695,29 @@ class Operation extends Admin_Controller {
                     if ($res) {
                         $result = $this->category_list_model->parent_batch_delete_category_list($key);
                         if ($result) {
-                            $this->session->set_flashdata('success', $this->lang->line('delete_success'));
+                            echo $this->lang->line('delete_success');
                         } else {
-                            $this->session->set_flashdata('error', $this->lang->line('delete_failure'));
+                            echo $this->lang->line('delete_failure');
                         }
                     } else {
-                        $this->session->set_flashdata('error', $this->lang->line('delete_failure'));
+                        echo $this->lang->line('delete_failure');
                     }
                 } else {
-                    $this->session->set_flashdata('error', $this->lang->line('no_access_delete_record'));
+                    echo $this->lang->line('no_access_delete_record');
                 }
             } else {
-                $this->session->set_flashdata('error', $this->lang->line('no_result'));
+                echo $this->lang->line('no_result');
             }
         } else {
-            $this->session->set_flashdata('error', $this->lang->line('invalid_data'));
+            echo $this->lang->line('invalid_data');
         }
-        redirect('/adminpanel/operation/question_type');
     }
 //================================================== End question type =================================================
 
 //================================================== question content ==================================================
     public function question_content($order_by = "category_list_id", $sort_order = "asc", $search = "all", $offset = 0) {
-        $content_data = array();
         $this->check_permission(19);
         $content_data['add'] = $this->check_page_action(17, 'add');
-        $content_data['edit'] = $this->check_page_action(17, 'edit');
-        $content_data['delete'] = $this->check_page_action(17, 'delete');
-
-        if (!is_numeric($offset)) {
-            redirect('/adminpanel/operation/question_content');
-        }
-
-        $post_data = $this->input->post();
-        $content_data['search'] = $search;
-        $content_data['order_by'] = $order_by;
-        $content_data['sort_order'] = $sort_order;
-        $content_data['offset'] = $offset;
-
-        $this->session->set_flashdata($post_data);
-
-        $content_data['lists'] = $this->category_list_model->get_all_category_list($order_by, $sort_order, $post_data, $this->limit_per_page, $offset);
-        if (!empty($content_data['lists'])) {
-            $content_data['total_rows'] = $content_data['lists']->total_rows;
-        } else {
-            $content_data['total_rows'] = '0';
-        }
-
-        // set pagination config data
-        $config['total_rows'] = $content_data['total_rows'];
-        $config['uri_segment'] = '7';
-        $config['base_url'] = site_url('adminpanel/operation/question_type/' . $order_by . '/' . $sort_order . '/' . $search);
-        $config['per_page'] = $this->limit_per_page;
-        $config['prev_tag_open'] = ''; // removes &nbsp; at beginning of pagination output
-        $config['full_tag_open'] = '<div><ul class="pagination">';
-        $config['full_tag_close'] = '</ul></div>';
-        $config['num_tag_open'] = $config['first_tag_open'] = $config['last_tag_open'] = $config['next_tag_open'] = $config['prev_tag_open'] = '<li>';
-        $config['num_tag_close'] = $config['first_tag_close'] = $config['last_tag_close'] = $config['next_tag_close'] = $config['prev_tag_close'] = '</li>';
-        $config['cur_tag_open'] = '<li class="active"><a href="javascript:"><strong>';
-        $config['cur_tag_close'] = '</strong></a></li>';
-        $this->pagination->initialize($config);
 
         $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel', $this->lang->line('question_content'), 'operation/question_content', 'header', 'footer', '', $content_data);
     }
@@ -771,14 +738,18 @@ class Operation extends Admin_Controller {
             $content_data['permission']['delete'] = $this->check_page_action(18, 'delete');
             $content_data['total_rows'] = '0';
 
-            $content_data['types'] = $this->category_group_model->get_all_category_group($paging['order_by'], $paging['sort_order'], $paging['search_data'], $this->limit_per_page, $paging['offset']);
-            if (!empty($content_data['types'])) {
-                foreach($content_data['types']->result() as $value) {
-                    $value->status = $this->lang->line($value->status);
+            $content_data['list'] = $this->category_list_model->get_all_category_list($paging['order_by'], $paging['sort_order'], $paging['search_data'], $this->limit_per_page, $paging['offset']);
+            if (!empty($content_data['list'])) {
+                foreach($content_data['list']->result() as $value) {
+                    if ($value->status == 'active') {
+                        $value->status = '<label class = "label label-success">' . $this->lang->line($value->status) . '</label>';
+                    } else {
+                        $value->status = '<label class = "label label-danger">' . $this->lang->line($value->status) . '</label>';
+                    }
                     $value->created_time = $this->change_date_format($value->created_time);
                 }
-                $content_data['table_data'] = $content_data['types']->result();
-                $content_data['total_rows'] = $content_data['types']->total_rows;
+                $content_data['table_data'] = $content_data['list']->result();
+                $content_data['total_rows'] = $content_data['list']->total_rows;
             }
 
             $content_data['offset'] = $paging['offset'];
@@ -831,8 +802,8 @@ class Operation extends Admin_Controller {
     public function question_content_edit($key) {
         $this->check_permission(19);
         if (!$this->check_page_action(19, 'edit')) {
-            $this->session->set_flashdata('error', $this->lang->line('no_access_edit_record'));
-            redirect('/adminpanel/operation/question_content');
+            echo $this->lang->line('no_access_edit_record');
+            exit();
         }
 
         if (!empty($key)) {
@@ -860,30 +831,29 @@ class Operation extends Admin_Controller {
                         $post_data['parent_content'] = $this->category_group_model->get_one_category_group($post_data['category_id'])->content;
                         $res = $this->category_list_model->edit_category_list($post_data);
                         if ($res) {
-                            $this->session->set_flashdata('success', $this->lang->line('update_success'));
+                            echo $this->lang->line('update_success');
                         } else {
-                            $this->session->set_flashdata('error', $this->lang->line('update_failure'));
+                            echo $this->lang->line('update_failure');
                         }
                     } else {
-                        return $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel', $this->lang->line('question_content_edit'), 'operation/question_content_edit', 'header', 'footer', '', $content_data);
+                        echo json_encode($content_data['category_list']);
                     }
                 } else {
-                    $this->session->set_flashdata('error', $this->lang->line('no_access_edit_record'));
+                    echo $this->lang->line('no_access_edit_record');
                 }
             } else {
-                $this->session->set_flashdata('error', $this->lang->line('no_result'));
+                echo $this->lang->line('no_result');
             }
         } else {
-            $this->session->set_flashdata('error', $this->lang->line('invalid_data'));
+            echo $this->lang->line('invalid_data');
         }
-        redirect('/adminpanel/operation/question_content');
     }
 
     public function question_content_delete($key) {
         $this->check_permission(19);
         if (!$this->check_page_action(19, 'delete')) {
-            $this->session->set_flashdata('error', $this->lang->line('no_access_delete_record'));
-            redirect('/adminpanel/operation/question_content');
+            echo $this->lang->line('no_access_delete_record');
+            exit();
         }
 
         if (!empty($key)) {
@@ -892,20 +862,19 @@ class Operation extends Admin_Controller {
                 if ($this->user == $report->created_by) {
                     $res = $this->category_list_model->delete_category_list($key);
                     if ($res) {
-                        $this->session->set_flashdata('success', $this->lang->line('delete_success'));
+                        echo $this->lang->line('delete_success');
                     } else {
-                        $this->session->set_flashdata('error', $this->lang->line('delete_failure'));
+                        echo $this->lang->line('delete_failure');
                     }
                 } else {
-                    $this->session->set_flashdata('error', $this->lang->line('no_access_delete_record'));
+                    echo $this->lang->line('no_access_delete_record');
                 }
             } else {
-                $this->session->set_flashdata('error', $this->lang->line('no_result'));
+                echo $this->lang->line('no_result');
             }
         } else {
-            $this->session->set_flashdata('error', $this->lang->line('invalid_data'));
+            echo $this->lang->line('invalid_data');
         }
-        redirect('/adminpanel/operation/question_content');
     }
 //================================================ End question content ================================================
 }
