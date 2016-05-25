@@ -1,21 +1,28 @@
+/** bootbox modal bug fixed **/
+body.modal-open {
+    overflow-y: auto !important;
+    padding-right: 0 !important;
+}
+
+.modal-scrollbar-measure {
+    overflow: hidden;
+}
 .contain-datepicker {
     position: relative;
     z-index: 1;
 }
- 
+/** bootbox modal bug fixed **/
+
 .contain-datepicker:after  {
     content: "\f073";
     font-family: FontAwesome;
-    font-style: normal;
-    font-weight: normal;
-    text-decoration: inherit;
-    color: #555555;
-    font-size: 18px;
-    padding-right: 0.5em;
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
     z-index: 0;
+    bottom: 0.1em;
+    right: 0.3em;
+    position: absolute;
+    color: #555555;
+    font-size: 1.5em;
+    display: block;
 }
 /*** user details left tabs ***/
 .tabs-left > .nav-tabs {
@@ -76,6 +83,10 @@
     background: #DC323C;
 }
 
+.label-pending {
+    background: #FB7A48;
+}
+
 .btn-circle {
     width: 30px;
     height: 30px;
@@ -107,11 +118,12 @@
     height: 200px;
     /*box-shadow: 0 0 15px 5px #DC2828;*/
 }
-/*** performance report ***/
-.daily-qa  {
-    text-align: center;
+th {
+    white-space: nowrap;
 }
-.daily-qa th {
+
+/*** performance report ***/
+.daily-qa {
     text-align: center;
 }
 .monthly-qa  {
@@ -120,4 +132,3 @@
 .monthly-qa th {
     text-align: center;
 }
-

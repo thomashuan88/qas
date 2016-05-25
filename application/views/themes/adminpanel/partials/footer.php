@@ -1,5 +1,5 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
-Created by Eagleeye Technologies - All rights reserved &copy; 2016 - BEXCEL
+<p><?php print Settings_model::$db_config['footer_title']; ?></p>
 
-<!-- <p>Empty</p> -->
+

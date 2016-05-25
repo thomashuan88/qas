@@ -16,7 +16,7 @@ class Performance_daily_qa_model extends CI_Model {
 
     public function get_daily_qa( $limit = 0, $offset = 0, $order_by = "import_date", $sort_order = "desc", $search_data = array() , $status = 1) {
 
-        $this->db->select($this->fields);
+        $this->db->select( array( 'daily_qa_id', 'username', 'yes', 'no', 'csi', 'art', 'aht', 'quantity', 'import_date', 'import_by' ) );
         $this->db->from($this->table);
         
         if(!empty($search_data)) {
@@ -53,24 +53,47 @@ class Performance_daily_qa_model extends CI_Model {
     }
 
     public function count_pending_daily_qa($search_data = array()) {
-    	$this->db->select($this->fields);
+        $this->db->select($this->fields);
         $this->db->from($this->table);
 
         if(!empty($search_data)) {
-	        foreach ($search_data as $searchKey => $searchValue) {
-	        	$this->db->like( $searchKey, $searchValue );
-	        }
+            foreach ($search_data as $searchKey => $searchValue) {
+                $this->db->like( $searchKey, $searchValue );
+            }
         }
+
         $this->db->where('status', 0);
+
+        return $this->db->get()->num_rows();
+    }
+    public function count_not_current_upload($search_data = array()) {
+        $this->db->select($this->fields);
+        $this->db->from($this->table);
+
+        if(!empty($search_data)) {
+            foreach ($search_data as $searchKey => $searchValue) {
+                $this->db->where( $searchKey, $searchValue );
+            }
+        }
+
+        $this->db->where('status', 0);
+
+        $date = new DateTime();
+        $this->db->not_like( 'import_date', $date->format('Y-m-d H:i') );
 
         return $this->db->get()->num_rows();
     }
 
     public function delete_daily_qa($id) {
-    	$this->db->where('daily_qa_id', $id);
+        $this->db->where('daily_qa_id', $id);
         $this->db->delete($this->table);
     }
     
+    public function delete_pending_daily_qa($import_by) {
+        $this->db->where('import_by', $import_by);
+        $this->db->where('status', 0);
+        $this->db->delete($this->table);
+    }
     public function edit_daily_qa($record_id, $yes, $no, $csi, $art, $aht, $quantity, $update_date, $update_by) {
         $data = array(
                'yes' => $yes,

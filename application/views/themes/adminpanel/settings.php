@@ -184,7 +184,7 @@
                                 <td><?php print $value['access_token']; ?></td>
                                 <td><?php print $value['access_token_secret']; ?></td>
                                 <td>
-                                    <a href="<?php print base_url() ."adminpanel/settings/edit_product/"; ?>"class="btn btn-primary btn-circle edit" title="<?php print $this->lang->line('edit'); ?>" data-toggle="tooltip" data-placement="top" data-original-title="Edit">
+                                    <a href="<?php print base_url() ."adminpanel/settings/edit_live_person/".$product; ?>"class="btn btn-primary btn-circle edit" title="<?php print $this->lang->line('edit'); ?>" data-toggle="tooltip" data-placement="top" data-original-title="Edit">
                                         <i class="fa fa-pencil-square"></i></a>
                                 </td>
                             </tr>
@@ -225,38 +225,59 @@
        <br>
         <?php print form_open('adminpanel/settings/save_system_settings', array('id' => 'save_system')) ."\r\n"; ?>
         <div class="col-sm-12">
-
             <div class="row">
-                <div class="col-sm-3 form-group">
-                    <label for="site title"><?php print $this->lang->line('site_title'); ?></label>
+                <div class="col-sm-6 form-group">
+                    <label for="Site Title"><?php print $this->lang->line('site_title'); ?></label>
                     <input type="text" class="form-control" name="site_title" id="site_title" value="<?php print Settings_model::$db_config['site_title']; ?>">
+                </div>
+                <div class="col-sm-6 form-group">
+                   <label for="Predefined Email"><?php print $this->lang->line('predefined_email'); ?></label>
+                   <input type="text" class="form-control" name="predefined_email" id="predefined_email" >
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-3 form-group">
-                    <label for="default language"><?php print $this->lang->line('site_language'); ?></label>
+                <div class="col-sm-6 form-group">
+                    <label for="Site Language"><?php print $this->lang->line('site_language'); ?></label>
                         <select class="form-control" name="language" id="language" >
                             <option value="english">English</option>
                             <option value="chinese">中文</option>
                         </select>
                 </div>
+                <div class="col-sm-6 form-group">
+                   <label for="Footer Title"><?php print $this->lang->line('footer_title'); ?></label>
+                   <input type="text" class="form-control" name="footer_title" id="footer_title" value="<?php print Settings_model::$db_config['footer_title']; ?>">
+                </div>
             </div>
-           
-
+            <div class="row">
+                <div class="col-sm-6 form-group">
+                   <label for="System Role"><?php print $this->lang->line('system_role'); ?></label>
+                   <input type="text" class="form-control" name="system_role" id="system_role" value="<?php print Settings_model::$db_config['system_role ']; ?>"> >
+                </div>
+                 <div class="col-sm-6 form-group">
+                   <label for="Website URL"><?php print $this->lang->line('website_url'); ?></label>
+                   <input type="text" class="form-control" name="website_url" id="website_url" >
+                </div>
+            </div>
+             <div class="row">
+                 <div class="col-sm-6 form-group">
+                   <label for="Logo"><?php print $this->lang->line('logo'); ?></label>
+                   <input type="file" class="form-control" name="logo" id="logo" >
+                </div>
+                <div class="col-sm-6 form-group">
+                   <label for="Website URL"><?php print $this->lang->line('search'); ?></label>
+                   <input type="text" class="form-control" name="website_url" id="website_url" >
+                </div>
+            </div>
             <div class="row">
                 <div class="col-sm-4 form-group">
                     <button type="submit" class="btn btn-success js-btn-loading" ><?php print $this->lang->line('save'); ?></button>
                 </div>
             </div>
+
+
         </div>
         <?php print form_close() ."\r\n"; ?>
     </div>
-
-
-  
-
-
-
 
   </div>
 </div>

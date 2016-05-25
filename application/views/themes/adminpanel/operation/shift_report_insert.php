@@ -51,7 +51,7 @@
                     <input type="text" class="form-control datetimepicker" id="finish" name="finish" value="<?php print $this->session->flashdata('finish');?>">
                 </div>
                 <div class="form-group">
-                    <label for="remarks"><?php print $this->lang->line('remarks'); ?></label>
+                    <label for="remarks"><?php print $this->lang->line('remark'); ?></label>
                     <textarea class="form-control" id="remarks" name="remarks" rows="4" style="resize: vertical;"><?php print $this->session->flashdata('remarks');?></textarea>
                 </div>
             </div>

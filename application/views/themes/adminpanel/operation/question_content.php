@@ -54,7 +54,7 @@
                         <select name="status" id="status" class="form-control">
                             <option value="active" <?php print ($this->session->flashdata('status') == 'active') ? "selected" : ""; ?>><?php print $this->lang->line('active'); ?></option>
                             <option value="inactive" <?php print ($this->session->flashdata('status') == 'inactive') ? "selected" : ""; ?>><?php print $this->lang->line('inactive'); ?></option>
-                            <option value="all" <?php print ($this->session->flashdata('status') == 'all') ? "selected" : ""; ?>><?php print $this->lang->line('show_all'); ?></option>
+                            <option value="all" <?php print ($this->session->flashdata('status') == 'all') ? "selected" : ""; ?>><?php print $this->lang->line('all'); ?></option>
                         </select>
                     </div>
                 </div>
@@ -82,7 +82,7 @@
                 <thead>
                     <tr>
                         <th><a href="javascript:void(0)" onclick="chgOrder('category_list_id')"><i dataname="category_list_id" class="table-th"></i> <?php print $this->lang->line('id'); ?></a></th>
-                        <th><a href="javascript:void(0)" onclick="chgOrder('parent_content')"><i dataname="parent_content" class="table-th"></i> <?php print $this->lang->line('group'); ?></a></th>
+                        <th><a href="javascript:void(0)" onclick="chgOrder('parent_content')"><i dataname="parent_content" class="table-th"></i> <?php print $this->lang->line('question_type'); ?></a></th>
                         <th><a href="javascript:void(0)" onclick="chgOrder('content')"><i dataname="content" class="table-th"></i> <?php print $this->lang->line('content'); ?></a></th>
                         <th><a href="javascript:void(0)" onclick="chgOrder('status')"><i dataname="status" class="table-th"></i> <?php print $this->lang->line('status'); ?></a></th>
                         <th><a href="javascript:void(0)" onclick="chgOrder('created_by')"><i dataname="created_by" class="table-th"></i> <?php print $this->lang->line('submit_by'); ?></a></th>
@@ -116,6 +116,7 @@
     var searchData = function () {
         paging.search_data = {
             id: $('#id').val(),
+            group: $('#group').val(),
             content: $('#content').val(),
             status: $('#status').val()
         };
@@ -131,11 +132,12 @@
             success: function (data) {
                 bootbox.dialog({
                         title: "<?php print $this->lang->line('question_content_edit'); ?>",
-                        message: '<div class="row"><div class="col-md-12"><form class="form-horizontal" id="edit_form"><div class="panel"><div class="panel-body"><div class="form-group"><label for="content">' +
-                        '<?php print $this->lang->line('content'); ?>' + '</label><input type="text" class="form-control" id="content" name="content" value="' + data['content'] + '"/></div>' +
+                        message: '<div class="row"><div class="col-md-12"><form class="form-horizontal" id="edit_form"><div class="panel"><div class="panel-body"><div class="form-group">' +
+                        '<label for="category_id">' + '<?php print $this->lang->line('question_type'); ?>' + '</label>' + data['category_list'] + '</div><div class="form-group"><label for="content">' +
+                        '<?php print $this->lang->line('content'); ?>' + '</label><input type="text" class="form-control" id="content" name="content" value="' + data['list']['content'] + '"/></div>' +
                         '<div class="form-group"><label for="status">' + '<?php print $this->lang->line('status'); ?>' + '</label><select name="status" id="status" class="form-control">' +
-                        '<<option value="active"' + ((data['content'] == 'active') ? selected : "") + '>' + '<?php print $this->lang->line('active'); ?>' + '</option><option value="inactive"' +
-                        ((data['content'] == 'inactive') ? selected : "") + '>' + '<?php print $this->lang->line('inactive'); ?>' + '</option></select></div></div></div></form></div></div>',
+                        '<<option value="active"' + ((data['list']['status'] == 'active') ? 'selected' : "") + '>' + '<?php print $this->lang->line('active'); ?>' + '</option><option value="inactive"' +
+                        ((data['list']['status'] == 'inactive') ? 'selected' : "") + '>' + '<?php print $this->lang->line('inactive'); ?>' + '</option></select></div></div></div></form></div></div>',
                         buttons: {
                             success: {
                                 label: "<?php print $this->lang->line('save'); ?>",
@@ -147,15 +149,13 @@
                                         dataType: "json",
                                         type: "post",
                                         success: function (data) {
-                                            bootbox.alert(data['responseText']);
-
+                                            bootbox.alert(data);
                                         },
                                         error: function (data) {
                                             bootbox.alert(data['responseText']);
                                             getNewData();
                                         }
                                     });
-                                    $('body').css('padding-right', '');
                                 }
                             },
                             cancel: {
@@ -188,7 +188,6 @@
                         bootbox.alert(data);
                     }
                 });
-                $('body').css('padding-right', '');
             }
         });
     };
@@ -214,10 +213,10 @@
             html += '<td>' + value['created_time'] + '</td>';
             html += '<td style="white-space: nowrap;">';
             if (paging.permission['edit']) {
-                html += '<a href="#" onclick="editData(' + value['category_list_id'] + ');" class="btn btn-primary btn-circle edit" title="edit" data-toggle="tooltip" data-placement="top" data-original-title="Edit"><i class="fa fa-pencil-square"></i></a>';
+                html += '<a href="#" onclick="editData(' + value['category_list_id'] + ');" class="btn btn-primary btn-circle edit" title="<?php print $this->lang->line('edit')?>" data-toggle="tooltip" data-placement="top" data-original-title="Edit"><i class="fa fa-pencil-square"></i></a>';
             }
             if (paging.permission['delete']) {
-                html += '<a <a href="#" onclick="deleteData(' + value['category_list_id'] + ');" class="btn btn-danger btn-circle delete" title="delete" data-toggle="tooltip" data-placement="top" data-method="DELETE"><i class="fa fa-trash"></i></a>';
+                html += '<a <a href="#" onclick="deleteData(' + value['category_list_id'] + ');" class="btn btn-danger btn-circle delete" title="<?php print $this->lang->line('delete')?>" data-toggle="tooltip" data-placement="top" data-method="DELETE"><i class="fa fa-trash"></i></a>';
             }
             html += '</td></tr>';
         });

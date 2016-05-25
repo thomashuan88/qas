@@ -80,11 +80,16 @@ var drawTable = function (data) {
     var count = 1;
     console.log(data);
     $.each( data, function( key, value ) {
+
+        var date = new Date( Date.parse( value['create_time']) );
+        var dateYMD = new Date(date).toISOString().slice(0, 10).replace(/-/g, '/');
+        var dateHSi = (date.getHours() % 12) + ':' + date.getMinutes() + ' ' + ( ( date.getHours() >= 12 ) ? 'PM' : 'AM' );
+
         html +='<tr data_id="' + value['id'] + '">';
         html +='<td>' + count + '</td>';
         html +='<td>' + value['remark'] + '</td>';
         html +='<td>' + value['create_by'] + '</td>';
-        html +='<td>' + value['create_time'] + '</td>';
+        html +='<td>' + dateYMD + '<br />' + dateHSi + '</td>';
         html +='</tr>';
         count++
 

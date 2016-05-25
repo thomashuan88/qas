@@ -13,11 +13,11 @@
         <?php print form_open('auth/login/validate', 'id="login_form" class="mg-b-15"') ."\r\n"; ?>
         
         <div class="form-group">
-            <input type="text" name="username" id="username" class="form-control input-lg" placeholder="<?php print $this->lang->line('username'); ?>">
+            <input type="text" name="username" id="username" class="form-control input-lg" placeholder="<?php print $this->lang->line('username'); ?>" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled required>
         </div>
 
         <div class="form-group">
-            <input type="password" name="password" id="password" class="form-control input-lg" placeholder="<?php print $this->lang->line('password'); ?>">
+            <input type="password" name="password" id="password" class="form-control input-lg" placeholder="<?php print $this->lang->line('password'); ?>" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled required>
         </div>
 
         <div class="form-group">
@@ -53,5 +53,23 @@ $(function(){
     });
 });
 
+
+
+var parsley_factory = function($form, $button) {
+var $parsley = $form.parsley();
+    $button.on('click', function(e) {
+        if ($parsley.isValid()) {
+            $parsley.destroy();
+            $form.submit();
+        }else{
+        $(this).button("reset");
+        }
+    });
+};
+// Parsley login form
+var $loginForm = $("#login_form");
+if ($loginForm.length) {
+    parsley_factory( $loginForm, $("#login_submit") );
+}
 
 </script>

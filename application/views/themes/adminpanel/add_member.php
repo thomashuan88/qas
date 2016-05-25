@@ -51,8 +51,8 @@
 											<label for="username"><?php print $this->lang->line('username'); ?></label>
                                             <label style="color:red; font-size:14px;">*</label>
 
-											<input type="text" class="form-control " id="username" name="username" placeholder="<?php print $this->lang->line('username'); ?>"
-                                            value="<?php print $this->session->flashdata('username'); ?>"
+											<input type="text" class="form-control " id="uname" name="uname" placeholder="<?php print $this->lang->line('username'); ?>"
+                                            value="<?php print $this->session->flashdata('uname'); ?>"
                                             data-parsley-trigger="change keyup"
                                             data-parsley-pattern="^[a-zA-Z0-9_.-]+$"
                                             data-parsley-minlength="6"
@@ -92,7 +92,7 @@
 										<div class="form-group">
 											<label for="leader"><?php print $this->lang->line('report_to'); ?></label>
 											<select class="form-control" id="leader"  name="leader">
-												<option style="display:none;" value="<?php print $this->session->flashdata('leader'); ?>" selected><?php print $this->session->flashdata('leader'); ?></option>
+                                                    <option style="display:none;" value="<?php print $this->session->flashdata('leader'); ?>" selected><?php print $this->session->flashdata('leader'); ?></option>
 												<?php foreach($leaders as $leader) {?>
 												<option value="<?php echo $leader->username; ?>"><?php echo $leader->username; ?></option>
 											<?php } ?>
@@ -102,7 +102,7 @@
 											<label for="role"><?php print $this->lang->line('role'); ?></label>
                                             <label style="color:red; font-size:14px;">*</label>
 											<select class="form-control" id="role" name="role" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled required>
-                                                <option value=" ">ffff</option>
+                                                <option value=" "></option>
                                                 <option style="display:none;" value="<?php print $this->session->flashdata('role'); ?>" selected><?php print $this->session->flashdata('role'); ?></option>
 												<?php foreach($roles as $role) {?>
 												<option value="<?php print $role->role_name; ?>"><?php print $role->role_name; ?></option>
@@ -131,21 +131,20 @@
 										</div>
 										<div class="col-sm-12 form-group">
 											<label for="phone"><?php print $this->lang->line('phone'); ?></label>
-											<input type="tel"  style="width :100%" name="phone" id="phone"class="form-control"
-                                            value="<?php print $this->session->flashdata('phone'); ?>"
-                                            data-parsley-trigger="change keyup"
-
-                                            data-parsley-errors-messages-disabled
-                                            >
-                                            <span id="valid-msg" class="hide">✓ Valid</span>
-                                            <span id="error-msg" class="hide">Invalid number</span>
+											<input type="text" name="phone_display" id="phone_display"class="form-control" value="<?php print $this->session->flashdata('phone'); ?>">
+                                            <input type="hidden" name="phone" id="phone"class="form-control" value="<?php print $this->session->flashdata('phone'); ?>">
+                                            <span id="phone-valid-msg" class="hide"><i class="fa fa-check"></i></span>
+                                            <span id="phone-error-msg" class="hide"><i class="fa fa-times"></i></span>
 										</div>
 									</div>
 									<div class="col-sm-6">
 										<div class="col-sm-12 form-group">
 											<label for="emergency_contact"><?php print $this->lang->line('emergency_contact'); ?></label>
-											<input type="text" name="emergency_contact" id="emergency_contact" class="form-control" value="<?php print $this->session->flashdata('emergency_contact'); ?>">
-										</div>
+											<input type="text" name="emergency_contact_display" id="emergency_contact_display" class="form-control" value="<?php print $this->session->flashdata('emergency_contact'); ?>">
+                                            <input type="hidden" name="emergency_contact" id="emergency_contact" class="form-control" value="<?php print $this->session->flashdata('emergency_contact'); ?>">
+                                            <span id="emergency-valid-msg" class="hide"><i class="fa fa-check"></i></span>
+                                            <span id="emergency-error-msg" class="hide"><i class="fa fa-times"></i></span>
+                                        </div>
 										<div class="col-sm-12 form-group">
 											<label for="emergency_name"><?php print $this->lang->line('emergency_name'); ?></label>
 											<input type="text" name="emergency_name" id="emergency_name" class="form-control" value="<?php print $this->session->flashdata('emergency_name'); ?>">
@@ -163,9 +162,6 @@
 												<option value="family">Others</option>
 											</select>
 										</div>
-										<!-- <div class = "col-sm-3 form-group pull-right">
-											<button type="submit" class="btn btn-primary js-btn-loading" >Save</button>
-										</div> -->
 									</div>
 								</div>
 							</div>
@@ -233,190 +229,4 @@
 
 </div>
 <script src="<?php print base_url(); ?>assets/js/vendor/intl-tel-input/build/js/intlTelInput.js"></script>
-
-
-
-<script type="text/javascript">
-
-// $("#phone").intlTelInput({
-//       // allowDropdown: false,
-//       // autoHideDialCode: false,
-//       // autoPlaceholder: false,
-//       // dropdownContainer: "body",
-//       // excludeCountries: ["us"],
-//       geoIpLookup: function(callback) {
-//         $.get("http://ipinfo.io", function() {}, "jsonp").always(function(resp) {
-//           var countryCode = (resp && resp.country) ? resp.country : "";
-//           callback(countryCode);
-//         });
-//       },
-//       initialCountry: "auto",
-//       // nationalMode: false,
-//       // numberType: "MOBILE",
-//       // onlyCountries: ['us', 'gb', 'ch', 'ca', 'do'],
-//       // preferredCountries: ['cn', 'jp'],
-//       separateDialCode: true,
-//       utilsScript: "<?php print base_url(); ?>assets/js/vendor/intl-tel-input/build/js/utils.js"
-//     });
-
-    var telInput = $("#phone"),
-  errorMsg = $("#error-msg"),
-  validMsg = $("#valid-msg");
-
-// initialise plugin
-telInput.intlTelInput({
-    geoIpLookup: function(callback) {
-      $.get("http://ipinfo.io", function() {}, "jsonp").always(function(resp) {
-        var countryCode = (resp && resp.country) ? resp.country : "";
-        callback(countryCode);
-      });
-    },
-    initialCountry: "auto",
-    // nationalMode: false,
-    // numberType: "MOBILE",
-    // onlyCountries: ['us', 'gb', 'ch', 'ca', 'do'],
-    // preferredCountries: ['cn', 'jp'],
-    separateDialCode: true,
-    utilsScript: "<?php print base_url(); ?>assets/js/vendor/intl-tel-input/build/js/utils.js"
-});
-
-var reset = function() {
-  telInput.removeClass("error");
-  errorMsg.addClass("hide");
-  validMsg.addClass("hide");
-};
-
-// on blur: validate
-telInput.blur(function() {
-  reset();
-  if ($.trim(telInput.val())) {
-    if (telInput.intlTelInput("isValidNumber")) {
-        telInput.removeClass("parsley-error");
-
-        telInput.addClass("parsley-success");
-
-    } else {
-      telInput.removeClass("parsley-success");
-      telInput.addClass("parsley-error");
-
-    }
-  }
-});
-
-// on keyup / change flag: reset
-telInput.on("keyup change", reset);
-
-    $("#emergency_contact").intlTelInput({
-          // allowDropdown: false,
-          // autoHideDialCode: false,
-          // autoPlaceholder: false,
-          // dropdownContainer: "body",
-          // excludeCountries: ["us"],
-          geoIpLookup: function(callback) {
-            $.get("http://ipinfo.io", function() {}, "jsonp").always(function(resp) {
-              var countryCode = (resp && resp.country) ? resp.country : "";
-              callback(countryCode);
-            });
-          },
-          initialCountry: "auto",
-          // nationalMode: false,
-          // numberType: "MOBILE",
-          // onlyCountries: ['us', 'gb', 'ch', 'ca', 'do'],
-          // preferredCountries: ['cn', 'jp'],
-          separateDialCode: true,
-          utilsScript: "<?php print base_url(); ?>assets/js/vendor/intl-tel-input/build/js/utils.js"
-        });
-
-var form_lock = true;
-$(document).ready(function() {
-
-    $("#credentials :input").change(function(){
-
-        var flag = 0;
-        if (form_lock == true){
-
-            $("#credentials :input[name!='leader']").each(function(){
-                if($(this).val() == ""){
-                    flag = 1;
-                }
-            })
-
-            if(flag==0){
-                unlock_form();
-            } else {
-                lock_form();
-            }
-        }
-    })
-
-    var gen_pass = randomPassword();
-    $("#password").val(gen_pass);
-
-    $("#username").change(function(){
-    	var name = $("#username").val();
-    	$("#email").val(name+"@bexcel.com");
-    })
-
-    $("#profile :input").prop("disabled", true);
-    $("#ids :input").prop("disabled", true);
-
-});
-
-$("#unlock").click(function(){
-    var status = $("#unlock span").text();
-
-    if(status == "Unlock"){
-        unlock_form();
-        form_lock = false;
-    } else {
-        lock_form();
-        form_lock = true;
-
-    }
-    console.log(form_lock);
-})
-
-function unlock_form(){
-
-        $("#profile").removeClass("lock-overlay");
-        $("#ids").removeClass("lock-overlay");
-        $("#unlock i").removeClass("fa-unlock").addClass("fa-lock");
-        $("#unlock span").text("Lock");
-
-        $("#profile :input").prop("disabled", false);
-        $("#ids :input").prop("disabled", false);
-
-
-}
-
-function lock_form(){
-
-        $("#profile").addClass("lock-overlay");
-        $("#ids").addClass("lock-overlay");
-        $("#unlock i").removeClass("fa-lock").addClass("fa-unlock");
-        $("#unlock span").text("Unlock");
-
-        $("#profile :input").prop("disabled", true);
-        $("#ids :input").prop("disabled", true);
-
-}
-
-function randomPassword() {
-    var chars = "abcdefghjkmnopqrstuvwxyzABCDEFGHIJKLMNPRTUVWXYZ";
-	var num ="23456789";
-	var symbol = "@#$%^&+=.-_*";
-    var pass = "";
-	var a = Math.floor(Math.random() * num.length);
-	pass += num.charAt(a);
-	var b = Math.floor(Math.random() * symbol.length);
-	pass += symbol.charAt(b);
-    for (var x = 0; x <4; x++) {
-        var i = Math.floor(Math.random() * chars.length);
-        pass += chars.charAt(i);
-    }
-	var pass = pass.split('').sort(function(){return 0.5-Math.random()}).join('');
-
-    return pass;
-}
-
-</script>
+<script src="<?php print base_url(); ?>assets/js/adminpanel/add_member.js"></script>

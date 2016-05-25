@@ -28,37 +28,36 @@ class Add_member extends Admin_Controller {
      *
      */
 
-     public function validate_input(){
-
-         $this->form_validation->set_error_delimiters('<p>', '</p>');
-         $this->form_validation->set_rules('username', $this->lang->line('username'), 'trim|required|max_length[20]|min_length[6]|is_valid_username|is_db_cell_available[users.username]');
-         $this->form_validation->set_rules('password', $this->lang->line('password'), 'required|max_length[20]|min_length[6]|is_valid_password');
-         $this->form_validation->set_rules('leader', $this->lang->line('leader'), 'trim|is_value_exists[users.username]');
-         $this->form_validation->set_rules('email', $this->lang->line('email_address'), 'trim|required|max_length[255]|is_valid_email|is_db_cell_available[users.email]');
-         $this->form_validation->set_rules('role', $this->lang->line('role'), 'trim|required|is_value_exists[role.role_name]');
-         $this->form_validation->set_rules('phone', $this->lang->line('phone'), 'is_valid_phone');
-
-         if (!$this->form_validation->run()) {
-             echo json_encode($this->form_validation->error_array(), true);
-             exit();
-
-         }
-     }
+    //  public function validate_input(){
+     //
+    //      $this->form_validation->set_error_delimiters('<p>', '</p>');
+    //      $this->form_validation->set_rules('username', $this->lang->line('username'), 'trim|required|max_length[20]|min_length[6]|is_valid_username|is_db_cell_available[users.username]');
+    //      $this->form_validation->set_rules('password', $this->lang->line('password'), 'required|max_length[20]|min_length[6]|is_valid_password');
+    //      $this->form_validation->set_rules('leader', $this->lang->line('leader'), 'trim|is_value_exists[users.username]');
+    //      $this->form_validation->set_rules('email', $this->lang->line('email_address'), 'trim|required|max_length[255]|is_valid_email|is_db_cell_available[users.email]');
+    //      $this->form_validation->set_rules('role', $this->lang->line('role'), 'trim|required|is_value_exists[role.role_name]');
+    //     //  $this->form_validation->set_rules('phone', $this->lang->line('phone'), 'is_valid_phone');
+     //
+    //      if (!$this->form_validation->run()) {
+    //          echo json_encode($this->form_validation->error_array(), true);
+    //          exit();
+     //
+    //      }
+    //  }
 
     public function add() {
 
         if (! self::check_permissions(4)) {
             redirect("/private/no_access");
         }
-
         $this->form_validation->set_error_delimiters('<p>', '</p>');
-        $this->form_validation->set_rules('username', $this->lang->line('username'), 'trim|required|max_length[20]|min_length[6]|is_valid_username|is_db_cell_available[users.username]');
+        $this->form_validation->set_rules('uname', $this->lang->line('username'), 'trim|required|max_length[20]|min_length[6]|is_valid_username|is_db_cell_available[users.username]');
         $this->form_validation->set_rules('password', $this->lang->line('password'), 'required|max_length[20]|min_length[6]|is_valid_password');
         $this->form_validation->set_rules('leader', $this->lang->line('leader'), 'trim|is_value_exists[users.username]');
         $this->form_validation->set_rules('email', $this->lang->line('email_address'), 'trim|required|max_length[255]|is_valid_email|is_db_cell_available[users.email]');
         $this->form_validation->set_rules('role', $this->lang->line('role'), 'trim|required|is_value_exists[role.role_name]');
-        $this->form_validation->set_rules('phone', $this->lang->line('phone'), 'trim|is_valid_phone');
-        //validation fail
+        $this->form_validation->set_rules('phone_display', $this->lang->line('phone'), 'trim|is_valid_phone');
+        $this->form_validation->set_rules('emergency_contact_display', $this->lang->line('emergency_contact'), 'trim|is_valid_phone');
 
         if (!$this->form_validation->run()) {
             $this->session->set_flashdata('error', validation_errors());
@@ -70,7 +69,7 @@ class Add_member extends Admin_Controller {
         }
 
         //save user into table
-        if($return_array = $this->users_model->create_user($this->input->post('username'), $this->input->post('password'), $this->input->post('email'), $this->input->post('leader'), $this->input->post('role'), "pending")) {
+        if($return_array = $this->users_model->create_user($this->input->post('uname'), $this->input->post('password'), $this->input->post('email'), $this->input->post('leader'), $this->input->post('role'), "pending")) {
 
             // set roles
             if ($result = $this->roles_model->get_role_id($_POST['role']) ) {
@@ -79,7 +78,7 @@ class Add_member extends Admin_Controller {
 
             // Data to be Save
             $data = array();
-            $fields = array('real_name', 'nickname', 'phone', 'emergency_contact', 'emergency_name', 'relationship', 'tb_lp_id', 'tp_lp_name', 'sy_lp_id', 'sy_lp_name', 'tb_bo', 'gd_bo', 'keno_bo', 'cyber_roam', 'rtx', 'windows_id');
+            $fields = array('real_name', 'nickname', 'phone', 'emergency_contact', 'emergency_name', 'relationship', 'tb_lp_id', 'tb_lp_name', 'sy_lp_id', 'sy_lp_name', 'tb_bo', 'gd_bo', 'keno_bo', 'cyber_roam', 'rtx', 'windows_id');
             $data['username'] = $this->input->post('username');
             foreach($fields as $field){
                 isset($_POST[$field])?$data[$field] = $this->input->post($field) : "";

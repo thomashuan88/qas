@@ -39,7 +39,7 @@
                     <td><span class="info"><?php print $report->created_by ?></span></td>
                 </tr>
                 <tr>
-                    <td><label><?php print $this->lang->line('remarks'); ?></label></td>
+                    <td><label><?php print $this->lang->line('remark'); ?></label></td>
                     <td colspan="3"><span class="info"><?php print $report->remarks ?></span></td>
                 </tr>
             </table>
@@ -83,7 +83,7 @@
                         </th>
                         <th>
                             <a href="<?php print base_url() . "adminpanel/operation/shift_report_follow_up/' . $report->shift_reports_id . '/remarks/" . ($order_by == "remarks" ? ($sort_order == "asc" ? "desc" : "asc") : "asc") . "/" . $search . "/0"; ?>">
-                                <i class="<?php print ($order_by == "remarks" ? ($sort_order == "asc" ? "fa fa-arrow-circle-o-up" : "fa fa-arrow-circle-o-down") : ""); ?>"></i>&nbsp;<?php print $this->lang->line('remarks'); ?>
+                                <i class="<?php print ($order_by == "remarks" ? ($sort_order == "asc" ? "fa fa-arrow-circle-o-up" : "fa fa-arrow-circle-o-down") : ""); ?>"></i>&nbsp;<?php print $this->lang->line('remark'); ?>
                             </a>
                         </th>
                         <th>
@@ -130,7 +130,7 @@
                         <th><a href="#"><?php print $this->lang->line('id'); ?></a></th>
                         <th><a href="#"><?php print $this->lang->line('follow_up_by'); ?></a></th>
                         <th><a href="#"><?php print $this->lang->line('status'); ?></a></th>
-                        <th><a href="#"><?php print $this->lang->line('remarks'); ?></a></th>
+                        <th><a href="#"><?php print $this->lang->line('remark'); ?></a></th>
                         <th><a href="#"><?php print $this->lang->line('submit_by'); ?></a></th>
                         <th><a href="#"><?php print $this->lang->line('submit_time'); ?></a></th>
                     </tr>

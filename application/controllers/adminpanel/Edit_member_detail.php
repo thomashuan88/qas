@@ -99,9 +99,11 @@ class Edit_member_detail extends Admin_Controller {
         if (! self::check_permissions(5)) {
             redirect("/private/no_access");
         }
+        log_message('error', print_r($this->input->post(), true));
 
         $this->form_validation->set_error_delimiters('<p>', '</p>');
-        $this->form_validation->set_rules('nickname', $this->lang->line('nickname'), 'trim|max_length[40]|min_length[2]');
+        $this->form_validation->set_rules('phone_display', $this->lang->line('phone'), 'trim|is_valid_phone');
+        $this->form_validation->set_rules('emergency_contact_display', $this->lang->line('emergency_contact'), 'trim|is_valid_phone');
 
         if (!$this->form_validation->run()) {
             $this->session->set_flashdata('error', validation_errors());

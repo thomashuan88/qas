@@ -23,12 +23,21 @@ class Users_model extends CI_Model {
             !empty($search_data['status']) ? $status['data'] = $search_data['status'] : "";
         }
 
-        $this->db->select('users.user_id, users.username, users.email, users.real_name, users.leader, users.role, users.phone, users.status');
+        $this->db->select('users.user_id, users.last_login, users.username, users.email, users.real_name, users.leader, users.role, users.phone, users.status');
         $this->db->from('users');
         // $this->db->group_start();
         if(isset($status['data'])){
-        $this->db->where('status', $status['data']);
+            if($status['data']!=="all"){
+                $this->db->where('status', $status['data']);
+            }else {
+                $this->db->where('status', '');
+
+            }
         }
+        // foreach($data as $key => $value) {
+        //     $where_statement = $key.' LIKE "%'.$value.'%"';
+        //     $this->db->where($where_statement,null, false);
+        // }
         if(!empty($data)) {
                 $this->db->group_start();
              $this->db->like($data);
@@ -46,7 +55,7 @@ class Users_model extends CI_Model {
     }
 
     public function get_member_data($id) {
-        $this->db->select('user_id, username, email, real_name, nickname, dob, role,
+        $this->db->select('user_id, last_login, username, email, real_name, nickname, dob, role,
         windows_id, tb_lp_id, tb_lp_name, sy_lp_id, sy_lp_name, tb_bo,
         gd_bo, keno_bo, cyber_roam, rtx, emergency_contact, emergency_name, relationship,
         leader, status, remark, phone')
@@ -186,6 +195,14 @@ class Users_model extends CI_Model {
             return true;
         }
         return false;
+    }
+
+    public function find_downline($username){
+        $this->db->select("username");
+        $this->db->from("users");
+        $this->db->where("leader",$username);
+        $query = $this->db->get();
+        return $query->result('array');
     }
 
 

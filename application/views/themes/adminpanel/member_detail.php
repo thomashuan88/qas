@@ -35,7 +35,6 @@
             <div class="panel with-nav-tabs panel-default">
                 <div class="panel-heading">
                     <ul class="nav nav-tabs">
-
                         <li class="active"><a href="#user_info" data-toggle="tab">User Information</a></li>
                         <li><a href="#daily_qa" data-toggle="tab">Daily QA</a></li>
                         <li><a href="#monthly_qa" data-toggle="tab">Monthly QA</a></li>

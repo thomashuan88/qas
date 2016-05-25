@@ -1,3 +1,5 @@
+var qas_app = {};
+
 $(function () {
     //form conformation
     $('.form-confirm').on('submit', function (e) {
@@ -51,16 +53,19 @@ $(function () {
 });
 
 // pagination
-var getNewData = function() {
+var getNewData = function(callback) {
+    // console.log(JSON.stringify(paging));
     $.ajax({
         url: paging.ajaxUrl,
-        data: JSON.stringify(paging),
+        data:JSON.stringify(paging),
         type: "post",
         success: function(data) {
             var jsonData = JSON.parse(data);
             paging.permission = jsonData.permission;
             drawTable(jsonData.table_data);
             drawPager(jsonData);
+            $('a[data-original-title]').tooltip();
+            // callback();
         },
         error: function(data) {
             console.log(data);
@@ -86,7 +91,7 @@ var drawPager = function (data) {
             pagerHTML += '<li><a href="javascript:void(0)" onclick="chgPage(' + (curPage-2) * data.per_page  + ')"><</a></li>';
         }
 
-        for (var i = curPage - maxDisplayPg; i < curPage + maxDisplayPg; i++) {
+        for (var i = curPage - maxDisplayPg; i <= curPage + maxDisplayPg; i++) {
             var pgOffset = (i-1) * data.per_page;
             if (i > 0 && i <= totalPage) {
                 if (i == curPage) {

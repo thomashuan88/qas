@@ -62,7 +62,7 @@ $lang['logout'] = '登出';
 // register
 $lang['unable_to_register'] = 'Unable to register - please try again later.';
 $lang['disable_registration'] = "Disable member registration";
-$lang['required_fields'] = '(All fields are required)';
+$lang['required_fields'] = 'All fields are required';
 $lang['membership_subject'] = 'Activation required';
 $lang['membership_message'] = ",\r\n\r\nThank you for registering with us. To activate your account please visit the link below (or copy-paste into your browser).";
 $lang['membership_success'] = 'Account created - please check the link in your mailbox to activate your membership.';
@@ -200,6 +200,7 @@ $lang['search_member'] = "Search member";
 $lang['search_user'] = "搜索用户";
 $lang['search_record'] = "搜索记录";
 $lang['edit_record'] = "更改记录";
+$lang['finish_time'] = "结束时间";
 
 $lang['submit_by'] = "提交人";
 $lang['submit_time'] = "提交时间";
@@ -259,7 +260,7 @@ $lang['saving'] = "存储当中。。。";
 $lang['resetting'] = "重置当中。。。";
 $lang['remark'] = "备注";
 $lang['example'] = "例如:12:00";
-$lang['action'] = "功能";
+$lang['action'] = "操作";
 $lang['add_new'] = "添加";
 $lang['number'] = "序";
 $lang['system'] = "系统";
@@ -272,6 +273,15 @@ $lang['access_token'] = "进入象征";
 $lang['access_token_secret'] = "进入象征秘密";
 $lang['add_live_person'] = "添加线人";
 $lang['account_id'] = "账户ID";
+$lang['language'] = "语言";
+$lang['footer_title'] = "页脚标题";
+$lang['system_role'] = "系统角色";
+$lang['predefined_email'] = "预定电子邮件";
+$lang['website_url'] = "网址";
+$lang['logo'] = "标志";
+
+
+
 
 
 
@@ -358,7 +368,7 @@ $lang['ops_monthly'] = "每月OPS";
 $lang['log_in_out'] = "登录/注销";
 $lang['qa_evaluation'] = "QA评估";
 $lang['operation_utilization'] = "利用操作";
-$lang['pending'] = "待处理导入";
+$lang['view_pending'] = "待处理导入";
 $lang['confirm_import'] = "确认导入";
 $lang['import_done'] = "已导入记录";
 $lang['import'] = "导入";
@@ -373,7 +383,10 @@ $lang['update_date'] = "更新日期";
 $lang['update_by'] = "被更新";
 $lang['typing_test'] = "打字测试";
 $lang['monthly_assessment'] = "月度考核";
-
+$lang['chat_log_id'] = "聊天记录ID";
+$lang['imported_time'] = "导入时间";
+$lang['evaluate_mark'] = "积分";
+$lang['evaluate_by'] = "评价者";
 //Header
 // $lang['logged_in'] = "登入为：";
 
@@ -430,6 +443,7 @@ $lang['information_update'] = "Information Update";
 $lang['time_sheet'] = "Time Sheet";
 $lang['question_type'] = "Question Type";
 $lang['question_content'] = "Question Content";
+
 
 //page 404
 $lang['page_not_found'] = "找不到网页";

@@ -62,7 +62,11 @@ class Time_sheet_model extends CI_Model {
     public function insert_time_sheet($data) {
         $new_data = array(
             'shift' => $data['shift'],
+            'product' => $data['product'],
+            'title' => $data['title'],
             'remarks' => $data['remarks'],
+            'time_start' => $data['time_start'],
+            'time_end' => $data['time_end'],
             'status' => 'active',
             'created_by' => $this->user,
             'created_time' => $this->time,
@@ -71,6 +75,26 @@ class Time_sheet_model extends CI_Model {
         );
         $this->db->insert($this->table, $new_data);
         return $this->is_query_working();
+    }
+
+    public function edit_time_sheet($data) {
+        if ($this->is_exist($data['id'])) {
+            $new_data = array(
+                'shift' => $data['shift'],
+                'product' => $data['product'],
+                'title' => $data['title'],
+                'remarks' => $data['remarks'],
+                'time_start' => $data['time_start'],
+                'time_end' => $data['time_end'],
+                'last_updated_by' => $this->user,
+                'last_updated_time' => $this->time
+            );
+            $this->db->where('time_sheet_id', $data['id']);
+            $this->db->update($this->table, $new_data);
+            return $this->is_query_working();
+        } else {
+            return false;
+        }
     }
 
     public function delete_time_sheet($key) {

@@ -71,7 +71,9 @@
                     <tr>
                         <th><a href="javascript:void(0)" onclick="chgOrder('time_sheet_id')"><i dataname="time_sheet_id" class="table-th"></i> <?php print $this->lang->line('id'); ?></a></th>
                         <th><a href="javascript:void(0)" onclick="chgOrder('shift')"><i dataname="shift" class="table-th"></i> <?php print $this->lang->line('shift'); ?></a></th>
-                        <th><a href="javascript:void(0)" onclick="chgOrder('remarks')"><i dataname="remarks" class="table-th"></i> <?php print $this->lang->line('remarks'); ?></a></th>
+                        <th><a href="javascript:void(0)" onclick="chgOrder('product')"><i dataname="product" class="table-th"></i> <?php print $this->lang->line('product'); ?></a></th>
+                        <th><a href="javascript:void(0)" onclick="chgOrder('title')"><i dataname="title" class="table-th"></i> <?php print $this->lang->line('remark'); ?></a></th>
+                        <th><a href="javascript:void(0)" onclick="chgOrder('time_end')"><i dataname="time_end" class="table-th"></i> <?php print $this->lang->line('duration'); ?></a></th>
                         <th><a href="javascript:void(0)" onclick="chgOrder('created_by')"><i dataname="created_by" class="table-th"></i> <?php print $this->lang->line('submit_by'); ?></a></th>
                         <th><a href="javascript:void(0)" onclick="chgOrder('created_time')"><i dataname="created_time" class="table-th"></i> <?php print $this->lang->line('submit_time'); ?></a></th>
                         <th><a href="javascript:void(0)"><?php print $this->lang->line('action'); ?></a></th>
@@ -109,7 +111,7 @@
         return false;
     };
 
-    var editData = function(id) {
+    var viewData = function(id) {
         $.ajax({
             url: "/adminpanel/operation/time_sheet_details/" + id,
             type: "post",
@@ -120,7 +122,7 @@
                         message: '<div class="panel-body table-responsive"><table class="table"><tr><td><label>' +
                         '<?php print $this->lang->line('id'); ?>' + '</label></td><td><span class="info">' + data['time_sheet_id'] + '</span></td></tr><tr><td><label>' +
                         '<?php print $this->lang->line('shift'); ?>' + '</label></td><td><span class="info">' + data['shift'] + '</span></td></tr><tr><td><label>' +
-                        '<?php print $this->lang->line('remarks'); ?>' + '</label></td><td><span class="info">' + data['remarks'] + '</span></td></tr><tr><td><label>' +
+                        '<?php print $this->lang->line('remark'); ?>' + '</label></td><td><span class="info">' + data['remarks'] + '</span></td></tr><tr><td><label>' +
                         '<?php print $this->lang->line('submit_by'); ?>' + '</label></td><td><span class="info">' + data['created_by'] + '</span></td></tr><tr><td><label>' +
                         '<?php print $this->lang->line('submit_time'); ?>' + '</label></td><td><span class="info">' + data['created_time'] + '</span></td></tr></table></div>',
                         buttons: {
@@ -140,6 +142,36 @@
         });
     };
 
+    var editData = function(id) {
+        $.ajax({
+            url: "/adminpanel/operation/time_sheet_details/" + id,
+            type: "post",
+            dataType: "json",
+            success: function (data) {
+                bootbox.dialog({
+                        title: "<?php print $this->lang->line('time_sheet_details'); ?>",
+                        message: '<div class="panel-body table-responsive"><table class="table"><tr><td><label>' +
+                        '<?php print $this->lang->line('id'); ?>' + '</label></td><td><span class="info">' + data['time_sheet_id'] + '</span></td></tr><tr><td><label>' +
+                        '<?php print $this->lang->line('shift'); ?>' + '</label></td><td><span class="info">' + data['shift'] + '</span></td></tr><tr><td><label>' +
+                        '<?php print $this->lang->line('remark'); ?>' + '</label></td><td><span class="info">' + data['remarks'] + '</span></td></tr><tr><td><label>' +
+                        '<?php print $this->lang->line('submit_by'); ?>' + '</label></td><td><span class="info">' + data['created_by'] + '</span></td></tr><tr><td><label>' +
+                        '<?php print $this->lang->line('submit_time'); ?>' + '</label></td><td><span class="info">' + data['created_time'] + '</span></td></tr></table></div>',
+                        buttons: {
+                            close: {
+                                label: "<?php print $this->lang->line('close'); ?>",
+                                className: "btn-default",
+                                callback: function () {
+                                }
+                            }
+                        }
+                    }
+                );
+            },
+            error: function (data) {
+                bootbox.alert(data['responseText']);
+            }
+        });
+    };
 
     var deleteData = function (id) {
         bootbox.confirm(delete_message, function (confirmed) {
@@ -174,13 +206,18 @@
             html += '<tr>';
             html += '<td>' + value['time_sheet_id'] + '</td>';
             html += '<td>' + value['shift'] + '</td>';
-            html += '<td>' + value['remarks'] + '</td>';
+            html += '<td>' + value['product'] + '</td>';
+            html += '<td>' + value['content'] + '</td>';
+            html += '<td>' + value['duration'] + '</td>';
             html += '<td>' + value['created_by'] + '</td>';
             html += '<td>' + value['created_time'] + '</td>';
             html += '<td style="white-space: nowrap;">';
-            html += '<a href="#" onclick="editData(' + value['time_sheet_id'] + ');" class="btn btn-success btn-circle" title="details" data-toggle="tooltip" data-placement="top" data-original-title="View"><i class="fa fa-eye"></i></a>';
+            html += '<a href="#" onclick="viewData(' + value['time_sheet_id'] + ');" class="btn btn-success btn-circle" title="<?php print $this->lang->line('details')?>" data-toggle="tooltip" data-placement="top" data-original-title="View"><i class="fa fa-eye"></i></a>';
+            if (paging.permission['edit']) {
+                html += '<a href="#" onclick="editData(' + value['time_sheet_id'] + ');" class="btn btn-primary btn-circle edit" title="<?php print $this->lang->line('edit')?>" data-toggle="tooltip" data-placement="top" data-original-title="Edit"><i class="fa fa-pencil-square"></i></a>';
+            }
             if (paging.permission['delete']) {
-                html += '<a href="#" onclick="deleteData(' + value['time_sheet_id'] + ');" class="btn btn-danger btn-circle" title="delete" data-toggle="tooltip" data-placement="top" data-method="DELETE"><i class="fa fa-trash"></i></a>';
+                html += '<a href="#" onclick="deleteData(' + value['time_sheet_id'] + ');" class="btn btn-danger btn-circle" title="<?php print $this->lang->line('delete')?>" data-toggle="tooltip" data-placement="top" data-original-title="DELETE" data-method="DELETE"><i class="fa fa-trash"></i></a>';
             }
             html += '</td></tr>';
         });

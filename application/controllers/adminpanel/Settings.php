@@ -9,7 +9,7 @@ class Settings extends Admin_Controller {
         $this->load->helper('form');
         $this->load->library('encrypt');
         $this->load->library('form_validation');
-        $this->load->model('adminpanel/setting_model');
+        $this->load->model('adminpanel/system_settings_model');
 
     }
 
@@ -22,10 +22,10 @@ class Settings extends Admin_Controller {
         if (! self::check_action(21)) {
             redirect("/private/no_access");
         }
-        $this->load->model('adminpanel/setting_model');
-        $content_data['shift'] = $this->setting_model->get_shift();
-        $content_data['product'] = $this->setting_model->get_product();
-        $live_person = $this->setting_model->get_live_person();
+        $this->load->model('adminpanel/system_settings_model');
+        $content_data['shift'] = $this->system_settings_model->get_shift();
+        $content_data['product'] = $this->system_settings_model->get_product();
+        $live_person = $this->system_settings_model->get_live_person();
         
         $arr = array();
           foreach($live_person as $value){
@@ -88,11 +88,10 @@ class Settings extends Admin_Controller {
             'value' => $this->input->post('product'),
         );        
 
-        $this->load->model('adminpanel/setting_model');
+        $this->load->model('adminpanel/system_settings_model');
 
-        if ($this->setting_model->save_setting($data)) {
+        if ($this->system_settings_model->save_setting($data)) {
             $this->session->set_flashdata('success', '<p>'. $this->lang->line('settings_update') .'</p>');
-            //unlink(APPPATH .'cache/settings.cache');
             $this->load->library('cache');
             $this->cache->delete('settings');
         }
@@ -111,7 +110,7 @@ class Settings extends Admin_Controller {
    {
       if (!empty($key)) {
         $content_data = array();
-        $content_data['shift'] = $this->setting_model->get_one_record($key);
+        $content_data['shift'] = $this->system_settings_model->get_one_record($key);
         if (!empty($content_data['shift'])) {
             $post_data = $this->input->post();
             if (!empty($post_data)) {
@@ -124,7 +123,7 @@ class Settings extends Admin_Controller {
                         redirect('/adminpanel/settings/edit_shift/'.$key);
                 }
                 $post_data['id'] = $key;
-                $res = $this->setting_model->edit_shift($post_data);
+                $res = $this->system_settings_model->edit_shift($post_data);
                 if ($res) {
                     $this->session->set_flashdata('success', $this->lang->line('update_success'));
                 } else {
@@ -140,16 +139,13 @@ class Settings extends Admin_Controller {
             $this->session->set_flashdata('error', $this->lang->line('invalid_data'));
     }
     redirect('/adminpanel/settings/');
-
-
    }
-
 
    public function edit_product($key)
    {
       if (!empty($key)) {
         $content_data = array();
-        $content_data['product'] = $this->setting_model->get_one_record($key);
+        $content_data['product'] = $this->system_settings_model->get_one_record($key);
         if (!empty($content_data['product'])) {
             $post_data = $this->input->post();
 
@@ -163,7 +159,7 @@ class Settings extends Admin_Controller {
                 }
                 $post_data['id'] = $key;
 
-                $res = $this->setting_model->edit_product($post_data);
+                $res = $this->system_settings_model->edit_product($post_data);
                 if ($res) {
                     $this->session->set_flashdata('success', $this->lang->line('update_success'));
                 } else {
@@ -195,9 +191,9 @@ class Settings extends Admin_Controller {
 
     $data = array('site_title' => $this->input->post('site_title'));
 
-    $this->load->model('setting_model');
+    $this->load->model('system_settings_model');
 
-    if ($this->setting_model->save_system_settings($data)) {
+    if ($this->system_settings_model->save_system_settings($data)) {
 
       $this->session->set_flashdata('success', '<p>'. $this->lang->line('settings_update') .'</p>');
   
@@ -234,13 +230,10 @@ class Settings extends Admin_Controller {
             exit();
     }
 
-    $this->load->model('adminpanel/setting_model');
+    $this->load->model('adminpanel/system_settings_model');
     $key = array('account_id', 'consumer_key', 'consumer_secret' ,'access_token_secret','access_token');
 
-  log_message("error", $key);
-
     foreach($key as $value){
-        log_message("error", "hi");
 
       $data = array(
             'type' => 'live_person',
@@ -248,55 +241,75 @@ class Settings extends Admin_Controller {
             'key' => $value,
             'value' => $this->input->post($value)
           );
-       if ($this->setting_model->save_setting($data)) {
+       if ($this->system_settings_model->save_setting($data)) {
           $this->session->set_flashdata('success', '<p>'. $this->lang->line('settings_update') .'</p>');
         }
     }
     redirect('/adminpanel/settings/'.'?tab=live_person');
    }
 
-  
 
-    public function edit_live_person($key)
-   {
-      if (!empty($key)) {
 
+    public function edit_live_person($product){
+
+      if (!empty($product)) {
+
+        $live_person = $this->system_settings_model->get_one_live_person($product);
         $content_data = array();
-        $content_data['live_person'] = $this->setting_model->get_one_record($key);
+        $arr = array();
+          foreach($live_person as $value){
+              $arr[$value->group][$value->key] = $value->value;
+          }
+        $content_data['live_person'] = $arr ;
+        $content_data["product"] = $product;
+
         if (!empty($content_data['product'])) {
             $post_data = $this->input->post();
-
             if (!empty($post_data)) {
-                $this->form_validation->set_error_delimiters('<p>', '</p>');
-                $this->form_validation->set_rules('product','product type','trim|required|is_db_cell_available[system_setting.value]');
+              $this->form_validation->set_error_delimiters('<p>', '</p>');
+              $this->form_validation->set_rules('product','Product Type','trim|required');
+              $this->form_validation->set_rules('account_id','Account ID','trim|required');
+              $this->form_validation->set_rules('consumer_key','Consumer Key','trim|required');
+              $this->form_validation->set_rules('consumer_secret','Consumer Secret','trim|required');
+              $this->form_validation->set_rules('access_token','Access Token','trim|required');
+              $this->form_validation->set_rules('access_token_secret','Access Token Secret','trim|required');
 
-                if (!$this->form_validation->run()) {
-                        $this->session->set_flashdata('error', validation_errors());
-                        redirect('/adminpanel/settings/edit_product/'.$key);
-                }
-                $post_data['id'] = $key;
+              if (!$this->form_validation->run()) {
+                      $this->session->set_flashdata('error', validation_errors());
+                      redirect('/adminpanel/settings/edit_live_person/'.$product);
+              }
+                $post_data['product'] = $product;
 
-                $res = $this->setting_model->edit_product($post_data);
-                if ($res) {
+                $key = array('account_id', 'consumer_key', 'consumer_secret' ,'access_token_secret','access_token');
+
+                foreach($key as $value){
+
+                  $data = array(
+                      'type' => 'live_person',
+                      'group' => $this->input->post('product'),
+                      'key' => $value,
+                      'value' => $this->input->post($value)
+                  );
+
+                   if ($this->system_settings_model->edit_live_person($data, $product)) {
                     $this->session->set_flashdata('success', $this->lang->line('update_success'));
-                } else {
+                  }
+                  else{
                     $this->session->set_flashdata('error', $this->lang->line('update_failure'));
+                  }
                 }
             }else {
-                return $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel', $this->lang->line('settings'), 'product_settings_edit', 'header', 'footer', '', $content_data);
+                 return $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel', $this->lang->line('settings'), 'live_person_settings_edit', 'header', 'footer', '', $content_data);
             }
-        } else {
+        }else {
             $this->session->set_flashdata('error', $this->lang->line('no_result'));
         }
-    } else {
+    
+      }else {
             $this->session->set_flashdata('error', $this->lang->line('invalid_data'));
-    }
-
-    redirect('/adminpanel/settings/'.'?tab=product');
-
+      }
+    redirect('/adminpanel/settings/'.'?tab=live_person');
    }
-
-
 
 
 }

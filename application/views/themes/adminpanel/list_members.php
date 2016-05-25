@@ -39,7 +39,7 @@
 
                 <div class="col-sm-3">
                     <div class="form-group">
-                        <label for="last_name"><?php print $this->lang->line('leader'); ?></label>
+                        <label for="last_name"><?php print $this->lang->line('report_to'); ?></label>
                         <input type="text" name="leader" id="leader" class="form-control">
                     </div>
                 </div>
@@ -49,6 +49,9 @@
                         <select name="status" id="status" class="form-control">
                             <option value="active"><?php print $this->lang->line('active'); ?></option>
                             <option value="inactive"><?php print $this->lang->line('inactive'); ?></option>
+                            <option value="inactive"><?php print $this->lang->line('pending'); ?></option>
+                            <option value="all"><?php print $this->lang->line('all'); ?></option>
+
                         </select>
                     </div>
                 </div>
@@ -63,7 +66,6 @@
             </div>
 		</div>
     </form>
-
     </div>
 
 	<div class="row margin-top-30">
@@ -85,14 +87,13 @@
                     <th><a href="javascript:void(0)" onclick="chgOrder('real_name')"><i dataname="real_name" class="table-th"></i> <?php print $this->lang->line('full_name'); ?></a></th>
                     <th><a href="javascript:void(0)" onclick="chgOrder('role')"><i dataname="role" class="table-th"></i> <?php print $this->lang->line('role'); ?></a></th>
                     <th><a href="javascript:void(0)" onclick="chgOrder('phone')"><i dataname="phone" class="table-th"></i><?php print $this->lang->line('phone'); ?></a></th>
-                    <th><a href="javascript:void(0)" onclick="chgOrder('leader')"><i dataname="leader" class="table-th"></i> <?php print $this->lang->line('leader'); ?></a></th>
+                    <th><a href="javascript:void(0)" onclick="chgOrder('leader')"><i dataname="leader" class="table-th"></i> <?php print $this->lang->line('report_to'); ?></a></th>
+                    <th><a href="javascript:void(0)" onclick="chgOrder('last_login')"><i dataname="last_login" class="table-th"></i> <?php print $this->lang->line('last_login'); ?></a></th>
                     <th><a href="javascript:void(0)" onclick="chgOrder('status')"><i dataname="status" class="table-th"></i> <?php print $this->lang->line('status'); ?></a></th>
                     <th><a href="javascript:void(0)" onclick="#"><i  class="table-th"></i> <?php print $this->lang->line('action'); ?></a></th>
-
                 </tr>
                 </thead>
                 <tbody id="table-data">
-
                 </tbody>
             </table>
         </div>
@@ -114,8 +115,8 @@ var paging = {
 offset : 0,
 order_by : 'user_id',
 sort_order : 'desc',
-search_data : {'status':'active'},
-ajaxUrl: "<?php print base_url('adminpanel/List_members/get_report'); ?>"
+search_data : {},
+ajaxUrl: "<?php print base_url('adminpanel/List_members/get_report'); ?><?php isset($_GET['type'])? print '/'.$_GET['type'] : ''?>"
 }
 
 var searchData = function() {
@@ -124,15 +125,14 @@ var new_real_name = $('#real_name').val();
 var new_email = $('#email').val();
 var new_leader = $('#leader').val();
 var new_status = $('#status').val();
-
 paging.search_data = {
     username : new_username,
-    real_name : new_real_name,
+    real_name : encodeURIComponent(new_real_name),
     email : new_email,
     leader : new_leader,
     status : new_status,
 };
-
+paging.search_data;
 getNewData();
 
 return false;
@@ -150,6 +150,12 @@ if (data.length != 0) {
 }
 
 $.each( data, function( key, value ) {
+
+
+    var date = new Date( Date.parse(value['last_login']) );
+    var dateYMD = new Date(date).toISOString().slice(0, 10).replace(/-/g, '/');
+    var dateHSi = (date.getHours() % 12) + ':' + date.getMinutes() + ' ' + ( ( date.getHours() >= 12 ) ? 'PM' : 'AM' );
+
     html +='<tr>';
     // html +='<td>' + value['daily_qa_id'] + '</td>';
     html +='<td>' + value['user_id'] + '</td>';
@@ -158,11 +164,17 @@ $.each( data, function( key, value ) {
     html +='<td>' + value['role'] + '</td>';
     html +='<td>' + value['phone'] + '</td>';
     html +='<td>' + value['leader'] + '</td>';
-    if(value['status'] == "active"){
-        html +='<td><i class="label label-success">' + value['status'] + '</i></td>';
+    html +='<td>' + dateYMD + '<br />' + dateHSi+'</td>';
 
-    } else {
-        html +='<td><i class="label label-danger">' + value['status'] + '</i></td>';
+    if(value['status'] == "Active"){
+        html +='<td><label class="label label-success">' + value['status'] + '</label></td>';
+
+    } else if(value['status'] == "Pending") {
+        html +='<td><label class="label label-pending">' + value['status'] + '</label></td>';
+
+    }
+    else if(value['status'] == "Inactive") {
+        html +='<td><label class="label label-danger">' + value['status'] + '</label></td>';
 
     }
     // html +='<td><a href="#" class="btn btn-info btn-circle" title="" data-toggle="tooltip" data-placement="top" data-original-title="User Sessions"><i class="fa fa-list"></i></a>'
@@ -176,11 +188,11 @@ $('#table-data').html(html);
 }
 
 var inactiveUser = function(username, current_status) {
-    bootbox.confirm('Are you sure to inactive '+username+' ?', function(confirmed){
+    bootbox.confirm('Are you sure to change '+username+' status?', function(confirmed){
         if (confirmed) {
             data = {'username' : username, 'current_status' : current_status};
             $.ajax({
-                url: "<?php print base_url('adminpanel/list_members/inactive_user'); ?>",
+                url: "<?php print base_url('adminpanel/list_members/change_status'); ?>",
                 data: data,
                 type: "post",
                 success: function(data) {
@@ -188,6 +200,7 @@ var inactiveUser = function(username, current_status) {
                     bootbox.alert(username+' has been deactivated');
                 },
                 error: function(data) {
+                    console.log(data);
                     bootbox.alert('Invalid Action.');
                 }
             });

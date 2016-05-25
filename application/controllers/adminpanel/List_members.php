@@ -27,32 +27,58 @@ class List_members extends Admin_Controller {
         $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel',  $this->lang->line('user_listing'), 'list_members', 'header', 'footer', '');
     }
 
-    public function get_report() {
-       if ( $this->input->post() ) {
-           $array = $this->input->post();
-           $array1 = array_keys($array);
-           $paging = json_decode($array1[0], true);
+    public function get_report($type="") {
+        $paging = $this->session->userdata('paging');
 
-           $offset = $paging['offset'];
-           $order_by = $paging['order_by'];
-           $sort_order = $paging['sort_order'];
-           $search_data = $paging['search_data'];
-           $per_page = Settings_model::$db_config['members_per_page'];
-           $users_data = $this->users_model->get_members($per_page, $offset, $order_by, $sort_order, $search_data);
-           $content_data['total_rows'] = $this->users_model->count_all_search_members($search_data);
+        if($type == 'session' && !empty($paging)){
+            if($this->input->post()){
+                $array = $this->input->post();
+                $array1 = array_keys($array);
+                $post_data = json_decode($array1[0], true);
+                if(!empty($post_data['search_data'])){
+                    $search_session = array('paging' => $post_data);
+                    $this->session->set_userdata($search_session);
+                    $paging = $post_data ;
+                }
+            }
+        } else{
+            if($this->input->post()){
+                $array = $this->input->post();
 
-           if ( $content_data['total_rows'] > 0 ) {
-               $content_data['table_data'] = $users_data->result();
-           } else {
-               $content_data['table_data'] = array();
-           }
+                $array1 = array_keys($array);
+                $post_data = json_decode($array1[0], true);
 
-           $content_data['total_rows'] = $this->users_model->count_all_search_members($search_data);
-           $content_data['offset'] = $offset;
-           $content_data['per_page'] = Settings_model::$db_config['members_per_page'];
-           echo json_encode($content_data, true);
+                if(!empty($post_data['search_data'])){
+                    $search_session = array('paging' => $post_data);
+                    $this->session->set_userdata($search_session);
+                } else{
+                    $post_data['search_data'] = array('status'=>'active');
+                    // $unset_search_session  = array('paging' => '');
+                    $this->session->unset_userdata('paging');
 
-       }
+                }
+                $paging = $post_data ;
+            }
+        }
+
+               $offset = $paging['offset'];
+               $order_by = $paging['order_by'];
+               $sort_order = $paging['sort_order'];
+               $search_data = $paging['search_data'];
+               $per_page = Settings_model::$db_config['members_per_page'];
+               $users_data = $this->users_model->get_members($per_page, $offset, $order_by, $sort_order, $search_data);
+               $content_data['total_rows'] = $this->users_model->count_all_search_members($search_data);
+
+               if ( $content_data['total_rows'] > 0 ) {
+                   $content_data['table_data'] = $users_data->result();
+               } else {
+                   $content_data['table_data'] = array();
+               }
+
+               $content_data['total_rows'] = $this->users_model->count_all_search_members($search_data);
+               $content_data['offset'] = $offset;
+               $content_data['per_page'] = Settings_model::$db_config['members_per_page'];
+               echo json_encode($content_data, true);
    }
 
    public function change_status() {
@@ -66,7 +92,7 @@ class List_members extends Admin_Controller {
         //    $data['status'] = "inactive";
 
            try {
-               $this->users_model->save($value['username'], $value['current_status']);
+               $this->users_model->toggle_active($value['username'], $value['current_status']);
                echo json_encode( array('error' => false),true );
            } catch ( Exception $e ){
                echo json_encode( array('error' => true),true );

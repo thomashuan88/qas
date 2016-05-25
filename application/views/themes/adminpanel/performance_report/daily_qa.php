@@ -2,7 +2,7 @@
 
 <?php $this->load->view('themes/'. Settings_model::$db_config['adminpanel_theme'] .'/partials/content_head.php'); ?>
 <link href="<?php print base_url(); ?>assets/js/vendor/plupload-2.1.9/js/jquery.ui.plupload/css/jquery.ui.plupload.css" rel="stylesheet">
-<script type="text/javascript" src="<?php print base_url(); ?>assets/js/vendor/jquery-ui-1.10.2.js"></script>
+<!-- <script type="text/javascript" src="<?php print base_url(); ?>assets/js/vendor/jquery-ui-1.10.2.js"></script> -->
 <script src="<?php print base_url(); ?>assets/js/vendor/plupload-2.1.9/js/plupload.full.min.js"></script>
 <script src="<?php print base_url(); ?>assets/js/vendor/plupload-2.1.9/js/jquery.ui.plupload/jquery.ui.plupload.min.js"></script>
 
@@ -10,58 +10,61 @@
     <div class="col-md-4">
         <div id="pending_list" style="display:none;"></div>
         <button type="button" name="confirm_import" id="confirm_import" class="btn btn-default btn-md" style="display:none;" ><i class="fa fa-play"></i> &nbsp; <?php print $this->lang->line('confirm_import'); ?></button>
-
+        <?php if ( isset( $permission['delete'] ) ): ?>
+        <button type="button" name="delete_import" id="delete_import" class="btn btn-default btn-md" style="display:none;" ><i class="fa fa-ban"></i> &nbsp; <?php print $this->lang->line('delete_import'); ?></button>
+        <?php endif; ?>
         <button id="js-search" type="button" class="btn btn-default" data-toggle="collapse" data-target="#search_wrapper">
             <span id="js-search-text"><i class="fa fa-compress pd-r-6"></i> <?php print $this->lang->line('collapse'); ?></span> <i class="fa fa-search pd-l-5"></i>
         </button>
     </div>
     <div class="col-md-8" style="text-align: right;">
-        <button type="button" name="export_btn" id="export_btn" class="btn btn-default btn-md"><i class="fa fa-upload"></i> &nbsp; <?php print $this->lang->line('export'); ?></button>
-        &nbsp; &nbsp; &nbsp;
-        <button type="button" name="import_btn" id="import_btn" class="btn btn-default btn-md" ><i class="fa fa-download"></i> &nbsp; <?php print $this->lang->line('import'); ?></button>
-        &nbsp; &nbsp; &nbsp;
+        <?php if ( isset( $permission['add'] ) ): ?>
+        <button type="button" name="import_btn" id="import_btn" class="btn btn-default btn-md" style="margin-right: 18px;" ><i class="fa fa-download"></i> &nbsp; <?php print $this->lang->line('import'); ?></button>
+        <?php endif; ?>
+        <button type="button" name="export_btn" id="export_btn" class="btn btn-default btn-md" style="margin-right: 18px;"><i class="fa fa-upload"></i> &nbsp; <?php print $this->lang->line('export'); ?></button>
         <a href="<?php print base_url() . '/tmp/report_template/daily_qa.xls' ;?>" target="_self"><button type="button" name="template_btn" id="template_btn" class="btn btn-default btn-md"><i class="fa fa-file-text"></i> &nbsp; <?php print $this->lang->line('template'); ?></button></a>
         &nbsp; &nbsp; &nbsp;
-        <button type="button" name="pending" id="pending" class="btn btn-default btn-md" ><i class="fa fa-step-forward"></i> &nbsp; <?php print $this->lang->line('pending'); ?></button>
+        <button type="button" name="pending" id="pending" class="btn btn-default btn-md" ><i class="fa fa-step-forward"></i> &nbsp; <?php print $this->lang->line('view_pending'); ?></button>
         <button type="button" name="confirmed" id="confirmed" class="btn btn-default btn-md" style="display:none;" ><i class="fa fa-check"></i> &nbsp; <?php print $this->lang->line('import_done'); ?></button>
     </div>
 </div>
-
 <!-- search -->
-<div id="search_wrapper" class="collapse in">
-    <form name="daily_qa_form" id="daily_qa_form" onsubmit="return searchData();">
-        <div class="pd-15 bg-primary mg-t-15 mg-b-10">
-            <h2 class="text-uppercase mg-t-0">
-                <?php print $this->lang->line('search_record'); ?>
-            </h2>
+<div id="search_container">
+    <div id="search_wrapper" class="collapse in">
+        <form name="daily_qa_form" id="daily_qa_form" onsubmit="return searchData();">
+            <div class="pd-15 bg-primary mg-t-15 mg-b-10">
+                <h2 class="text-uppercase mg-t-0">
+                    <?php print $this->lang->line('search_record'); ?>
+                </h2>
 
-            <div class="row">
-                <div class="col-sm-3">
-                    <div class="form-group">
-                        <label for="username"><?php print $this->lang->line('username'); ?></label>
-                        <input type="text" name="username" id="username" class="form-control">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label for="username"><?php print $this->lang->line('username'); ?></label>
+                            <input type="text" name="username" id="username" class="form-control">
+                        </div>
                     </div>
-                </div>
-                <div class="col-sm-3">
-                    <div class="form-group contain-datepicker">
-                        <label for="import_date"><?php print $this->lang->line('import_date'); ?></label>
-                        <input type="text" name="import_date" id="import_date" class="form-control datepicker" autocomplete="off" />
+                    <div class="col-sm-3">
+                        <div class="form-group contain-datepicker">
+                            <label for="import_date"><?php print $this->lang->line('import_date'); ?></label>
+                            <input type="text" name="import_date" id="import_date" class="form-control datepicker" autocomplete="off" />
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="row mg-b-20">
-            <div class="col-xs-12 clearfix">
-                <button type="submit" name="member_search_submit" id="member_search_submit" class="btn btn-primary btn-lg js-btn-loading" data-loading-text="Searching...">
-                    <i class="fa fa-check pd-r-5"></i> <?php print $this->lang->line('search'); ?>
-                </button>
+            <div class="row mg-b-20">
+                <div class="col-xs-12 clearfix">
+                    <button type="submit" name="member_search_submit" id="member_search_submit" class="btn btn-primary btn-lg js-btn-loading" data-loading-text="Searching...">
+                        <i class="fa fa-check pd-r-5"></i> <?php print $this->lang->line('search'); ?>
+                    </button>
+                </div>
             </div>
-        </div>
-    </form>
+        </form>
+    </div>
 </div>
 
-<div id="uploader" style="display:none;"></div>
+<div id="uploader" style="display: none;"></div>
 
 <div class="row margin-top-30">
     <div class="col-xs-12">
@@ -72,9 +75,8 @@
                 </h4>
             </div>
         </div>
-        
         <div class="table-responsive" id='dailyqa_table' style="">
-            <table class="table table-hover daily-qa">
+            <table class="table table-hover ">
                 <thead>
                 <tr>
                     <th><a href="javascript:void(0)" onclick="chgOrder('daily_qa_id')"><i dataname="daily_qa_id" class="table-th"></i> <?php print $this->lang->line('id'); ?></a></th>
@@ -87,9 +89,9 @@
                     <th><a href="javascript:void(0)" onclick="chgOrder('quantity')"><i dataname="quantity" class="table-th"></i> <?php print $this->lang->line('quantity'); ?></a></th>
                     <th><a href="javascript:void(0)" onclick="chgOrder('import_date')"><i dataname="import_date" class="table-th"></i> <?php print $this->lang->line('import_date'); ?></a></th>
                     <th><a href="javascript:void(0)" onclick="chgOrder('import_by')"><i dataname="import_by" class="table-th"></i> <?php print $this->lang->line('import_by'); ?></a></th>
-                    <!-- <th><a href="javascript:void(0)" onclick="chgOrder('update_date')"><i dataname="update_date" class="table-th"></i> <?php print $this->lang->line('update_date'); ?></a></th>
-                    <th><a href="javascript:void(0)" onclick="chgOrder('update_by')"><i dataname="update_by" class="table-th"></i> <?php print $this->lang->line('update_by'); ?></a></th> -->
+                <?php if( isset( $permission['delete'] ) || isset( $permission['edit'] ) ): ?>
                     <th><a href="javascript:void(0)"><i class="table-th"></i> <?php print $this->lang->line('action'); ?></a></th>
+                <?php endif;?>
                 </tr>
                 </thead>
                 <tbody id="table-data">
@@ -133,10 +135,24 @@
     .plupload_message {
         display: none;
     }
+
 </style>
 
 <script type="text/javascript">
+
+var permission = <?php echo json_encode($permission, true); ?>;
+var paging = {
+    offset : 0,
+    order_by : 'import_date',
+    sort_order : 'desc',
+    search_data : {},
+    ajaxUrl: '<?php print base_url('adminpanel/daily_qa/get_report'); ?>'
+}
+
+// import file 
 jQuery(document).ready(function($){
+    var errMsg = '<?php echo $this->lang->line('msg_success_import'); ?>';
+
     var uploader = $("#uploader").plupload({
         // General settings
         runtimes : 'html5,flash,silverlight,html4',
@@ -144,9 +160,7 @@ jQuery(document).ready(function($){
         multi_selection: true,
         max_file_size : '500kb',
         chunk_size: '1mb',
-        filters : [
-            {title : "Excel Files", extensions : "xls"}
-        ],
+        filters : [{title : "Excel Files", extensions : "xls"}],
         rename: true,
         sortable: true,
         dragdrop: true,
@@ -155,10 +169,19 @@ jQuery(document).ready(function($){
             active: 'thumbs'
         },
         init : {
-            Error: function(uploader, error) {
-                bootbox.alert('Invalid Data! File name: "' + error.file.name + '" might contain invalid data or file size more than 2 mb.' );
+            FileUploaded: function( upldr, file, object ) {
+                var response = JSON.parse(object.response);
+                if(response.error) {
+                    errMsg = response.message;
+                }
             },
-            UploadComplete: function(up, file, info) { // upload callback
+            Error: function( uploader, error ) {
+                bootbox.alert( "<?php echo $this->lang->line('msg_import_invalid_file_size1'); ?>" + error.file.name + " <?php echo $this->lang->line('msg_import_invalid_file_size1'); ?>" );
+            },
+            UploadComplete: function( up, file, info ) { // upload callback
+                bootbox.alert( errMsg );
+                $('#confirm_import').prop('disabled', false);
+                $('#delete_import').prop('disabled', false);
                 getNewData();
                 up.splice();
             },
@@ -193,24 +216,17 @@ $("#export_btn").click(function(){
     window.open('<?php print base_url('adminpanel/daily_qa/export_report'); ?>/' + encodeURIComponent(paging.order_by) + '/' + encodeURIComponent(paging.sort_order) + '/' + searchDataUrl, '_blank' );
 });
 
-var paging = {
-    offset : 0,
-    order_by : 'import_date',
-    sort_order : 'desc',
-    search_data : {},
-    ajaxUrl: '<?php print base_url('adminpanel/daily_qa/get_report'); ?>'
-}
-
 $("#pending").click(function() {
     $("#pending_list").css("display", "block");
     $("#js-search").css("display", "none");
 
-    $("#search_wrapper").removeClass("collapse in");
-    $("#search_wrapper").addClass("collapse");
+    $("#search_container").removeClass("collapse in");
+    $("#search_container").addClass("collapse");
     
     $("#confirmed").css("display", "");
     $("#pending").css("display", "none");
     $("#confirm_import").css("display", "");
+    $("#delete_import").css("display", "");
 
     $("#export_btn").css("display", "none");
         
@@ -232,13 +248,14 @@ $("#confirmed").click(function() {
     $("#pending_list").css("display", "none");
     $("#js-search").css("display", "block");
 
-    $("#search_wrapper").removeClass("collapse");
-    $("#search_wrapper").addClass("collapse in");
-    $("#search_wrapper").attr("aria-expanded", true);
+    $("#search_container").removeClass("collapse");
+    $("#search_container").addClass("collapse in");
+    $("#search_container").attr("aria-expanded", true);
     
     $("#pending").css("display", "");
     $("#confirmed").css("display", "none");
     $("#confirm_import").css("display", "none");
+    $("#delete_import").css("display", "none");
 
     $("#export_btn").css("display", "");
 
@@ -257,26 +274,44 @@ $("#confirmed").click(function() {
 $('#confirm_import').click(function() {
     bootbox.confirm('Are you sure to confirm this import?', function(confirmed){
         if (confirmed) {
-
-            var requestData = { import_by: paging.search_data.import_by }
+            var requestData = { import_by: paging.search_data.import_by };
 
             $.ajax({
                 url: '<?php print base_url('adminpanel/daily_qa/confirm_pending'); ?>',
                 data: requestData,
                 type: 'post',
+                dataType: 'json',
                 success: function(data) {
-                    var jsonData = JSON.parse(data);
-                    
-                    if (!jsonData.error) {
-                        bootbox.alert("Order has confirmed.")
-                    } else {
-                        bootbox.alert(jsonData.message);
-                    }
-
+                    bootbox.alert(data.message);
+                    getPendingList();
                     getNewData();
                 },
                 error: function(data) {
-                    bootbox.alert("Unknown error has occur.")
+                    bootbox.alert("Unknown error has occur.");
+                }
+            });
+        }
+    });
+})
+
+$('#delete_import').click(function() {
+    bootbox.confirm('Are you sure to delete this import?', function(confirmed){
+        if (confirmed) {
+            var requestData = { import_by: paging.search_data.import_by };
+
+            $.ajax({
+                url: '<?php print base_url('adminpanel/daily_qa/delete_pending'); ?>',
+                data: requestData,
+                type: 'post',
+                dataType: 'json',
+                success: function(data) {
+                    bootbox.alert(data.message);
+                    getPendingList();
+                    getNewData();
+                },
+                error: function(data) {
+                    console.log(data)
+                    bootbox.alert("Unknown error has occur.");
                 }
             });
         }
@@ -295,6 +330,8 @@ var getPendingList = function() {
             var jsonData = JSON.parse(data);
 
             if (jsonData.length > 0) {
+                $('#confirm_import').prop('disabled', false);
+                $('#delete_import').prop('disabled', false);
                 var html = '<div class="form-group"><select name="select_import_session" id="select_import_session" class="form-control" onchange="chgImportSession(this);">';
 
                 $.each( jsonData, function( key, value ) {
@@ -316,6 +353,7 @@ var getPendingList = function() {
                 
             } else {
                 $('#confirm_import').prop('disabled', true);
+                $('#delete_import').prop('disabled', true);
             }
             getNewData();
             setHeaderIcon();
@@ -348,12 +386,19 @@ var deleteData = function(data_id) {
                 url: "<?php print base_url('adminpanel/daily_qa/delete_report'); ?>",
                 data: JSON.stringify(data_id),
                 type: "post",
+                dataType: 'json',
                 success: function(data) {
+                    if (data.error) {
+                        bootbox.alert(data.message);
+                    } else {
+                        bootbox.alert(data.message);
+                    }
+
+                    getPendingList();
                     getNewData();
-                    bootbox.alert('Record Successfully Deleted');
                 },
                 error: function(data) {
-                    bootbox.alert('Invalid Action.');
+                    bootbox.alert('Unknown Error.');
                 }
             });
         }
@@ -448,7 +493,9 @@ var editData = function(data_id) {
                             url: "<?php print base_url('adminpanel/daily_qa/edit_report'); ?>",
                             data: $('#edit_form').serialize(),
                             type: "post",
+                            dataType: "json",
                             success: function(data) {
+                                bootbox.alert(data.message);
                                 paging.order_by = 'update_date';
                                 paging.sort_order = 'desc';
                                 paging.offset = 0;
@@ -469,7 +516,6 @@ var editData = function(data_id) {
 
 var drawTable = function (data) {
     var html ='';
-
     if (data.length != 0) {
         $('#dailyqa_table').css('display', 'block');
         $('#no_result').css('display', 'none');
@@ -480,8 +526,8 @@ var drawTable = function (data) {
 
     $.each( data, function( key, value ) {
 
-        var date = new Date( Date.parse( value['import_date'] ) );
-        var dateYMD = new Date(date).toISOString().slice(0, 10).replace(/-/g, '/');
+        var date = new Date(value['import_date'].substr(0, 4), value['import_date'].substr(5, 2), value['import_date'].substr(8, 2), value['import_date'].substr(11, 2), value['import_date'].substr(14, 2), value['import_date'].substr(17, 2));
+        var dateYMD = date.toISOString().slice(0, 10).replace(/-/g, '/');
         var dateHSi = (date.getHours() % 12) + ':' + date.getMinutes() + ' ' + ( ( date.getHours() >= 12 ) ? 'PM' : 'AM' );
         
         html +='<tr data_id="' + value['daily_qa_id'] + '">';
@@ -495,11 +541,16 @@ var drawTable = function (data) {
         html +='<td>' + value['quantity'] + '</td>';
         html +='<td>' + dateYMD + '<br />' + dateHSi + '</td>';
         html +='<td>' + value['import_by'] + '</td>';
-        html +='<td><a href="#" onclick="deleteData(' + value['daily_qa_id'] + ')" class="btn btn-danger btn-circle" ><i class="fa fa-trash"></i></a></td>';
+
+        if ( permission.delete ) {
+            html +='<td style="white-space: nowrap;"><a href="#" onclick="deleteData(' + value['daily_qa_id'] + ')" class="btn btn-danger btn-circle" title="<?php print $this->lang->line('delete')?>" data-toggle="tooltip" data-placement="top" data-original-title="" data-method="DELETE"><i class="fa fa-trash"></i></a></td>';
+        }
+        
         html +='</tr>';
     });
 
     $('#table-data').html(html);
+    // $('a[data-original-title]').tooltip();
 }
 
 </script>

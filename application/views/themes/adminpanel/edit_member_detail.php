@@ -1,6 +1,8 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
 <?php $this->load->view('themes/'. Settings_model::$db_config['adminpanel_theme'] .'/partials/content_head.php'); ?>
+<link href="<?php print base_url(); ?>assets/js/vendor/intl-tel-input/build/css/intlTelInput.css" rel="stylesheet" >
+
 
     <?php $this->load->view('generic/flash_error'); ?>
 
@@ -13,7 +15,7 @@
             <div class="panel with-nav-tabs panel-default">
                 <div class="panel-heading">
                     <div class="pull-right">
-        				<button type="submit" name="add_user_submit" id="add_user_submit" class="btn btn-default js-btn-loading pd-r-5" data-loading-text="Going Back.."><i class="fa fa-reply pd-r-5"></i> Back</button>
+                        <a href="<?php print base_url()?>/adminpanel/list_members?type=session" class="btn btn-default js-btn-loading" data-loading-text="Going Back.."><i class="fa fa-reply"></i> Back</a>
                     </div>
                     <ul class="nav nav-tabs">
                         <li class="active"><a href="<?php print base_url() ."adminpanel/member_detail/".$member->user_id; ?>" >User Information</a></li>
@@ -66,7 +68,7 @@
                                             </div>
                                             <div class="col-sm-6">
                                                 <div class="col-sm-12 form-group">
-                                                    <label for="leader"><?php print $this->lang->line('leader'); ?></label>
+                                                    <label for="leader"><?php print $this->lang->line('report_to'); ?></label>
                                                     <select class="form-control" id="leader"  name="leader">
                                                         <option style="display:none;" value="<?php echo $member->leader; ?>" selected><?php echo $member->leader; ?></option>
                                                         <?php foreach($leaders as $leader) {?>
@@ -76,7 +78,7 @@
                                                 </div>
                                                 <div class="col-sm-12 form-group">
                                                     <label for="status"><?php print $this->lang->line('status'); ?></label>
-                                                    <select class="form-control" id="leader"  name="leader">
+                                                    <select class="form-control" id="status"  name="status" disabled>
                                                         <option style="display:none;" value="<?php print $member->status; ?>" selected><?php print $member->status; ?></option>
                                                         <option value="active"><?php print $this->lang->line('active'); ?></option>
                                                         <option value="inactive"><?php print $this->lang->line('inactive'); ?></option>
@@ -87,7 +89,7 @@
                                                     <input type="text" name="windows_id" id="windows_id" value="<?php print $member->windows_id; ?>"  class="form-control">
                                                 </div>
                                                 <div class = "col-sm-3 form-group pull-right">
-                                                    <button type="submit" class="btn btn-success js-btn-loading" ><i class="fa fa-check pd-r-5"></i>Save</button>
+                                                    <button type="submit" class="btn btn-success js-btn-loading" ><i class="fa fa-floppy-o pd-r-5"></i>Save</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -112,14 +114,21 @@
                                                     <!-- <input type="text" name="dob" id="dob" value="<?php print $member->dob; ?>"  class="form-control"> -->
                                                 </div>
                                                 <div class="col-sm-12 form-group">
-                                                    <label for="phone"><?php print $this->lang->line('phone'); ?></label>
-                                                    <input type="text" name="phone" id="phone" value="<?php print $member->phone; ?>"  class="form-control">
+                                                    <label for="phone_display"><?php print $this->lang->line('phone'); ?></label>
+                                                    <br />
+        											<input type="tel" name="phone_display" id="phone_display" class="form-control" value="<?php print $member->phone; ?>">
+                                                    <input type="hidden" name="phone" id="phone" class="form-control" value="<?php print $member->phone; ?>">
+                                                    <span id="phone-valid-msg" class="hide"><i class="fa fa-check"></i></span>
+                                                    <span id="phone-error-msg" class="hide"><i class="fa fa-times"></i></span>
                                                 </div>
                                             </div>
                                             <div class="col-sm-6">
                                                 <div class="col-sm-12 form-group">
-                                                    <label for="emergency_contact"><?php print $this->lang->line('emergency_contact'); ?></label>
-                                                    <input type="text" name="emergency_contact" id="emergency_contact" value="<?php print $member->emergency_contact; ?>"  class="form-control">
+                                                    <label for="emergency_contact_display"><?php print $this->lang->line('emergency_contact'); ?></label>
+        											<input type="tel" name="emergency_contact_display" id="emergency_contact_display" class="form-control" value="<?php print $member->emergency_contact; ?>">
+                                                    <input type="hidden" name="emergency_contact" id="emergency_contact" class="form-control" value="<?php print $member->emergency_contact; ?>">
+                                                    <span id="emergency-valid-msg" class="hide"><i class="fa fa-check"></i></span>
+                                                    <span id="emergency-error-msg" class="hide"><i class="fa fa-times"></i></span>
                                                 </div>
                                                 <div class="col-sm-12 form-group">
                                                     <label for="emergency_name"><?php print $this->lang->line('emergency_name'); ?></label>
@@ -131,7 +140,7 @@
                                                     <input type="text" name="relationship" id="relationship" value="<?php print $member->relationship; ?>"  class="form-control">
                                                 </div>
                                                 <div class = "col-sm-3 form-group pull-right">
-                                                    <button type="submit" class="btn btn-success js-btn-loading" ><i class="fa fa-check pd-r-5"></i>Save</button>
+                                                    <button type="submit" class="btn btn-success js-btn-loading" ><i class="fa fa-floppy-o pd-r-5"></i>Save</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -184,7 +193,7 @@
                                                     <input type="text" name="cyber_roam" id="cyber_roam" value="<?php print $member->cyber_roam; ?>"  class="form-control">
                                                 </div>
                                                 <div class = "col-sm-3 form-group pull-right">
-                                                    <button type="submit" class="btn btn-success js-btn-loading" ><i class="fa fa-check pd-r-5"></i>Save</button>
+                                                    <button type="submit" class="btn btn-success js-btn-loading" ><i class="fa fa-floppy-o pd-r-5"></i>Save</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -245,7 +254,7 @@
                                                 <textarea name="remark" id="remark" rows="10" class="form-control"> <?php print $member->remark; ?></textarea>
                                             </div>
                                             <div class = "col-sm-1 form-group pull-right">
-                                                <button type="submit" class="btn btn-success js-btn-loading" ><i class="fa fa-check pd-r-5"></i>Save</button>
+                                                <button type="submit" class="btn btn-success js-btn-loading" ><i class="fa fa-floppy-o pd-r-5"></i>Save</button>
                                             </div>
                                             <?php print form_close() ."\r\n"; ?>
                                         </div>
@@ -265,5 +274,5 @@
 		</div>
 	</div>
 </div>
-
+<script src="<?php print base_url(); ?>assets/js/vendor/intl-tel-input/build/js/intlTelInput.js"></script>
 <script src="<?php print base_url(); ?>assets/js/adminpanel/member_details.js"></script>

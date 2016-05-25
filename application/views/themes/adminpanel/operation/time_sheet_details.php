@@ -17,7 +17,7 @@
                     <td><span class="info"><?php print $time_sheet->shift ?></span></td>
                 </tr>
                 <tr>
-                    <td><label><?php print $this->lang->line('remarks'); ?></label></td>
+                    <td><label><?php print $this->lang->line('remark'); ?></label></td>
                     <td><span class="info"><?php print $time_sheet->remarks ?></span></td>
                 </tr>
                 <tr>

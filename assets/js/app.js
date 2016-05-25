@@ -297,11 +297,18 @@ var waitForFinalEvent = (function() {
         // -------------------------------------------------------------------------------------------------------------
         var parsleyFactory = function($form, $button) {
             var $parsley = $form.parsley();
-            $button.on('click', function() {
+            $button.on('click', function(e) {
                 if ($parsley.isValid()) {
                     $parsley.destroy();
-                    $form.submit();
-                    $(this).button('loading');
+                    e.preventDefault();
+                    bootbox.confirm(confirm_message, function (confirmed) {
+                        if (confirmed) {
+                            $(this).button('loading');
+                            $form.submit();
+                        } else {
+                            $parsley = $form.parsley();
+                        }
+                    });
                 }else{
                     bootbox.alert("Please Complete required fields before submit");
                     $(this).button("reset");
@@ -311,10 +318,10 @@ var waitForFinalEvent = (function() {
         };
 
         // Parsley login form
-        var $loginForm = $("#login_form");
-        if ($loginForm.length) {
-            parsleyFactory( $loginForm, $("#login_submit") );
-        }
+        // var $loginForm = $("#login_form");
+        // if ($loginForm.length) {
+        //     parsleyFactory( $loginForm, $("#login_submit") );
+        // }
         var $adduserForm = $("#add_user_form");
         if ($adduserForm.length) {
             parsleyFactory( $adduserForm, $("#add_user_submit") );
@@ -351,7 +358,53 @@ var waitForFinalEvent = (function() {
             parsleyFactory( $oauth2FinalizeForm, $("#oauth2_finalize_submit") );
         }
 
-        
+        // Parsley time sheet insert form
+        var time_sheet_insert_form = $("#time_sheet_insert_form");
+        if (time_sheet_insert_form.length) {
+            parsleyFactory( time_sheet_insert_form, $("#time_sheet_insert_submit") );
+        }
+
+        // Parsley question type insert form
+        var question_type_insert_form = $("#question_type_insert_form");
+        if (question_type_insert_form.length) {
+            parsleyFactory( question_type_insert_form, $("#question_type_insert_submit") );
+        }
+
+        // Parsley question content insert form
+        var question_content_insert_form = $("#question_content_insert_form");
+        if (question_content_insert_form.length) {
+            parsleyFactory( question_content_insert_form, $("#question_content_insert_submit") );
+        }
+        //Parsley shift setting edit form
+        var shift_setting_edit_form = $("#shift_setting_edit_form");
+        if (shift_setting_edit_form.length) {
+            parsleyFactory( shift_setting_edit_form, $("#shift_setting_edit_submit") );
+        }
+
+        //Parley product setting add form
+        var product_setting_add_form = $("#product_setting_add_form");
+        if (product_setting_add_form.length) {
+            parsleyFactory( product_setting_add_form, $("#product_setting_add_submit") );
+        }
+
+        //Parley product setting add form
+        var product_setting_edit_form = $("#product_setting_edit_form");
+        if (product_setting_edit_form.length) {
+            parsleyFactory( product_setting_edit_form, $("#product_setting_edit_submit") );
+        }
+
+        //Parley live person setting add form
+        var live_person_setting_add_form = $("#live_person_setting_add_form");
+        if (live_person_setting_add_form.length) {
+            parsleyFactory( live_person_setting_add_form, $("#live_person_setting_add_submit") );
+        }
+
+        //Parley live person setting edit form
+        var live_person_setting_edit_form = $("#live_person_setting_edit_form");
+        if (live_person_setting_edit_form.length) {
+            parsleyFactory( live_person_setting_edit_form, $("#live_person_setting_edit_submit") );
+        }
+
 
 
         // profile picture upload

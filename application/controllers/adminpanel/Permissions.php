@@ -10,6 +10,7 @@ class Permissions extends Admin_Controller {
         // }
         $this->load->helper('form');
         $this->load->library('form_validation');
+        $this->load->library('MY_Permission');
         $this->load->model('adminpanel/permissions_model');
         $this->load->model('adminpanel/roles_model');
         $this->load->model('adminpanel/role_permission_model');
@@ -19,6 +20,8 @@ class Permissions extends Admin_Controller {
         if (! self::check_permissions(6)) {
             redirect("/private/no_access");
         }
+        $check_this = $this->my_permission->find_permission();
+
         $permissions = $this->permissions_model->get_permissions();
         //log_message("error",print_r($permissions,true));
         $roles = $this->roles_model->get_roles();
@@ -36,6 +39,10 @@ class Permissions extends Admin_Controller {
                 $content_data['roles'][$role->role_id]['role_name'] = $role->role_name;
                 $content_data['roles'][$role->role_id]['role_description'] = $role->role_description;
                 $content_data['roles'][$role->role_id]['status'] = $role->status;
+                $content_data['roles'][$role->role_id]['add'] = $role->add;
+                $content_data['roles'][$role->role_id]['edit'] = $role->edit;
+                $content_data['roles'][$role->role_id]['delete'] = $role->delete;
+                $content_data['roles'][$role->role_id]['view'] = $role->view;
                 $role_id = $role->role_id;
 
                 foreach ($permissions as $permission) {

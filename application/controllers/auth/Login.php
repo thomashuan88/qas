@@ -60,13 +60,13 @@ class Login extends Auth_Controller {
 
         //if got result - delete data from ci_slssion with the selected id from previous result
         //else no result - do nth
-        $session_id = $this->login_model->get_session($this->input->post('username'));
-
-        // log_message("error", $session_id);
-
+        // $session_id = $this->login_model->get_session($this->input->post('username'));
+        // log_message("error", "hi");
+        // log_message("error",$session_id);
+        // log_message("error", print_r($session_id,true));
         // if($session_id){
-            
-        //     $this->login_model->delete_session($session_id);
+        //     // $this->login_model->delete_session($session_id);
+
         // }
 
         // else{

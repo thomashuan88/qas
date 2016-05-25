@@ -1,20 +1,30 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class Daily_Qa extends Admin_Controller {
+    private $permission = array();
+
     public function __construct() {
         parent::__construct();
-        // pre-load
-        // $this->load->helper('form');
-        // $this->load->library('form_validation');
+
+        if (! self::check_permissions(7)) {
+            redirect("/private/no_access");
+        }
+
+        $this->permission = self::check_action(7);
         $this->load->model('adminpanel/Performance_daily_qa_model');
-        // $this->load->library('pagination');
     }
 
     public function index() {
-        $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel', $this->lang->line('daily_qa'), 'performance_report/daily_qa', 'header', 'footer');
+        $content_data['permission'] = array();
+        ($this->permission->add == 'yes') ?  $content_data['permission']['add'] = TRUE : '';
+        ($this->permission->edit == 'yes') ?  $content_data['permission']['edit'] = TRUE : '';
+        ($this->permission->delete == 'yes') ?  $content_data['permission']['delete'] = TRUE : '';
+
+        $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel', $this->lang->line('daily_qa'), 'performance_report/daily_qa', 'header', 'footer', '', $content_data);
     }
 
     public function get_report() {
+
         if ( $this->input->post() ) {
             $array = $this->input->post();
             $array1 = array_keys($array);
@@ -40,14 +50,9 @@ class Daily_Qa extends Admin_Controller {
 
     public function pending_list() {
         $dailyQaObj = $this->Performance_daily_qa_model->pending_list();
-
         $pendingList = ( $dailyQaObj != false ) ? $dailyQaObj->result('array') : array();
 
-        if ( $this->input->is_ajax_request() ) {
-            echo json_encode($pendingList, true);
-        } else {
-            return $pendingList;    
-        }
+        echo json_encode($pendingList, true);
     }
 
     public function get_pending() {
@@ -79,22 +84,39 @@ class Daily_Qa extends Admin_Controller {
     }
 
     public function confirm_pending() {
+        // check permission
+        if($this->permission->add != 'yes') { 
+            echo json_encode( array( 'error' => true, 'message' => $this->lang->line('msg_no_import') ), true);
+            exit();
+        }
+
         if ( $this->input->post() ) {
             $arr = $this->input->post();
 
             try {
-                $this->Performance_daily_qa_model->confirm_dailyqa_import($arr['import_by']);
-
-                echo json_encode( array('error' => false), true );
-
+                $this->Performance_daily_qa_model->confirm_dailyqa_import( $arr['import_by'] );
+                echo json_encode( array( 'error' => false, 'message' => $this->lang->line('msg_success_confirm_import') ), true );
             } catch ( Exception $e ){
-                echo json_encode( array('error' => true), true ); 
+                echo json_encode( array( 'error' => true, 'message' => $this->lang->line('account_unknown_error') ), true ); 
             }
         }
     }
 
     public function import_report() {
+        // check permission
+        if($this->permission->add != 'yes') { 
+            echo json_encode( array( 'error' => true, 'message' => $this->lang->line('msg_no_import') ), true);
+            exit();
+        }
 
+        // check pending upload exists
+        $total_rows = $this->Performance_daily_qa_model->count_not_current_upload(array( 'username' => $this->session->userdata('username') ), 0);
+        if ( $total_rows > 0 ) {
+            echo json_encode( array( 'error' => true, 'message' => $this->lang->line('msg_import_clear_pending') ), true);
+            exit();
+        }
+
+        // upload file
         if( isset($_FILES['file']) ) {
             $spreadData = array();
             $error = false;
@@ -138,11 +160,11 @@ class Daily_Qa extends Admin_Controller {
             }
 
             if ($error) {
-                echo json_encode( array('error' => true, 'error_line' => $errorLine), true );
+                echo json_encode( array('error' => true, 'message' => $this->lang->line('msg_import_invalid_filename') . $_FILES['file']['name'] . $this->lang->line('msg_import_invalid_line') . $errorLine ), true );
             } else {
                 $this->Performance_daily_qa_model->insert_multi_daily_qa($spreadData);
                 
-                echo json_encode( array('error' => false),true );
+                echo json_encode( array('error' => false), true );
             }
 
         }
@@ -155,7 +177,7 @@ class Daily_Qa extends Admin_Controller {
         $search_data = $this->uri->uri_to_assoc(6);
 
         $dailyQaObj = $this->Performance_daily_qa_model->get_daily_qa( 0, 0, $order_by, $sort_order, $search_data );
-        $total_rows = $this->Performance_daily_qa_model->count_all_daily_qa($search_data);
+        $total_rows = $this->Performance_daily_qa_model->count_confirm_daily_qa($search_data);
 
         if ($total_rows >0) {
             $data = $dailyQaObj->result('array');
@@ -170,7 +192,7 @@ class Daily_Qa extends Admin_Controller {
         $aht = array();
         $totalRow = count( $data );
 
-        $excel->getActiveSheet()->fromArray( array('ID', 'Username', 'Yes', 'No', 'CSI', 'ART', 'AHT', 'Quantity', 'Import Date', 'Import By', 'Update Date', 'Update By'), NULL, 'A1');
+        $excel->getActiveSheet()->fromArray( array('ID', 'Username', 'Yes', 'No', 'CSI', 'ART', 'AHT', 'Quantity', 'Import Date', 'Import By'), NULL, 'A1');
 
         foreach ($data as $value) {
             $excel->getActiveSheet()->fromArray( array_values($value), NULL, 'A' . $num_rows); 
@@ -206,7 +228,13 @@ class Daily_Qa extends Admin_Controller {
         $writer->save('php://output');
     }
     
+    // unused
     public function edit_report() {
+        // check permission
+        if($this->permission->edit != 'yes') { 
+            echo json_encode( array( 'error' => true, 'message' => $this->lang->line('msg_no_edit') ), true);
+            exit();
+        }
         if ( $this->input->post() ) {
             $array = $this->input->post();
             $today = date('Y-m-d H:i:s');
@@ -214,14 +242,21 @@ class Daily_Qa extends Admin_Controller {
 
             try {
                 $this->Performance_daily_qa_model->edit_daily_qa($array['record_id'], $array['yes'], $array['no'], $array['csi'], $array['art'], $array['aht'], $array['quantity'], $today, $myUsername);
-                echo json_encode( array('error' => false),true ); 
+                echo json_encode( array('error' => false, 'message' => $this->lang->line('update_success') ),true ); 
             } catch ( Exception $e ){
-                echo json_encode( array('error' => true),true ); 
+                echo json_encode( array('error' => true, 'message' => $this->lang->line('account_unknown_error') ),true ); 
             }
         }
     }
 
     public function delete_report() {
+        // check permission
+        if($this->permission->delete != 'yes') { 
+            echo json_encode( array( 'error' => true, 'message' => $this->lang->line('msg_no_delete') ), true);
+            exit();
+        }
+
+        //delete record
         if ( $this->input->post() ) {
             $array = $this->input->post();
             $array1 = array_keys($array);
@@ -229,10 +264,32 @@ class Daily_Qa extends Admin_Controller {
 
             try {
                 $this->Performance_daily_qa_model->delete_daily_qa($id);
-                echo json_encode( array('error' => false),true ); 
+                echo json_encode( array('error' => false, 'message' => $this->lang->line('delete_success') ),true ); 
             } catch ( Exception $e ){
-                echo json_encode( array('error' => true),true ); 
+                echo json_encode( array('error' => true, 'message' => $this->lang->line('account_unknown_error') ),true ); 
             }
         }
     }
+
+    public function delete_pending() {
+        // check permission
+        if($this->permission->delete != 'yes') { 
+            echo json_encode( array( 'error' => true, 'message' => $this->lang->line('msg_no_delete') ), true);
+            exit();
+        }
+
+        //delete pending record
+        if ( $this->input->post() ) {
+            $array = $this->input->post();
+
+            try {
+                $this->Performance_daily_qa_model->delete_pending_daily_qa($array['import_by']);
+                echo json_encode( array('error' => false, 'message' => $this->lang->line('delete_success') ),true ); 
+            } catch ( Exception $e ){
+                echo json_encode( array('error' => true, 'message' => $this->lang->line('account_unknown_error') ),true ); 
+            }
+        }
+    }
+
+    
 }

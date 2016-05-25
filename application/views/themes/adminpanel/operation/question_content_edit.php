@@ -9,7 +9,7 @@
         <div class="panel panel-default">
             <div class="panel-body">
                 <div class="form-group">
-                    <label for="category_id"><?php print $this->lang->line('category'); ?></label>
+                    <label for="category_id"><?php print $this->lang->line('question_type'); ?></label>
                     <?php print $category_list; ?>
                 </div>
                 <div class="form-group">
@@ -25,7 +25,7 @@
                 </div>
                 <div>
                     <button type="submit" class="btn btn-success"><i class="fa fa-floppy-o pd-r-5"></i>&nbsp;<?php print $this->lang->line('save'); ?></button>
-                    <a href="<?php print base_url() . "adminpanel/operation/question_content/"; ?>"><button type="button" class="btn btn-danger"><i class="fa fa-reply pd-r-5"></i>&nbsp;<?php print $this->lang->line('cancel'); ?></button></a>
+                    <a href="<?php print base_url() . "adminpanel/operation/question_content?type=post"; ?>"><button type="button" class="btn btn-danger"><i class="fa fa-reply pd-r-5"></i>&nbsp;<?php print $this->lang->line('cancel'); ?></button></a>
                 </div>
             </div>
         </div>

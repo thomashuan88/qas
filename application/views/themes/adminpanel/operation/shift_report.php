@@ -54,7 +54,7 @@
         <div class="row">
             <div class="col-sm-3">
                 <div class="form-group">
-                    <label for="remarks"><?php print $this->lang->line('remarks'); ?></label>
+                    <label for="remarks"><?php print $this->lang->line('remark'); ?></label>
                     <input type="text" name="remarks" id="remarks" class="form-control" value="<?php print $this->session->flashdata('remarks');?>">
                 </div>
             </div>
@@ -107,7 +107,7 @@
                             <th><a href="<?php print base_url() ."adminpanel/operation/shift_report/shift_reports_id/". ($order_by == "shift_reports_id" ? ($sort_order == "asc" ? "desc" : "asc" ) : "asc") ."/". $search ."/0"; ?>"><i class="<?php print ($order_by == "shift_reports_id" ? ($sort_order == "asc" ? "fa fa-arrow-circle-o-up" : "fa fa-arrow-circle-o-down" ) : ""); ?>"></i>&nbsp;<?php print $this->lang->line('id'); ?></a></th>
                             <th><a href="<?php print base_url() ."adminpanel/operation/shift_report/product/". ($order_by == "product" ? ($sort_order == "asc" ? "desc" : "asc" ) : "asc") ."/". $search ."/0"; ?>"><i class="<?php print ($order_by == "product" ? ($sort_order == "asc" ? "fa fa-arrow-circle-o-up" : "fa fa-arrow-circle-o-down" ) : ""); ?>"></i>&nbsp;<?php print $this->lang->line('product'); ?></a></th>
                             <th><a href="<?php print base_url() ."adminpanel/operation/shift_report/category_id/". ($order_by == "category_id" ? ($sort_order == "asc" ? "desc" : "asc" ) : "asc") ."/". $search ."/0"; ?>"><i class="<?php print ($order_by == "category_id" ? ($sort_order == "asc" ? "fa fa-arrow-circle-o-up" : "fa fa-arrow-circle-o-down" ) : ""); ?>"></i>&nbsp;<?php print $this->lang->line('category'); ?></a></th>
-                            <th><a href="<?php print base_url() ."adminpanel/operation/shift_report/remarks/". ($order_by == "remarks" ? ($sort_order == "asc" ? "desc" : "asc" ) : "asc") ."/". $search ."/0"; ?>"><i class="<?php print ($order_by == "remarks" ? ($sort_order == "asc" ? "fa fa-arrow-circle-o-up" : "fa fa-arrow-circle-o-down" ) : ""); ?>"></i>&nbsp;<?php print $this->lang->line('remarks'); ?></a></th>
+                            <th><a href="<?php print base_url() ."adminpanel/operation/shift_report/remarks/". ($order_by == "remarks" ? ($sort_order == "asc" ? "desc" : "asc" ) : "asc") ."/". $search ."/0"; ?>"><i class="<?php print ($order_by == "remarks" ? ($sort_order == "asc" ? "fa fa-arrow-circle-o-up" : "fa fa-arrow-circle-o-down" ) : ""); ?>"></i>&nbsp;<?php print $this->lang->line('remark'); ?></a></th>
                             <th><a href="<?php print base_url() ."adminpanel/operation/shift_report/status/". ($order_by == "status" ? ($sort_order == "asc" ? "desc" : "asc" ) : "asc") ."/". $search ."/0"; ?>"><i class="<?php print ($order_by == "status" ? ($sort_order == "asc" ? "fa fa-arrow-circle-o-up" : "fa fa-arrow-circle-o-down" ) : ""); ?>"></i>&nbsp;<?php print $this->lang->line('status'); ?></a></th>
                             <th><a href="<?php print base_url() ."adminpanel/operation/shift_report/finish/". ($order_by == "finish" ? ($sort_order == "asc" ? "desc" : "asc" ) : "asc") ."/". $search ."/0"; ?>"><i class="<?php print ($order_by == "finish" ? ($sort_order == "asc" ? "fa fa-arrow-circle-o-up" : "fa fa-arrow-circle-o-down" ) : ""); ?>"></i>&nbsp;<?php print $this->lang->line('finish_time'); ?></a></th>
                             <th><a href="<?php print base_url() ."adminpanel/operation/shift_report/created_time/". ($order_by == "created_time" ? ($sort_order == "asc" ? "desc" : "asc" ) : "asc") ."/". $search ."/0"; ?>"><i class="<?php print ($order_by == "created_time" ? ($sort_order == "asc" ? "fa fa-arrow-circle-o-up" : "fa fa-arrow-circle-o-down" ) : ""); ?>"></i>&nbsp;<?php print $this->lang->line('submit_time'); ?></a></th>
@@ -158,7 +158,7 @@
                             <th><a href="#"><?php print $this->lang->line('id'); ?></a></th>
                             <th><a href="#"><?php print $this->lang->line('product'); ?></a></th>
                             <th><a href="#"><?php print $this->lang->line('category'); ?></a></th>
-                            <th><a href="#"><?php print $this->lang->line('remarks'); ?></a></th>
+                            <th><a href="#"><?php print $this->lang->line('remark'); ?></a></th>
                             <th><a href="#"><?php print $this->lang->line('status'); ?></a></th>
                             <th><a href="#"><?php print $this->lang->line('finish_time'); ?></a></th>
                             <th><a href="#"><?php print $this->lang->line('submit_time'); ?></a></th>

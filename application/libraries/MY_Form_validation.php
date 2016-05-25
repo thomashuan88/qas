@@ -56,7 +56,7 @@ class MY_Form_validation extends CI_Form_validation {
     }
 
     public function is_valid_phone($phone) {
-        if(preg_match('/^((((\\+[\\d\\-.]{1,5})?[ \\-.]?\\d{3})|(\\+[\\d\\-.]{1,5})?[ \\-.]?\\((\\d{3}\\)))?[ \\-.]?\\d{3}[ \\-.]?\\d{4}\\s?(e?x?t?\\.?\\s?\\d{1,7})?)?$/',$phone)){
+        if(preg_match('/^([0-9 +-]){8,}$/',$phone)){
 
             return true;
         }

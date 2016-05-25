@@ -5,7 +5,7 @@
 <?php $this->load->view('generic/flash_error'); ?>
 
 
-<?php print form_open('adminpanel/settings/save_live_person', 'class="form-confirm"') ."\r\n"; ?>
+<?php print form_open('adminpanel/settings/save_live_person', array('id' => 'live_person_setting_add_form')) ."\r\n"; ?>
 <div class="col-md-12" >
   <div class="panel panel-default">
       <div class="panel-heading">
@@ -15,36 +15,36 @@
         <div class="row">
           <div class="form-group col-md-6">
             <label for="Product Type"><?php print $this->lang->line('product_type'); ?></label>
-            <input type="text" class="form-control" id="product" name="product">
+            <input type="text" class="form-control" id="product" name="product" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled required>
           </div>
           <div class="form-group col-md-6">
             <label for="Account ID"><?php print $this->lang->line('account_id'); ?></label>
-            <input type="text" class="form-control" id="account_id" name="account_id">
+            <input type="text" class="form-control" id="account_id" name="account_id" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled required>
           </div>
         </div>
         <div class="row">
           <div class="form-group col-md-6">
             <label for="Consumer Key"><?php print $this->lang->line('consumer_key'); ?></label>
-            <input type="text" class="form-control" id="consumer_key" name="consumer_key">
+            <input type="text" class="form-control" id="consumer_key" name="consumer_key" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled required>
           </div>
           <div class="form-group col-md-6">
             <label for="Access Token"><?php print $this->lang->line('access_token'); ?></label>
-            <input type="text" class="form-control" id="access_token" name="access_token">
+            <input type="text" class="form-control" id="access_token" name="access_token" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled required>
           </div>
         </div>
 
         <div class="row">
           <div class="form-group col-md-6">
             <label for="Consumer Secret"><?php print $this->lang->line('consumer_secret'); ?></label>
-            <input type="text" class="form-control" id="consumer_secret" name="consumer_secret">
+            <input type="text" class="form-control" id="consumer_secret" name="consumer_secret" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled required>
           </div>
           <div class="form-group col-md-6">
             <label for="Access Token Secret"><?php print $this->lang->line('access_token_secret'); ?></label>
-            <input type="text" class="form-control" id="access_token_secret" name="access_token_secret">
+            <input type="text" class="form-control" id="access_token_secret" name="access_token_secret" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled required>
           </div>
         </div>
         <div class="form-group">
-          <button type="submit" class="btn btn-success js-btn-loading" data-loading-text="<?php print $this->lang->line('saving'); ?>"><i class="fa fa-floppy-o pd-r-5"></i> <?php print $this->lang->line('save'); ?></button>
+          <button type="submit" id="live_person_setting_add_submit" class="btn btn-success js-btn-loading" data-loading-text="<?php print $this->lang->line('saving'); ?>"><i class="fa fa-floppy-o pd-r-5"></i> <?php print $this->lang->line('save'); ?></button>
             <a href="<?php print base_url() . "adminpanel/settings/?tab=live_person"; ?>"><button type="button" class="btn btn-danger"><i class="fa fa-reply pd-r-5"></i>&nbsp;<?php print $this->lang->line('cancel'); ?></button></a>
         </div>
       </div>

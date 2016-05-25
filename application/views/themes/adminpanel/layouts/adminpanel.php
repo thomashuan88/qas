@@ -23,6 +23,9 @@
     <script>window.jQuery || document.write('<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js">\x3C/script>')</script>
     <script src="<?php print base_url(); ?>assets/js/vendor/jquery-ui-1.11.4/jquery-ui.min.js"></script>
     <script src="<?php print base_url(); ?>assets/js/vendor/bootstrap.min.js"></script>
+    <script type="text/javascript">// solve conflict between bootstrap and jquery-ui
+        var btn = $.fn.button.noConflict();
+        $.fn.btn = btn;</script>
     <script src="<?php print base_url(); ?>assets/js/vendor/jquery.navgoco.js"></script>
     <script src="<?php print base_url(); ?>assets/js/vendor/jquery.slimscroll.min.js"></script>
     <script src="<?php print base_url(); ?>assets/js/vendor/bootbox.min.js"></script>
@@ -115,6 +118,7 @@
         var delete_message = '<?php print $this->lang->line('delete_message'); ?>';
         var reset_message = '<?php print $this->lang->line('reset_message'); ?>';
     </script>
+    <script src="<?php print base_url(); ?>assets/js/vendor/parsley.min.js"></script>
     <script src="<?php print base_url(); ?>assets/js/app.js"></script>
 </body>
 </html>

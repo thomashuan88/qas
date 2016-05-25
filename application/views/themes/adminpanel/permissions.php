@@ -20,7 +20,7 @@
       </ul>
     </div>
      <div class="tab-content">
-    <?php foreach ($roles as $role_id => $role) { ?>
+    <?php foreach ($roles as $role_id => $role) { //log_message("error",print_r($role,true)); ?>
             <div class="tab-pane" id="<?php print $role_id; ?>">
             <?php print form_open('adminpanel/roles/save_role_permissions', 'id="save_role_permissions_form_'. $role_id .'"') ."\r\n"; ?>
                 <table class="table table-bordered table-hover list table-condensed table-striped" id="table_list">
@@ -29,6 +29,10 @@
                         <!-- <th style="width: 30px;cursor:default; color:#333333;text-shadow: 0 1px 0 #FFFFFF;background-color: #e6e6e6;text-align: center;">No.</th> -->
                         <th rowspan="2" style="width: 60%;cursor:default; color:#333333;text-shadow: 0 1px 0 #FFFFFF;background-color: white;text-align: center;"><?php print $this->lang->line('module_name')?></th>
                         <th style="width: 25%;cursor:default; color:#333333;text-shadow: 0 1px 0 #FFFFFF;background-color: white;text-align: center;"><?php print $this->lang->line('action')?></th>
+                        <th style="width: 30%;cursor:default; color:#333333;text-shadow: 0 1px 0 #FFFFFF;background-color: white;text-align: center;"><input type="checkbox" name="<?php print $role_id; ?>" class="check_full_access"/> full access</th>
+                        </tr>
+                        <tr>
+                         <th style="width: 30%;cursor:default; color:#333333;text-shadow: 0 1px 0 #FFFFFF;background-color: white;text-align: center;"></th>
                         <th style="width: 30%;cursor:default; color:#333333;text-shadow: 0 1px 0 #FFFFFF;background-color: white;text-align: center;">check all</th>
                         </tr>
                     </thead>
@@ -44,21 +48,27 @@
                         <?php }else{  ?>
                         <tr id ="<?php print $id; ?>" name="check_list" class="check_list">
                             <!-- <td style="text-align:center;"><?php echo $i;?></td> -->
-                            <td><?php print $permission['description']; ?></td>
+                            <td><?php print $permission['description']; ?>  </td>
                             <td style="text-align:center;">
                             <label class="checkbox inline">
-                                <?php print form_checkbox(array('name' => 'add[]', 'class' => 'check_action', 'value' => $id, 'checked' => ($permission['add'] == 'yes' ? true : false))); ?> Add</label>
+                                <?php print form_checkbox(array('name' => 'add[]', 'class' => 'check_action', 'value' => $id, 'id' => $role_id, 'checked' => ($permission['add'] == 'yes' ? true : false))); ?> Add</label>
                             <label class="checkbox inline">
-                                <?php print form_checkbox(array('name' => 'edit[]', 'class' => 'check_action', 'value' => $id, 'checked' => ($permission['edit'] == 'yes' ? true : false))); ?> Edit</label>
+                                <?php print form_checkbox(array('name' => 'edit[]', 'class' => 'check_action', 'value' => $id, 'id' => $role_id,'checked' => ($permission['edit'] == 'yes' ? true : false))); ?> Edit</label>
                             <label class="checkbox inline">
-                                <?php print form_checkbox(array('name' => 'delete[]', 'class' => 'check_action', 'value' => $id, 'checked' => ($permission['delete'] == 'yes' ? true : false))); ?> Delete</label>
+                                <?php print form_checkbox(array('name' => 'delete[]', 'class' => 'check_action', 'value' => $id, 'id' => $role_id, 'checked' => ($permission['delete'] == 'yes' ? true : false))); ?> Delete</label>
                             <label class="checkbox inline"> 
-                                <?php print form_checkbox(array('name' => 'view[]', 'class' => 'check_action', 'value' => $id, 'checked' => ($permission['view'] == 'yes' ? true : false))); ?>view</label>
+                                <?php print form_checkbox(array('name' => 'view[]', 'class' => 'check_action', 'value' => $id, 'id' => $role_id, 'checked' => ($permission['view'] == 'yes' ? true : false))); ?>view</label>
                             </td>
                             <td style="text-align:center;">
-                            
+                            <?php if($permission['view'] == "yes" && $permission['add'] == "yes" && $permission['edit'] == "yes" && $permission['delete'] == "yes"){ 
+                                   $check = "checked";
+                                }elseif($permission['view'] == "no" || $permission['add'] || "no" && $permission['edit'] || "no" || $permission['delete'] == "no"){ 
+                                     $check = "";
+                                }
+                            ?>
                             <label class="checkbox inline">
-                                <input type="checkbox" name="<?php print $role_id; ?>" class="check_all" id="<?php print $id; ?>" <?php if($permission['view'] == "yes" && $permission['add'] == "yes" && $permission['edit'] == "yes" && $permission['delete'] == "yes"){ echo "checked"; }else{ echo "";}?> />
+                                <input type="checkbox" name="<?php print $role_id; ?>" class="check_all" id="<?php print $id; ?>"  <?php print $check;?>/>
+                                <input type="hidden" name="checkbox" id="checkbox_id" value="<?php print $role_id; ?>">
                              </label>
                             </td>
                         </tr>
@@ -85,36 +95,38 @@ $(document).ready(function(){
     if(role_id != ""){
         $('.nav-tabs a[href="#' + role_id + '"]').tab('show');
     }
+    //alert($("input[name='add[]']").length);
 
-    // var permi_id = $("input[name=check_all]").attr("id");
-    // alert(permi_id);
-    
+    $(".check_all").each(function(){
+        var chkAllID = $(this).attr("name");
+        //alert(chkAllID);
+
+        if($("#" + chkAllID + " .check_action:checked").length == $("#" + chkAllID + " .check_action").length){
+             $("#"+chkAllID +".check_full_access").prop('checked', true); 
+        }
+    });
+
     $(".check_all").change(function(e){
         var checkedStatus = this.checked;
-        var abc = $(this).attr("id");
-        var def = $(this).attr("name");
-        $("#"+def).find("#"+abc+" td label input").each(function () {
+        var permi_id = $(this).attr("id");
+        var role_id = $(this).attr("name");
+        $("#"+role_id).find("#"+permi_id+" td label input").each(function () {
             $(this).prop('checked', checkedStatus);
-        });
-
-        /*
-         var checkedStatus = this.checked;
-         var permission_id = $(this).attr("id");
-         alert(permission_id);
-        $('#permission_id').parent().find('.check_action').each(function () {
-            $(this).prop('checked', checkedStatus);
-        });
-        */
-        
-       
+        });       
     });
 
-    $(".check_action")change(function(e){
-        alert();
+    $(".check_action").change(function(e){
+        var checkedStatus = this.checked;
+        var permi_id = $(this).val();
+        var role_id = $(this).attr("id"); 
+        $("#"+role_id).find("#"+permi_id+" td label .check_all").prop('checked', false); 
     });
 
-   //alert(permission_id);
-      //$(".check_action").prop('checked', $(this).prop("checked"));
+    $(".check_full_access").change(function(e){
+        var checkedStatus = this.checked;
+        var role_id = $(this).attr("name"); 
+        $("#"+role_id).find("td label input").prop('checked', checkedStatus); 
+    });
 });
 
 

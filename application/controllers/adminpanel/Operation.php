@@ -16,7 +16,7 @@ class Operation extends Admin_Controller {
         $this->load->model('adminpanel/time_sheet_model');
         $this->load->model('adminpanel/category_group_model');
         $this->load->model('adminpanel/category_list_model');
-        $this->load->model('adminpanel/setting_model');
+        $this->load->model('adminpanel/system_settings_model');
         $this->limit_per_page = Settings_model::$db_config['members_per_page'];
         $this->user = $this->session->userdata('username');
     }
@@ -39,7 +39,7 @@ class Operation extends Admin_Controller {
     private function get_category_list($key = '') {
         $data = $this->category_group_model->get_types();
         if (!empty($data)) {
-            $output = '<select class="form-control" id="category_id" name="category_id">';
+            $output = '<select class="form-control" id="category_id" name="category_id" data-parsley-trigger="change focusout" data-parsley-errors-messages-disabled required>';
             $output .= '<option value="">'.$this->lang->line('select').'</option>';
             if ($key) {
                 foreach ($data->result() as $data) {
@@ -60,7 +60,7 @@ class Operation extends Admin_Controller {
     private function get_sub_category_list($key = '') {
         $data = $this->category_list_model->get_lists();
         if (!empty($data)) {
-            $output = '<select class="form-control" id="sub_category_id" name="sub_category_id">';
+            $output = '<select class="form-control" id="sub_category_id" name="sub_category_id" data-parsley-trigger="change focusout" data-parsley-errors-messages-disabled required>';
             $output .= '<option value="">'.$this->lang->line('select').'</option>';
             if ($key) {
                 foreach ($data->result() as $data) {
@@ -79,9 +79,9 @@ class Operation extends Admin_Controller {
     }
 
     private function get_product_list($key = '') {
-        $data = $this->setting_model->get_product();
+        $data = $this->system_settings_model->get_product();
         if (!empty($data)) {
-            $output = '<select class="form-control" id="product" name="product">';
+            $output = '<select class="form-control" id="product" name="product" data-parsley-trigger="change focusout" data-parsley-errors-messages-disabled required>';
             $output .= '<option value="">'.$this->lang->line('select').'</option>';
             if ($key) {
                 foreach ($data->result() as $data) {
@@ -100,9 +100,9 @@ class Operation extends Admin_Controller {
     }
 
     private function get_shift_list($key = '') {
-        $data = $this->setting_model->get_shift();
+        $data = $this->system_settings_model->get_shift();
         if (!empty($data)) {
-            $output = '<select class="form-control" id="shift" name="shift">';
+            $output = '<select class="form-control" id="shift" name="shift" data-parsley-trigger="change focusout" data-parsley-errors-messages-disabled required>';
             $output .= '<option value="">' . $this->lang->line('select') . '</option>';
             if ($key) {
                 foreach ($data->result() as $data) {
@@ -150,7 +150,7 @@ class Operation extends Admin_Controller {
 
     private function check_product_list($key) {
         $res = array();
-        $data = $this->setting_model->get_product();
+        $data = $this->system_settings_model->get_product();
         foreach ($data->result() as $data) {
             $res[$data->key] = $data->key;
         }
@@ -164,7 +164,7 @@ class Operation extends Admin_Controller {
 
     private function check_shift_list($key) {
         $res = array();
-        $data = $this->setting_model->get_shift();
+        $data = $this->system_settings_model->get_shift();
         foreach ($data->result() as $data) {
             $res[$data->key] = $data->key;
         }
@@ -246,7 +246,7 @@ class Operation extends Admin_Controller {
             $this->form_validation->set_rules('follow_up', $this->lang->line('follow_up_by'), 'trim|required');
             $this->form_validation->set_rules('category_id', $this->lang->line('category'), 'trim|required');
             $this->form_validation->set_rules('sub_category_id', $this->lang->line('sub_category'), 'trim|required');
-            $this->form_validation->set_rules('remarks', $this->lang->line('remarks'), 'trim|required');
+            $this->form_validation->set_rules('remarks', $this->lang->line('remark'), 'trim|required');
 
             if (!$this->form_validation->run()) {
                 $this->session->set_flashdata($post_data);
@@ -324,7 +324,7 @@ class Operation extends Admin_Controller {
                     $this->form_validation->set_error_delimiters('<p>', '</p>');
                     $this->form_validation->set_rules('status', $this->lang->line('status'), 'trim|required');
                     $this->form_validation->set_rules('follow_up', $this->lang->line('follow_up_by'), 'trim|required');
-                    $this->form_validation->set_rules('remarks', $this->lang->line('remarks'), 'trim|required');
+                    $this->form_validation->set_rules('remarks', $this->lang->line('remark'), 'trim|required');
 
                     if (!$this->form_validation->run()) {
                         $this->session->set_flashdata($post_data);
@@ -371,7 +371,7 @@ class Operation extends Admin_Controller {
                         $this->form_validation->set_rules('follow_up', $this->lang->line('follow_up_by'), 'trim|required');
                         $this->form_validation->set_rules('category_id', $this->lang->line('category'), 'trim|required');
                         $this->form_validation->set_rules('sub_category_id', $this->lang->line('sub_category'), 'trim|required');
-                        $this->form_validation->set_rules('remarks', $this->lang->line('remarks'), 'trim|required');
+                        $this->form_validation->set_rules('remarks', $this->lang->line('remark'), 'trim|required');
 
                         if (!$this->form_validation->run()) {
                             $this->session->set_flashdata('error', validation_errors());
@@ -456,6 +456,7 @@ class Operation extends Admin_Controller {
 
             $this->session->set_flashdata($paging['search_data']);
             $content_data['table_data'] = array();
+            $content_data['permission']['edit'] = $this->check_page_action(17, 'edit');
             $content_data['permission']['delete'] = $this->check_page_action(17, 'delete');
             $content_data['total_rows'] = '0';
 
@@ -463,6 +464,8 @@ class Operation extends Admin_Controller {
             if (!empty($content_data['time_sheet'])) {
                 foreach($content_data['time_sheet']->result() as $value) {
                     $value->status = $this->lang->line($value->status);
+                    $value->content = $value->title . ' - ' . ((mb_strlen($value->remarks) > 6) ? mb_substr($value->remarks, 0, 6) . "..." : $value->remarks);
+                    $value->duration = date_diff(date_create($value->time_start),date_create($value->time_end),true)->format('%dd %hh %im');
                     $value->created_time = $this->change_date_format($value->created_time);
                 }
                 $content_data['table_data'] = $content_data['time_sheet']->result();
@@ -485,11 +488,16 @@ class Operation extends Admin_Controller {
 
         $content_data = array();
         $content_data['shift_list'] = $this->get_shift_list();
+        $content_data['product_list'] = $this->get_product_list();
         $post_data = $this->input->post();
         if (!empty($post_data)) {log_message("error",print_r($post_data,true));
             $this->form_validation->set_error_delimiters('<p>', '</p>');
             $this->form_validation->set_rules('shift', $this->lang->line('shift'), 'trim|required');
-            $this->form_validation->set_rules('remarks', $this->lang->line('remarks'), 'trim|required');
+            $this->form_validation->set_rules('product', $this->lang->line('product'), 'trim|required');
+            $this->form_validation->set_rules('title', $this->lang->line('title'), 'trim|required');
+            $this->form_validation->set_rules('remarks', $this->lang->line('remark'), 'trim|required');
+            $this->form_validation->set_rules('time_start', $this->lang->line('time_start'), 'trim|required');
+            $this->form_validation->set_rules('time_end', $this->lang->line('time_end'), 'trim|required');
 
             if (!$this->form_validation->run()) {
                 $this->session->set_flashdata($post_data);
@@ -497,7 +505,7 @@ class Operation extends Admin_Controller {
                 redirect('/adminpanel/operation/time_sheet_insert');
             }
 
-            if (!$this->check_shift_list($post_data['shift'])){
+            if (!$this->check_shift_list($post_data['shift']) || !$this->check_product_list($post_data['product'])){
                 $this->session->set_flashdata('error', $this->lang->line('invalid_post_data'));
                 redirect('/adminpanel/operation/time_sheet_insert');
             }
@@ -512,6 +520,50 @@ class Operation extends Admin_Controller {
         }
 
         $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel', $this->lang->line('time_sheet_insert'), 'operation/time_sheet_insert', 'header', 'footer', '', $content_data);
+    }
+
+    public function time_sheet_edit($key) {
+        $this->check_permission(17);
+        if (!$this->check_page_action(17, 'edit')) {
+            $this->session->set_flashdata('error', $this->lang->line('no_access_edit_record'));
+            redirect('/adminpanel/operation/question_type');
+        }
+
+        if (!empty($key)) {
+            $content_data = array();
+            $content_data['type'] = $this->category_group_model->get_one_category_group($key);
+            if (!empty($content_data['type'])) {
+                $post_data = $this->input->post();
+                if (!empty($post_data)) {
+                    $this->form_validation->set_error_delimiters("", "\n");
+                    $this->form_validation->set_rules('shift', $this->lang->line('shift'), 'trim|required');
+                    $this->form_validation->set_rules('product', $this->lang->line('product'), 'trim|required');
+                    $this->form_validation->set_rules('title', $this->lang->line('title'), 'trim|required');
+                    $this->form_validation->set_rules('remarks', $this->lang->line('remark'), 'trim|required');
+                    $this->form_validation->set_rules('time_start', $this->lang->line('time_start'), 'trim|required');
+                    $this->form_validation->set_rules('time_end', $this->lang->line('time_end'), 'trim|required');
+
+                    if (!$this->form_validation->run()) {
+                        echo json_encode(validation_errors());
+                        exit();
+                    }
+
+                    $post_data['id'] = $key;
+                    $res = $this->category_group_model->edit_category_group($post_data);
+                    if ($res) {
+                        echo $this->lang->line('update_success');
+                    } else {
+                        echo $this->lang->line('update_failure');
+                    }
+                } else {
+                    echo json_encode($content_data['type']);
+                }
+            } else {
+                echo $this->lang->line('no_result');
+            }
+        } else {
+            echo $this->lang->line('invalid_data');
+        }
     }
 
     public function time_sheet_details($key) {
@@ -541,15 +593,11 @@ class Operation extends Admin_Controller {
         if (!empty($key)) {
             $time_sheet = $this->time_sheet_model->get_one_time_sheet($key);
             if (!empty($time_sheet)) {
-                if ($this->user == $time_sheet->created_by) {
-                    $res = $this->time_sheet_model->delete_time_sheet($key);
-                    if ($res) {
-                        echo $this->lang->line('delete_success');
-                    } else {
-                        echo $this->lang->line('delete_failure');
-                    }
+                $res = $this->time_sheet_model->delete_time_sheet($key);
+                if ($res) {
+                    echo $this->lang->line('delete_success');
                 } else {
-                    echo $this->lang->line('no_access_delete_record');
+                    echo $this->lang->line('delete_failure');
                 }
             } else {
                 echo $this->lang->line('no_result');
@@ -646,31 +694,26 @@ class Operation extends Admin_Controller {
             $content_data = array();
             $content_data['type'] = $this->category_group_model->get_one_category_group($key);
             if (!empty($content_data['type'])) {
-                if ($this->user == $content_data['type']->created_by) {
-                    $post_data = $this->input->post();
-                    if (!empty($post_data)) {
-                        $this->form_validation->set_error_delimiters('<p>', '</p>');
-                        $this->form_validation->set_rules('content', $this->lang->line('content'), 'trim|required');
-                        $this->form_validation->set_rules('status', $this->lang->line('status'), 'trim|required');
+                $post_data = $this->input->post();
+                if (!empty($post_data)) {
+                    $this->form_validation->set_error_delimiters("", "\n");
+                    $this->form_validation->set_rules('content', $this->lang->line('content'), 'trim|required');
+                    $this->form_validation->set_rules('status', $this->lang->line('status'), 'trim|required');
 
-                        if (!$this->form_validation->run()) {
-                            echo json_encode($this->session->set_flashdata('error', validation_errors()));
-                            exit();
-                            //redirect('/adminpanel/operation/question_type');
-                        }
+                    if (!$this->form_validation->run()) {
+                        echo json_encode(validation_errors());
+                        exit();
+                    }
 
-                        $post_data['id'] = $key;
-                        $res = $this->category_group_model->edit_category_group($post_data);
-                        if ($res) {
-                            echo $this->lang->line('update_success');
-                        } else {
-                            echo $this->lang->line('update_failure');
-                        }
+                    $post_data['id'] = $key;
+                    $res = $this->category_group_model->edit_category_group($post_data);
+                    if ($res) {
+                        echo $this->lang->line('update_success');
                     } else {
-                        echo json_encode($content_data['type']);
+                        echo $this->lang->line('update_failure');
                     }
                 } else {
-                    echo $this->lang->line('no_access_edit_record');
+                    echo json_encode($content_data['type']);
                 }
             } else {
                 echo $this->lang->line('no_result');
@@ -690,20 +733,16 @@ class Operation extends Admin_Controller {
         if (!empty($key)) {
             $report = $this->category_group_model->get_one_category_group($key);
             if (!empty($report)) {
-                if ($this->user == $report->created_by) {
-                    $res = $this->category_group_model->delete_category_group($key);
-                    if ($res) {
-                        $result = $this->category_list_model->parent_batch_delete_category_list($key);
-                        if ($result) {
-                            echo $this->lang->line('delete_success');
-                        } else {
-                            echo $this->lang->line('delete_failure');
-                        }
+                $res = $this->category_group_model->delete_category_group($key);
+                if ($res) {
+                    $result = $this->category_list_model->parent_batch_delete_category_list($key);
+                    if ($result) {
+                        echo $this->lang->line('delete_success');
                     } else {
                         echo $this->lang->line('delete_failure');
                     }
                 } else {
-                    echo $this->lang->line('no_access_delete_record');
+                    echo $this->lang->line('delete_failure');
                 }
             } else {
                 echo $this->lang->line('no_result');
@@ -715,7 +754,7 @@ class Operation extends Admin_Controller {
 //================================================== End question type =================================================
 
 //================================================== question content ==================================================
-    public function question_content($order_by = "category_list_id", $sort_order = "asc", $search = "all", $offset = 0) {
+    public function question_content() {
         $this->check_permission(19);
         $content_data['add'] = $this->check_page_action(17, 'add');
 
@@ -810,36 +849,32 @@ class Operation extends Admin_Controller {
             $content_data = array();
             $content_data['list'] = $this->category_list_model->get_one_category_list($key);
             if (!empty($content_data['list'])) {
-                if ($this->user == $content_data['list']->created_by) {
-                    $content_data['category_list'] = $this->get_category_list($content_data['list']->parent_id);
-                    $post_data = $this->input->post();
-                    if (!empty($post_data)) {
-                        $this->form_validation->set_error_delimiters('<p>', '</p>');
-                        $this->form_validation->set_rules('category_id', $this->lang->line('category'), 'trim|required');
-                        $this->form_validation->set_rules('content', $this->lang->line('product'), 'trim|required');
-                        $this->form_validation->set_rules('status', $this->lang->line('status'), 'trim|required');
-                        if (!$this->form_validation->run()) {
-                            $this->session->set_flashdata('error', validation_errors());
-                            redirect('/adminpanel/operation/question_content_edit/' . $key);
-                        }
+                $content_data['category_list'] = $this->get_category_list($content_data['list']->parent_id);
+                $post_data = $this->input->post();
+                if (!empty($post_data)) {
+                    $this->form_validation->set_error_delimiters("", "\n");
+                    $this->form_validation->set_rules('category_id', $this->lang->line('category'), 'trim|required');
+                    $this->form_validation->set_rules('content', $this->lang->line('product'), 'trim|required');
+                    $this->form_validation->set_rules('status', $this->lang->line('status'), 'trim|required');
+                    if (!$this->form_validation->run()) {
+                        echo json_encode(validation_errors());
+                        exit();
+                    }
 
-                        if (!$this->check_category_list($post_data['category_id'])) {
-                            $this->session->set_flashdata('error', $this->lang->line('invalid_post_data'));
-                            redirect('/adminpanel/operation/question_content_edit/' . $key);
-                        }
-                        $post_data['id'] = $key;
-                        $post_data['parent_content'] = $this->category_group_model->get_one_category_group($post_data['category_id'])->content;
-                        $res = $this->category_list_model->edit_category_list($post_data);
-                        if ($res) {
-                            echo $this->lang->line('update_success');
-                        } else {
-                            echo $this->lang->line('update_failure');
-                        }
+                    if (!$this->check_category_list($post_data['category_id'])) {
+                        echo json_encode($this->lang->line('invalid_post_data'));
+                        exit();
+                    }
+                    $post_data['id'] = $key;
+                    $post_data['parent_content'] = $this->category_group_model->get_one_category_group($post_data['category_id'])->content;
+                    $res = $this->category_list_model->edit_category_list($post_data);
+                    if ($res) {
+                        echo $this->lang->line('update_success');
                     } else {
-                        echo json_encode($content_data['category_list']);
+                        echo $this->lang->line('update_failure');
                     }
                 } else {
-                    echo $this->lang->line('no_access_edit_record');
+                    echo json_encode($content_data);
                 }
             } else {
                 echo $this->lang->line('no_result');
@@ -859,15 +894,11 @@ class Operation extends Admin_Controller {
         if (!empty($key)) {
             $report = $this->category_list_model->get_one_category_list($key);
             if (!empty($report)) {
-                if ($this->user == $report->created_by) {
-                    $res = $this->category_list_model->delete_category_list($key);
-                    if ($res) {
-                        echo $this->lang->line('delete_success');
-                    } else {
-                        echo $this->lang->line('delete_failure');
-                    }
+                $res = $this->category_list_model->delete_category_list($key);
+                if ($res) {
+                    echo $this->lang->line('delete_success');
                 } else {
-                    echo $this->lang->line('no_access_delete_record');
+                    echo $this->lang->line('delete_failure');
                 }
             } else {
                 echo $this->lang->line('no_result');

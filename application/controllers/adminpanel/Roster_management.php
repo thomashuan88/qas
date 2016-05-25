@@ -25,12 +25,19 @@ class Roster_management extends Admin_Controller {
         //$content_data['userdata'] = $userdata;
         $action_result = self::check_action(21);
         ($action_result->add == 'yes') ?  $content_data['scheduler'] = TRUE : $content_data['scheduler'] = FALSE;
-        
-        $result = $this->select_shift();
+        $postData = $this->input->post();
+        (isset($postData['schedule_month'])) ? $search_month = $postData['schedule_month'] : $search_month = "";
+        $result = $this->select_shift($search_month);
         //$result = array();
         //log_message('error', print_r($result,true));
         $content_data['dow_arr'] = $this->lang->line('day_of_week_short');
         (empty($result)) ? $content_data['data'] = '' : $content_data['data'] = $result;
+
+        //set table structure
+        $content_data['table_structure']['day_per_shift'] = "2"; 
+        $content_data['table_structure']['leader_per_shift'] = "1"; 
+        $content_data['table_structure']['senior_per_shift'] = "1"; 
+        $content_data['table_structure']['cs_per_shift'] = "7";
 
         $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel', $this->lang->line('roster'), 'roster_page', 'header', 'footer', '', $content_data);
     }
@@ -53,17 +60,18 @@ class Roster_management extends Admin_Controller {
             $flat = array();
             $tree = array();
 
-            foreach ($pairdata AS $child => $parent) {
-                if (!isset($flat[$child])) {
-                    $flat[$child] = array();
-                }
-                if (!empty($parent)) {
-                    $flat[$parent][$child] =& $flat[$child];
-                } else {
-                    $tree[$child] =& $flat[$child];
-                    //$new_array[] = $flat[$child];
-                }
-            }
+            // foreach ($pairdata AS $child => $parent) {
+            //     if (!isset($flat[$child])) {
+            //         $flat[$child] = array();
+            //     }
+            //     if (!empty($parent)) {
+            //         $flat[$parent][$child] =& $flat[$child];
+            //     } else {
+            //         $tree[$child] =& $flat[$child];
+            //         //$new_array[] = $flat[$child];
+            //     }
+            // }
+
             //log_message('error', print_r($tree,true));
             //log_message('error', print_r($new_array,true));
             //$result_rec = $this->traverseArray($tree);
@@ -103,10 +111,10 @@ class Roster_management extends Admin_Controller {
         // Loops through each element. If element again is array, function is recalled. If not, result is echoed.
         foreach($array as $key=>$value){ 
             if(is_array($value)){ 
-                log_message('error', $key."<br />\n");
+                //log_message('error', $key."<br />\n");
                 $this->traverseArray($value); 
             }else{
-                log_message('error', $key." = ".$value."<br />\n"); 
+                //log_message('error', $key." = ".$value."<br />\n"); 
             }
         }
     }
