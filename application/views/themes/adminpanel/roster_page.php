@@ -11,10 +11,6 @@
     }
 </style>
 
-<?php if(empty($data)){ ?>
-    <br>no result
-<?php }else{?>
-
 <div class="row">
     <div class="col-sm-2">
         <div class="form-group contain-datepicker">
@@ -29,9 +25,7 @@
     <div class="mygrid-wrapper-div">
         <table class="table table-bordered table-hover">
             <thead class="table-loop-title">
-                <tr class="row_week">
-                    
-                </tr>
+                <tr class="row_week"></tr>
                 <tr class="row_dow"></tr>
                 <tr class="row_date"></tr>
                 <tr>
@@ -41,12 +35,11 @@
                     <th><?php print $this->lang->line('schedule'); ?></th>
                 </tr>
             </thead>
-            <tbody class="table-loop-content">
-            </tbody>
+            <tbody class="table-loop-content"></tbody>
        </table>
    </div> <!-- /container -->
 </div>
-<?php }?>
+
 <link href="<?php print base_url(); ?>assets/js/vendor/monthpicker/MonthPicker.css" rel="stylesheet">
 <script src="<?php print base_url(); ?>assets/js/vendor/monthpicker/MonthPicker.js"></script>
 <script type="text/javascript">
@@ -110,7 +103,18 @@
             var thisMonth = dNow.getMonth()+1;
             var thisYear = dNow.getFullYear();
             var return_date = getDaysInMonth(dNow.getMonth(), dNow.getFullYear());
+            if(thisMonth<10){
+                var intMonth = "0"+thisMonth;
+            }
+            _date = intMonth+"/"+thisYear;
         }
+        //get data content
+        var postData = {
+                "schedule_month" : _date
+            };
+        $.post( "<?php print base_url();?>adminpanel/roster_management/get_roster", postData, function( data ) {
+            //alert(data);
+        });
         
         //var thisMonth = dNow.getMonth()+1;
         //var return_date = getDaysInMonth(dNow.getMonth(), dNow.getFullYear());
@@ -151,7 +155,7 @@
         var _day = return_date.length + 4;
         var _people = 50;
 
-        //data content
+        //draw data content
         $('.table-loop-content').html('');
         for(i=1; i<=_people; i++){
             //loop row

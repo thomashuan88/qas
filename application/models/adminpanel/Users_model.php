@@ -198,12 +198,7 @@ class Users_model extends CI_Model {
     }
 
     public function find_downline($username){
-        $this->db->select("username");
-        $this->db->from("users");
-        $this->db->where("leader",$username);
-        $query = $this->db->get();
-        return $query->result('array');
+       $query = $this->db->query("select t1.username AS root, t2.username as HOD, t3.username as supervisor, t4.username as leader, t5.username as senior, t6.username as cs, t7.username as extra FROM users AS t1 LEFT JOIN users AS t2 ON t2.leader = t1.username LEFT JOIN users AS t3 ON t3.leader = t2.username LEFT JOIN users AS t4 ON t4.leader = t3.username LEFT JOIN users AS t5 ON t5.leader = t4.username LEFT JOIN users AS t6 ON t6.leader = t5.username LEFT JOIN users AS t7 ON t7.leader = t6.username WHERE t1.username = '".$username."'");
+       return $query->result('array');  
     }
-
-
 }

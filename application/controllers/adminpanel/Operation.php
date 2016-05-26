@@ -464,7 +464,7 @@ class Operation extends Admin_Controller {
             if (!empty($content_data['time_sheet'])) {
                 foreach($content_data['time_sheet']->result() as $value) {
                     $value->status = $this->lang->line($value->status);
-                    $value->content = $value->title . ' - ' . ((mb_strlen($value->remarks) > 6) ? mb_substr($value->remarks, 0, 6) . "..." : $value->remarks);
+                    $value->content = '<strong>' . $value->title . '</strong> - ' . ((mb_strlen($value->remarks) > 6) ? mb_substr($value->remarks, 0, 6) . "..." : $value->remarks);
                     $value->duration = date_diff(date_create($value->time_start),date_create($value->time_end),true)->format('%dd %hh %im');
                     $value->created_time = $this->change_date_format($value->created_time);
                 }

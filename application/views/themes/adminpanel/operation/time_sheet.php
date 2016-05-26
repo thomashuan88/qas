@@ -208,7 +208,7 @@
             html += '<td>' + value['shift'] + '</td>';
             html += '<td>' + value['product'] + '</td>';
             html += '<td>' + value['content'] + '</td>';
-            html += '<td>' + value['duration'] + '</td>';
+            html += '<td style="white-space: nowrap;">' + value['duration'] + '</td>';
             html += '<td>' + value['created_by'] + '</td>';
             html += '<td>' + value['created_time'] + '</td>';
             html += '<td style="white-space: nowrap;">';

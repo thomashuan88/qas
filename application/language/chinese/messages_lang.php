@@ -435,6 +435,8 @@ $lang['add'] = "添加";
 $lang['edit'] = "更改";
 $lang['delete'] = "删除";
 $lang['view'] = "View";
+$lang['full_access'] = "全权限";
+$lang['check_all'] = "全权限";
 
 //Operation
 $lang['operation'] = "Operation";

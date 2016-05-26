@@ -18,28 +18,37 @@ class Roster_management extends Admin_Controller {
 
     public function index() {
         $content_data = array();
-        //$username = $this->session->userdata['username'];
-        //$userid = $this->session->userdata['user_id'];
-        //$userdata = $this->users_model->get_member_data($userid);
-
-        //$content_data['userdata'] = $userdata;
         $action_result = self::check_action(21);
         ($action_result->add == 'yes') ?  $content_data['scheduler'] = TRUE : $content_data['scheduler'] = FALSE;
+        //$postData = $this->input->post();
+        //(isset($postData['schedule_month'])) ? $search_month = $postData['schedule_month'] : $search_month = "";
+        //$result = $this->select_shift($search_month);
+        //$result = array();
+        $content_data['dow_arr'] = $this->lang->line('day_of_week_short');
+        //(empty($result)) ? $content_data['data'] = '' : $content_data['data'] = $result;
+
+        $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel', $this->lang->line('roster'), 'roster_page', 'header', 'footer', '', $content_data);
+    }
+
+    public function get_roster(){
         $postData = $this->input->post();
         (isset($postData['schedule_month'])) ? $search_month = $postData['schedule_month'] : $search_month = "";
-        $result = $this->select_shift($search_month);
-        //$result = array();
-        //log_message('error', print_r($result,true));
-        $content_data['dow_arr'] = $this->lang->line('day_of_week_short');
+        //log_message('error', $search_month."-month");
+        $result = $this->select_shift($search_month, $this->session->userdata('username'));
         (empty($result)) ? $content_data['data'] = '' : $content_data['data'] = $result;
-
+        log_message('error', print_r($result,true));
         //set table structure
         $content_data['table_structure']['day_per_shift'] = "2"; 
         $content_data['table_structure']['leader_per_shift'] = "1"; 
         $content_data['table_structure']['senior_per_shift'] = "1"; 
         $content_data['table_structure']['cs_per_shift'] = "7";
 
-        $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel', $this->lang->line('roster'), 'roster_page', 'header', 'footer', '', $content_data);
+        //select from system setting table
+        //time and shifts
+        $content_data['table_structure']['shift'] = array('Morning'=>'07:00', 'Noon'=>'14:00','Night'=>'22:30','Normal'=>'11:00',); 
+        $content_data['table_structure']['cs_per_shift'] = "7";
+
+        return $content_data;
     }
 
     public function set_roster_page() {
@@ -92,8 +101,14 @@ class Roster_management extends Admin_Controller {
     }
 
 
-    private function select_shift($date=''){
-        ($date == '') ? $today = strtotime(date('Y-m-d')) : $today = strtotime($date);
+    private function select_shift($date='', $username){
+        if($date == ''){
+            $today = strtotime(date('Y-m-d'));
+        }else{
+            $date_arr = explode("/", $date);
+            $date = "01-".$date_arr[0]."-".$date_arr[1];
+            $today = strtotime($date);
+        }
 
         $first_day = date('Y-m-01', $today);
         $last_day = date('Y-m-t', $today);
@@ -106,18 +121,6 @@ class Roster_management extends Admin_Controller {
         return $result;
     }
 
-    // Recursively traverses a multi-dimensional array.
-    private function traverseArray($array){
-        // Loops through each element. If element again is array, function is recalled. If not, result is echoed.
-        foreach($array as $key=>$value){ 
-            if(is_array($value)){ 
-                //log_message('error', $key."<br />\n");
-                $this->traverseArray($value); 
-            }else{
-                //log_message('error', $key." = ".$value."<br />\n"); 
-            }
-        }
-    }
 }
 
 /* End of file Roster_management.php */

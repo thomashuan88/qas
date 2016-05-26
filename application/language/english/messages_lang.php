@@ -506,6 +506,8 @@ $lang['edit'] = "Edit";
 $lang['delete'] = "Delete";
 $lang['view'] = "View";
 $lang['details'] = "Details";
+$lang['full_access'] = "Full Access";
+$lang['check_all'] = "Check All";
 
 //Operation
 $lang['operation'] = "Operation";

@@ -21,7 +21,7 @@ class Roster_management_model extends CI_Model {
             if(empty($q)){
                 return false;
             }
-            return $q->result();
+            return $q->result('array');
         }else{
             return -1;
         }

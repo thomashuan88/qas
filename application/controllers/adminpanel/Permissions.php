@@ -5,9 +5,9 @@ class Permissions extends Admin_Controller {
     public function __construct()
     {
         parent::__construct();
-        // if (! self::check_permissions()) {
-        //     redirect("/private/no_access");
-        // }
+        if (! self::check_permissions(6)) {
+            redirect("/private/no_access");
+        }
         $this->load->helper('form');
         $this->load->library('form_validation');
         $this->load->library('MY_Permission');
@@ -17,10 +17,8 @@ class Permissions extends Admin_Controller {
     }
 
     public function index(){
-        if (! self::check_permissions(6)) {
-            redirect("/private/no_access");
-        }
-        $check_this = $this->my_permission->find_permission();
+        
+        //$check_this = $this->my_permission->find_permission();
 
         $permissions = $this->permissions_model->get_permissions();
         //log_message("error",print_r($permissions,true));

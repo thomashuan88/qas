@@ -65,7 +65,9 @@ var getNewData = function(callback) {
             drawTable(jsonData.table_data);
             drawPager(jsonData);
             $('a[data-original-title]').tooltip();
-            // callback();
+            if (callback) {
+                callback();
+            }
         },
         error: function(data) {
             console.log(data);

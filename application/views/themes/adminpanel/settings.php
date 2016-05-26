@@ -232,13 +232,13 @@
                 </div>
                 <div class="col-sm-6 form-group">
                    <label for="Predefined Email"><?php print $this->lang->line('predefined_email'); ?></label>
-                   <input type="text" class="form-control" name="predefined_email" id="predefined_email" >
+                   <input type="text" class="form-control" name="predefined_email" id="predefined_email" value="<?php print Settings_model::$db_config['predefined_email']; ?>">
                 </div>
             </div>
             <div class="row">
                 <div class="col-sm-6 form-group">
                     <label for="Site Language"><?php print $this->lang->line('site_language'); ?></label>
-                        <select class="form-control" name="language" id="language" >
+                        <select class="form-control" name="site_language" id="site_language" >
                             <option value="english">English</option>
                             <option value="chinese">中文</option>
                         </select>
@@ -251,7 +251,7 @@
             <div class="row">
                 <div class="col-sm-6 form-group">
                    <label for="System Role"><?php print $this->lang->line('system_role'); ?></label>
-                   <input type="text" class="form-control" name="system_role" id="system_role" value="<?php print Settings_model::$db_config['system_role ']; ?>"> >
+                   <input type="text" class="form-control" name="system_role" id="system_role" value="<?php print Settings_model::$db_config['system_role']; ?>"> 
                 </div>
                  <div class="col-sm-6 form-group">
                    <label for="Website URL"><?php print $this->lang->line('website_url'); ?></label>
