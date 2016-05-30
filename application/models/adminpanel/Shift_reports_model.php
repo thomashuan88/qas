@@ -14,40 +14,55 @@ class Shift_reports_model extends CI_Model {
         $this->time = date('Y-m-d H:i:s',time());
     }
 
-    public function get_all_reports($order_by = "shift_reports_id", $sort_order = "DESC", $search_data, $limit = 0, $offset = 0) {
+    public function get_all_reports($order_by = "shift_reports_id", $sort_order = "DESC", $search_data, $limit = 0, $offset = 0, $users = array()) {
         if (!in_array($order_by, $this->fields)) return array();
-        $this->search_query($order_by, $sort_order, $search_data);
+        $this->search_query($order_by, $sort_order, $search_data, $users);
         $this->db->limit($limit, $offset);
         $query = $this->db->get();
-        $query->total_rows = $this->count_all_search_reports($order_by, $sort_order, $search_data);
+        $query->total_rows = $this->count_all_search_reports($order_by, $sort_order, $search_data, $users);
         if ($query->num_rows() > 0) {
             return $query;
         }
         return false;
     }
 
-    private function search_query($order_by, $sort_order, $search_data) {
+    private function search_query($order_by, $sort_order, $search_data, $users) {
         if (!empty($search_data)) {
             $data = array(
                 'shift_reports_id' => $search_data['id'] ? $search_data['id'] : "",
-                'shift' => $search_data['shift'] ? $search_data['shift'] : "",
-                'category_id' => $search_data['category'] ? $search_data['category'] : "",
-                'product' => $search_data['product'] ? $search_data['product'] : "",
                 'remarks' => $search_data['remarks'] ? $search_data['remarks'] : "",
             );
         }
-        if (!empty($search_data['finish_time']) && !empty($search_data['submit_time'])) {
-            $cond = array(
-                'status' => $search_data['status'],
-                'finish' => $search_data['finish_time'],
-                'created_time' => $search_data['submit_time']
-            );
-        } else {
-            $cond = array('status' => !empty($search_data['status']) ? $search_data['status'] : 'active');
+        $cond = array();
+        if (!empty($search_data['category_id'])) {
+            $cond['category_id'] = $search_data['category_id'];
+        }
+
+        if (!empty($search_data['product'])) {
+            $cond['product'] = $search_data['product'];
+        }
+
+        if (!empty($search_data['shift'])) {
+            $cond['shift'] = $search_data['shift'];
+        }
+
+        if (!empty($search_data['submit_time_start']) && !empty($search_data['submit_time_end'])) {
+            $cond['created_time >='] = $search_data['submit_time_start'];
+            $cond['created_time <='] = $search_data['submit_time_end'];
         }
 
         $this->db->select($this->fields);
         $this->db->from($this->table);
+
+        if (!empty($users)) {
+            $this->db->where_in('created_by', $users);
+        }
+        if (!empty($search_data['status']) && $search_data['status'] == "all") {
+            $this->db->where_in('status', array('done', 'follow-up'));
+        } else {
+            $cond['status'] = !empty($search_data['status']) ? $search_data['status'] : 'follow-up';
+        }
+
         $this->db->where($cond);
         if (!empty($data)) {
             $this->db->group_start();
@@ -57,8 +72,8 @@ class Shift_reports_model extends CI_Model {
         $this->db->order_by($order_by, $sort_order);
     }
 
-    private function count_all_search_reports($order_by, $sort_order, $search_data) {
-        $this->search_query($order_by, $sort_order, $search_data);
+    private function count_all_search_reports($order_by, $sort_order, $search_data, $users) {
+        $this->search_query($order_by, $sort_order, $search_data, $users);
         return $this->db->count_all_results();
     }
 
@@ -83,7 +98,9 @@ class Shift_reports_model extends CI_Model {
             'status' => $data['status'],
             'remarks' => $data['remarks'],
             'category_id' => $data['category_id'],
+            'category_content' => $data['category_content'],
             'sub_category_id' => $data['sub_category_id'],
+            'sub_category_content' => $data['sub_category_content'],
             'created_by' => $this->user,
             'created_time' => $this->time,
             'last_updated_by' => $this->user,
@@ -103,7 +120,9 @@ class Shift_reports_model extends CI_Model {
                 'status' => $data['status'],
                 'remarks' => $data['remarks'],
                 'category_id' => $data['category_id'],
+                'category_content' => $data['category_content'],
                 'sub_category_id' => $data['sub_category_id'],
+                'sub_category_content' => $data['sub_category_content'],
                 'last_updated_by' => $this->user,
                 'last_updated_time' => $this->time
             );

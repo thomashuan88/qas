@@ -13,13 +13,13 @@
       </div>
       <div class="panel-body">
         <div class="row">
+           <div class="form-group col-md-6">
+            <label for="Account ID"><?php print $this->lang->line('account_id'); ?></label>
+            <input type="text" class="form-control" id="account_id" name="account_id" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled required>
+          </div>
           <div class="form-group col-md-6">
             <label for="Product Type"><?php print $this->lang->line('product_type'); ?></label>
             <input type="text" class="form-control" id="product" name="product" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled required>
-          </div>
-          <div class="form-group col-md-6">
-            <label for="Account ID"><?php print $this->lang->line('account_id'); ?></label>
-            <input type="text" class="form-control" id="account_id" name="account_id" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled required>
           </div>
         </div>
         <div class="row">

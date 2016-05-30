@@ -36,6 +36,11 @@
     <script src="<?php print base_url(); ?>assets/js/vendor/bootbox.min.js"></script>
     <?php print $template['js']; ?>
     <?php $this->load->view('generic/js_system'); ?>
+    <script type="text/javascript">
+        var confirm_message = '<?php print $this->lang->line('confirm_message'); ?>';
+        var delete_message = '<?php print $this->lang->line('delete_message'); ?>';
+        var reset_message = '<?php print $this->lang->line('reset_message'); ?>';
+    </script>
     <script src="<?php print base_url(); ?>assets/js/app.js"></script>
 </head>
 

@@ -12,36 +12,37 @@
         font-size: 12px;
     }
 </style>
+<?php if($add_role_page){  ?>
 <div style="padding-bottom: 10px;">
         <button class="btn btn-primary"  id="add-user" style="float: right;margin-bottom: 20px;" onclick="add_user();">
             <i class="fa fa-plus"></i>
             <?php echo $this->lang->line('add_role'); ?>
         </button>
 </div>
-
+<?php }?>
 <div style="padding-bottom: 10px;">
        <div class="form-group" id="roles_status">
         <label for="status"><?php print $this->lang->line('status'); ?> </label>
         <select name="status" id="status" class="form-control" style="width:10%;display: inline-block;">
-            <option value="all" ><?php print $this->lang->line('show_all'); ?></option>
+            <option value="all" ><?php print $this->lang->line('all'); ?></option>
             <option value="active" selected><?php print $this->lang->line('active'); ?></option>
             <option value="inactive"><?php print $this->lang->line('inactive'); ?></option>
         </select>
     </div>
 </div>
-<?php print form_open('adminpanel/roles/add_role', 'id="add_role_form" class="mg-t-20 form-confirm"') ."\r\n"; ?>
-
+<?php print form_open('adminpanel/roles/add_role', 'id="add_role_form" class="mg-t-20"') ."\r\n"; ?>
     <div class="row" id="add_user" style="display:none;">
     <div class="col-sm-6">
         <div class="form-group">
             <label for="role_name"><?php echo $this->lang->line('role_name'); ?></label>
-            <input type="text" name="role_name" id="role_name" class="form-control input-lg">
+            <input type="text" name="role_name" id="role_name" class="form-control input-lg" data-parsley-errors-messages-disabled required>
         </div>
     </div>
-        <button type="submit" class="btn btn-success btn-lg js-btn-loading" style="margin-top: 25px;" data-loading-text="Creating..."><i class="fa fa-floppy-o pd-r-5"></i><?php echo $this->lang->line('submit'); ?></button>
+        <button type="submit" id="add_role_save" class="btn btn-success btn-lg js-btn-loading" style="margin-top: 25px;" data-loading-text="Creating..."><i class="fa fa-floppy-o pd-r-5"></i><?php echo $this->lang->line('save'); ?></button>
         <a href="" type="button" class="btn btn-danger btn-lg js-btn-loading" style="margin-top: 25px;"><i class="fa fa-ban pd-r-5"></i><?php echo $this->lang->line('cancel'); ?></a>
 </div>
 <?php print form_close() ."\r\n"; ?>
+
     <div >
         <div class="row" id="roles_data">
            <table class="table table-bordered table-hover list table-condensed table-striped">
@@ -60,14 +61,14 @@
                         <td name="role_name" id="role_name_<?php print $role_id; ?>" value=""><?php print $role['role_name']; ?></td>
                         <td class="text-center">
                             <?php if($role['status'] == "active") : ?>
-                            <a class = "label label-success status_name" id="inactive" name="<?php print $role['role_name']; ?>" style="font-size: 11px;cursor:default;" href="#" title="activate account">
+                            <a class = "label label-success status_name" id="active" name="<?php print $role['role_name']; ?>" style="font-size: 11px;cursor:default;" href="#" title="activate account">
                             <?php echo $this->lang->line('active'); ?></a>
                             <?php else: ?>
-                            <a class = "label label-danger status_name" id="active" name="<?php print $role['role_name']; ?>"  style="font-size: 11px;cursor:default;" href="#" title="inactivate account">
+                            <a class = "label label-danger status_name" id="inactive" name="<?php print $role['role_name']; ?>"  style="font-size: 11px;cursor:default;" href="#" title="inactivate account">
                             <?php echo $this->lang->line('inactive'); ?></a>
                             <?php endif; ?>
                         </td>
-                        <td ><a href="<?php print site_url('adminpanel/roles/toggle_active/'. $role_id ."/". $role['status']."/".  $role['role_name']); ?>" style="margin: 0 5px;" class="btn btn-danger btn-circle status" name="<?php print $role['role_name']; ?>" title="" data-toggle="tooltip" data-placement="top"><i class="fa fa-power-off"></i></a></td>
+                        <td ><a href="<?php print site_url('adminpanel/roles/toggle_active/'. $role_id ."/". $role['status']."/".  $role['role_name']); ?>" style="margin: 0 5px;" id="<?php print $role['status']; ?>" class="btn btn-danger btn-circle status" name="<?php print $role['role_name']; ?>" title="" data-toggle="tooltip" data-placement="top"><i class="fa fa-power-off"></i></a></td>
                     </tr>
                     <?php $i++; } ?>
                 </tbody>
@@ -76,28 +77,33 @@
     </div>
 <script type="text/javascript">
 $(function(){
-var error = '<?php print $this->session->flashdata('iswrong'); ?>';
-var role_name = '<?php print $this->session->flashdata('role'); ?>';
+    var error = '<?php print $this->session->flashdata('iswrong'); ?>';
+    var role_name = '<?php print $this->session->flashdata('role'); ?>';
 
-if(error != ""){
-    $("#roles_data").hide();
-    $("#add-user").hide();
-    $("#roles_status").hide();
-    $("#add_user").show();
-    $("#role_name").val(role_name);
-}
+    if(error != ""){
+        $("#roles_data").hide();
+        $("#add-user").hide();
+        $("#roles_status").hide();
+        $("#add_user").show();
+        $("#role_name").val(role_name);
+    }
 
-$(".status").on("click", function (e) {
-    var status = $(".status_name").attr("id");
-    var role_name = $(this).attr("name");
-    var status_link = $(this).attr('href');
-    e.preventDefault();
-    bootbox.confirm("Are you sure to "+status+" "+role_name+"?", function (confirmed) {
-        if (confirmed) {
-            window.location.href = status_link;
+    $(".status").on("click", function (e) {
+        var status_name = $(this).attr("id");
+        var role_name = $(this).attr("name");
+        var status_link = $(this).attr('href');
+        if(status_name == "active"){
+            var status = "<?php echo $this->lang->line('deactivated')?>";
+        }else{
+            var status = "<?php echo $this->lang->line('activated')?>";
         }
+        e.preventDefault();
+        bootbox.confirm("<?php echo $this->lang->line('confirm_msg')?> "+status+" "+role_name+"?", function (confirmed) {
+            if (confirmed) {
+                window.location.href = status_link;
+            }
+        });
     });
-});
 
 	$('select').on('change', function() {
 		var html ='';
@@ -118,13 +124,13 @@ $(".status").on("click", function (e) {
                             html += "<td name=\"role_name\" id=\"role_name_"+value['role_id']+"\">"+value['role_name']+"</td>";
                             html += "<td class=\"text-center\">";
                             if(value['status'] == "active"){
-                                html += "<a class = \"label label-success status_name\" id=\"inactive\" style=\"font-size: 11px;cursor:default;\" href=\"#\" title=\"activate account\"><?php print $this->lang->line('active'); ?></a>"
+                                html += "<a class = \"label label-success status_name\" id=\"active\" style=\"font-size: 11px;cursor:default;\" href=\"#\" title=\"activate account\"><?php print $this->lang->line('active'); ?></a>"
                             }else{
-                                html += "<a class = \"label label-danger status_name\" id=\"active\"  name=\""+value['role_name']+"\" style=\"font-size: 11px;cursor:default;\" href=\"#\" title=\"inactivate account\"><?php print $this->lang->line('inactive'); ?></a>"
+                                html += "<a class = \"label label-danger status_name\" id=\"inactive\"  name=\""+value['role_name']+"\" style=\"font-size: 11px;cursor:default;\" href=\"#\" title=\"inactivate account\"><?php print $this->lang->line('inactive'); ?></a>"
                             }
                             html += "</td>";
                             html += "<td>";
-                            html += "<a href=\"<?php print base_url(); ?>adminpanel/roles/toggle_active/"+value['role_id']+"/"+value['status']+"/"+rolename+"\" style=\"margin: 0 5px;\" name=\""+value['role_name']+"\" class=\"btn btn-danger btn-circle status\" title=\"\" data-toggle=\"tooltip\" data-placement=\"top\"><i class=\"fa fa-power-off\"></i></a>";
+                            html += "<a href=\"<?php print base_url(); ?>adminpanel/roles/toggle_active/"+value['role_id']+"/"+value['status']+"/"+rolename+"\" style=\"margin: 0 5px;\" id=\""+value['status']+"\" name=\""+value['role_name']+"\" class=\"btn btn-danger btn-circle status\" title=\"\" data-toggle=\"tooltip\" data-placement=\"top\"><i class=\"fa fa-power-off\"></i></a>";
                             html += "</td>";
                             html += "</tr>";
                         
@@ -132,11 +138,16 @@ $(".status").on("click", function (e) {
                     });
                     $('tbody').html(html);
                     $(".status").on("click", function (e) {
-                        var status = $(".status_name").attr("id");
+                        var status_name = $(this).attr("id");
                         var role_name = $(this).attr("name");
                         var status_link = $(this).attr('href');
+                        if(status_name == "active"){
+                            var status = "<?php echo $this->lang->line('deactivated')?>";
+                        }else{
+                            var status = "<?php echo $this->lang->line('activated')?>";
+                        }
                         e.preventDefault();
-                        bootbox.confirm("Are you sure to "+status+" "+role_name+"?", function (confirmed) {
+                        bootbox.confirm("<?php echo $this->lang->line('confirm_msg')?>"+status+" "+role_name+"?", function (confirmed) {
                             if (confirmed) {
                                 window.location.href = status_link;
                             }
@@ -153,10 +164,10 @@ $(".status").on("click", function (e) {
 		});
 	});
 });
-    function add_user(){
-        $("#roles_data").hide();
-        $("#add-user").hide();
-        $("#roles_status").hide();
-        $("#add_user").show();
-    }
+function add_user(){
+    $("#roles_data").hide();
+    $("#add-user").hide();
+    $("#roles_status").hide();
+    $("#add_user").show();
+}
 </script>

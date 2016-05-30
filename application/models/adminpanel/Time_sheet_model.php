@@ -14,19 +14,19 @@ class Time_sheet_model extends CI_Model {
         $this->time = date('Y-m-d H:i:s',time());
     }
 
-    public function get_all_time_sheets($order_by = "time_sheet_id", $sort_order = "DESC", $search_data, $limit = 0, $offset = 0) {
+    public function get_all_time_sheets($order_by = "time_sheet_id", $sort_order = "DESC", $search_data, $limit = 0, $offset = 0, $users = array()) {
         if (!in_array($order_by, $this->fields)) return array();
-        $this->search_query($order_by, $sort_order, $search_data);
+        $this->search_query($order_by, $sort_order, $search_data, $users);
         $this->db->limit($limit, $offset);
         $query = $this->db->get();
-        $query->total_rows = $this->count_all_search_time_sheet($order_by, $sort_order, $search_data);
+        $query->total_rows = $this->count_all_search_time_sheet($order_by, $sort_order, $search_data, $users);
         if ($query->num_rows() > 0) {
             return $query;
         }
         return false;
     }
 
-    private function search_query($order_by, $sort_order, $search_data) {
+    private function search_query($order_by, $sort_order, $search_data, $users) {
         if(!empty($search_data['created_by'])) {
             $cond['created_by'] = $search_data['created_by'];
         }
@@ -39,12 +39,17 @@ class Time_sheet_model extends CI_Model {
         $cond['status'] = 'active';
         $this->db->select($this->fields);
         $this->db->from($this->table);
+
+        if (!empty($users)) {
+            $this->db->where_in('created_by', $users);
+        }
+
         $this->db->where($cond);
         $this->db->order_by($order_by, $sort_order);
     }
 
-    private function count_all_search_time_sheet($order_by, $sort_order, $search_data) {
-        $this->search_query($order_by, $sort_order, $search_data);
+    private function count_all_search_time_sheet($order_by, $sort_order, $search_data, $users) {
+        $this->search_query($order_by, $sort_order, $search_data, $users);
         return $this->db->count_all_results();
     }
 
@@ -52,6 +57,19 @@ class Time_sheet_model extends CI_Model {
         $this->db->select($this->fields);
         $this->db->from($this->table);
         $this->db->where('time_sheet_id', $key);
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->row();
+        }
+        return false;
+    }
+
+    public function get_last_record() {
+        $this->db->select($this->fields);
+        $this->db->from($this->table);
+        $this->db->where('created_by', $this->user);
+        $this->db->order_by('last_updated_time', 'DESC');
+        $this->db->limit('1');
         $query = $this->db->get();
         if ($query->num_rows() > 0) {
             return $query->row();

@@ -5,12 +5,14 @@ class Site_Controller extends MY_Controller
     public static $permissions = array();
     public static $roles = array();
     public static $page;
+    public static $method;
 
     public function __construct()
     {
         parent::__construct();
         // set page name
         self::$page = $this->router->fetch_class();
+        self::$method = $this->router->fetch_method();
          $this->load->model('adminpanel/role_permission_model');
     }
 

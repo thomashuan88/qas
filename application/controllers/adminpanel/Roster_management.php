@@ -14,6 +14,7 @@ class Roster_management extends Admin_Controller {
         $this->load->library('form_validation');
         $this->load->model('adminpanel/roster_management_model');
         $this->load->model('adminpanel/users_model');
+        $this->load->model('adminpanel/system_settings_model');
     }
 
     public function index() {
@@ -36,19 +37,195 @@ class Roster_management extends Admin_Controller {
         //log_message('error', $search_month."-month");
         $result = $this->select_shift($search_month, $this->session->userdata('username'));
         (empty($result)) ? $content_data['data'] = '' : $content_data['data'] = $result;
-        log_message('error', print_r($result,true));
+
+        if(empty($result)){
+            $content_data['data']['success'] = FALSE;
+            $content_data['data']['result'] = '';
+        }else{
+            $content_data['data']['success'] = TRUE;
+            $content_data['data']['result'] = $result;
+        }
+
         //set table structure
-        $content_data['table_structure']['day_per_shift'] = "2"; 
+        $content_data['table_structure']['shift_per_day'] = "3"; 
         $content_data['table_structure']['leader_per_shift'] = "1"; 
         $content_data['table_structure']['senior_per_shift'] = "1"; 
         $content_data['table_structure']['cs_per_shift'] = "7";
 
         //select from system setting table
         //time and shifts
-        $content_data['table_structure']['shift'] = array('Morning'=>'07:00', 'Noon'=>'14:00','Night'=>'22:30','Normal'=>'11:00',); 
-        $content_data['table_structure']['cs_per_shift'] = "7";
+        $result_shift_raw = $this->system_settings_model->get_shift();
+        $result_shift = $result_shift_raw->result('array');
+        //log_message('error', print_r($result_shift,true));
+        if(!empty($result_shift)){
+            foreach($result_shift AS $key=>$val){
+                $content_data['table_structure']['shift'][$val['key']] = $val['value'];
+            }
+        }else{
+            $content_data['table_structure']['shift'] = array('Morning'=>'07:00', 'Afternoon'=>'14:00','Night'=>'22:30','Normal'=>'11:00'); 
+        }
 
-        return $content_data;
+
+        $offdays['admin'][1] = array(
+                                    'on', //sunday
+                                    'on', //monday
+                                    'on', //tuesday
+                                    'on', //wednesday
+                                    'on', //thursday
+                                    'off', //friday
+                                    'off' //saturday
+                                );
+        $offdays['admin'][2] = array(
+                                    'off', //sunday
+                                    'off', //monday
+                                    'on', //tuesday
+                                    'on', //wednesday
+                                    'on', //thursday
+                                    'on', //friday
+                                    'on' //saturday
+                                );
+        $offdays['admin'][3] = array(
+                                    'off', //sunday
+                                    'on', //monday
+                                    'on', //tuesday
+                                    'on', //wednesday
+                                    'on', //thursday
+                                    'on', //friday
+                                    'off' //saturday
+                                );
+        $offdays['admin'][4] = array(
+                                    'off', //sunday
+                                    'on', //monday
+                                    'on', //tuesday
+                                    'on', //wednesday
+                                    'on', //thursday
+                                    'on', //friday
+                                    'off' //saturday
+                                );
+
+        $offdays['leader'][1] = array(
+                                    'on', //sunday
+                                    'on', //monday
+                                    'on', //tuesday
+                                    'off', //wednesday
+                                    'off', //thursday
+                                    'on', //friday
+                                    'on' //saturday
+                                );
+        $offdays['leader'][2] = array(
+                                    'on', //sunday
+                                    'off', //monday
+                                    'off', //tuesday
+                                    'on', //wednesday
+                                    'on', //thursday
+                                    'on', //friday
+                                    'on' //saturday
+                                );
+        $offdays['leader'][3] = array(
+                                    'on', //sunday
+                                    'on', //monday
+                                    'on', //tuesday
+                                    'on', //wednesday
+                                    'on', //thursday
+                                    'off', //friday
+                                    'off' //saturday
+                                );
+
+        $offdays['senior'][1] = array(
+                                    'off', //sunday
+                                    'on', //monday
+                                    'on', //tuesday
+                                    'on', //wednesday
+                                    'on', //thursday
+                                    'on', //friday
+                                    'off' //saturday
+                                );
+        $offdays['senior'][2] = array(
+                                    'on', //sunday
+                                    'on', //monday
+                                    'on', //tuesday
+                                    'on', //wednesday
+                                    'off', //thursday
+                                    'off', //friday
+                                    'on' //saturday
+                                );
+        $offdays['senior'][3] = array(
+                                    'on', //sunday
+                                    'off', //monday
+                                    'off', //tuesday
+                                    'on', //wednesday
+                                    'on', //thursday
+                                    'on', //friday
+                                    'on' //saturday
+                                );
+
+        $offdays['cs'][1] = array(
+                                    'off', //sunday
+                                    'off', //monday
+                                    'on', //tuesday
+                                    'on', //wednesday
+                                    'on', //thursday
+                                    'on', //friday
+                                    'on' //saturday
+                                );
+        $offdays['cs'][2] = array(
+                                    'off', //sunday
+                                    'on', //monday
+                                    'on', //tuesday
+                                    'on', //wednesday
+                                    'on', //thursday
+                                    'on', //friday
+                                    'off' //saturday
+                                );
+        $offdays['cs'][3] = array(
+                                    'on', //sunday
+                                    'on', //monday
+                                    'on', //tuesday
+                                    'on', //wednesday
+                                    'on', //thursday
+                                    'off', //friday
+                                    'off' //saturday
+                                );
+        $offdays['cs'][4] = array(
+                                    'on', //sunday
+                                    'on', //monday
+                                    'on', //tuesday
+                                    'on', //wednesday
+                                    'off', //thursday
+                                    'off', //friday
+                                    'on' //saturday
+                                );
+        $offdays['cs'][5] = array(
+                                    'on', //sunday
+                                    'on', //monday
+                                    'on', //tuesday
+                                    'off', //wednesday
+                                    'off', //thursday
+                                    'on', //friday
+                                    'on' //saturday
+                                );
+        $offdays['cs'][6] = array(
+                                    'on', //sunday
+                                    'on', //monday
+                                    'off', //tuesday
+                                    'off', //wednesday
+                                    'on', //thursday
+                                    'on', //friday
+                                    'on' //saturday
+                                );
+        $offdays['cs'][7] = array(
+                                    'on', //sunday
+                                    'off', //monday
+                                    'off', //tuesday
+                                    'on', //wednesday
+                                    'on', //thursday
+                                    'on', //friday
+                                    'on' //saturday
+                                );
+
+        $content_data['offdays'] = $offdays;
+        //log_message('error', print_r($content_data,true));
+        echo json_encode($content_data);
     }
 
     public function set_roster_page() {

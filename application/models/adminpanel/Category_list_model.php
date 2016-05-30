@@ -60,10 +60,10 @@ class Category_list_model extends CI_Model {
         $this->db->order_by($order_by, $sort_order);
     }
 
-    public function get_lists(){
+    public function get_lists($key) {
         $this->db->select($this->fields);
         $this->db->from($this->table);
-        $this->db->where('status', 'active');
+        $this->db->where(array('status' => 'active', 'parent_id' => $key));
         $query = $this->db->get();
         if ($query->num_rows() > 0) {
             return $query;
@@ -83,22 +83,26 @@ class Category_list_model extends CI_Model {
     }
 
     public function insert_category_list($data) {
-        $new_data = array(
-            'parent_id' => $data['category_id'],
-            'parent_content' => $data['parent_content'],
-            'content' => $data['content'],
-            'status' => $data['status'],
-            'created_by' => $this->user,
-            'created_time' => $this->time,
-            'last_updated_by' => $this->user,
-            'last_updated_time' => $this->time
-        );
-        $this->db->insert($this->table, $new_data);
-        return $this->is_query_working();
+        if ($this->check_duplicate($data)) {
+            $new_data = array(
+                'parent_id' => $data['category_id'],
+                'parent_content' => $data['parent_content'],
+                'content' => $data['content'],
+                'status' => $data['status'],
+                'created_by' => $this->user,
+                'created_time' => $this->time,
+                'last_updated_by' => $this->user,
+                'last_updated_time' => $this->time
+            );
+            $this->db->insert($this->table, $new_data);
+            return $this->is_query_working();
+        } else {
+            return false;
+        }
     }
 
     public function edit_category_list($data){
-        if ($this->is_exist($data['id'])) {
+        if ($this->is_exist($data['id']) && $this->check_duplicate($data)) {
             $new_data = array(
                 'parent_id' => $data['category_id'],
                 'parent_content' => $data['parent_content'],
@@ -144,6 +148,31 @@ class Category_list_model extends CI_Model {
             return true;
         }
         return false;
+    }
+
+    private function check_duplicate($data) {
+        if(!empty($data['id'])){
+            $cond = array(
+                'parent_id' => $data['category_id'],
+                'content' => $data['content'],
+                'category_list_id !=' => $data['id'],
+                'status !=' => 'delete'
+            );
+        } else {
+            $cond = array(
+                'parent_id' => $data['category_id'],
+                'content' => $data['content'],
+                'status !=' => 'delete'
+            );
+        }
+        $this->db->select($this->fields);
+        $this->db->from($this->table);
+        $this->db->where($cond);
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return false;
+        }
+        return true;
     }
 
     private function is_query_working() {

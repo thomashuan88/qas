@@ -4,7 +4,7 @@
 
 <?php $this->load->view('generic/flash_error'); ?>
 
-<?php print form_open('adminpanel/operation/question_content_insert/', 'id="question_content_insert_form"') . "\r\n"; ?>
+<?php print form_open('adminpanel/operation/question_content_insert', 'id="question_content_insert_form"') . "\r\n"; ?>
 <div class="col-md-12">
     <div class="panel panel-default">
         <div class="panel-body">

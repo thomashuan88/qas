@@ -24,7 +24,7 @@
 			<?php print $this->lang->line('add_user')?>
 			<div class="pull-right">
 
-				<button type="submit" name="add_user_submit" id="add_user_submit" class="btn btn-default js-btn-loading pd-r-5" data-loading-text="Adding..."><i class="fa fa-user-plus pd-r-5"></i> Save User</button>
+				<button type="submit" name="add_user_submit" id="add_user_submit" class="btn btn-default js-btn-loading pd-r-5" data-loading-text="Adding..."><i class="fa fa-user-plus pd-r-5"></i> <?php print $this->lang->line('save_user'); ?></button>
                 <button type="button" name="unlock" id="unlock" class="btn btn-default js-btn-loading" data-loading-text="Adding..." ><i class="fa fa-unlock pd-r-5"></i><span>Unlock</span></button>
 
             </div>
@@ -61,25 +61,10 @@
                                             required>
 											<label style="color:#9C9696; font-size:12px;">min 6 characters. symbol allow(._-). no space</label>
 										</div>
-										<div class="form-group">
-											<label for="password"><?php print $this->lang->line('password'); ?></label>
-                                            <label style="color:red; font-size:14px;">*</label>
-											<input type="text" name="password" id="password" class="form-control"
-                                            value="<?php print $this->session->flashdata('password'); ?>"
-                                            data-parsley-pattern="^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=.\-_*])([a-zA-Z0-9@#$%^&+=*.\-_]){6,20}$"
-                                            data-parsley-trigger="change keyup"
-                                            data-parsley-minlength="6"
-                                            data-parsley-maxlength="20"
-                                            data-parsley-errors-messages-disabled
-                                            required>
-											<label style="color:#9C9696; font-size:12px;">min 6 characters, contain uppercase, alphanumeric and symbol("@#$%^&+=.-_*). eg. qw#e3r </label>
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="form-group">
+                                        <div class="form-group">
 											<label for="email"><?php print $this->lang->line('email_address'); ?></label>
                                             <label style="color:red; font-size:14px;">*</label>
-											<input type="text" class="form-control" id="email" name="email"
+											<input type="email" class="form-control" id="email" name="email"
                                              placeholder="<?php print $this->lang->line('email_address'); ?>"
                                              value="<?php print $this->session->flashdata('email'); ?>"
                                              data-parsley-type="email"
@@ -89,6 +74,9 @@
                                              required>
 											<label style="color:#9C9696; font-size:12px;">eg. johnDoe@bexcel.com</label>
 										</div>
+
+									</div>
+									<div class="col-md-6">
 										<div class="form-group">
 											<label for="leader"><?php print $this->lang->line('report_to'); ?></label>
 											<select class="form-control" id="leader"  name="leader">
@@ -97,13 +85,15 @@
 												<option value="<?php echo $leader->username; ?>"><?php echo $leader->username; ?></option>
 											<?php } ?>
 											</select>
+                                            <label style="color:#9C9696; font-size:12px;"></label>
+
 										</div>
 										<div class="form-group">
 											<label for="role"><?php print $this->lang->line('role'); ?></label>
                                             <label style="color:red; font-size:14px;">*</label>
 											<select class="form-control" id="role" name="role" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled required>
-                                                <option value=" "></option>
-                                                <option style="display:none;" value="<?php print $this->session->flashdata('role'); ?>" selected><?php print $this->session->flashdata('role'); ?></option>
+                                                <option value="<?php print Settings_model::$db_config['system_role']; ?>"selected><?php print Settings_model::$db_config['system_role']; ?></option>
+                                                <option style="display:none;" value="<?php print $this->session->flashdata('role'); ?>"><?php print $this->session->flashdata('role'); ?></option>
 												<?php foreach($roles as $role) {?>
 												<option value="<?php print $role->role_name; ?>"><?php print $role->role_name; ?></option>
 												<?php } ?>
@@ -153,13 +143,13 @@
 											<label for="relationship"><?php print $this->lang->line('relationship'); ?></label>
 											<select name="relationship" id="relationship" class="form-control">
                                                 <option style="display:none;" value="<?php print $this->session->flashdata('relationship'); ?>" selected><?php print $this->session->flashdata('relationship'); ?></option>
-                                                <option value="family">Children</option>
-												<option value="family">Friends</option>
-												<option value="family">Parents</option>
-												<option value="family">Relative</option>
-												<option value="family">Spouse</option>
-												<option value="family">Siblings</option>
-												<option value="family">Others</option>
+                                                <option value="children"><?php print $this->lang->line('children'); ?></option>
+                                                <option value="friends"><?php print $this->lang->line('friends'); ?></option>
+                                                <option value="parents"><?php print $this->lang->line('parents'); ?></option>
+                                                <option value="relative"><?php print $this->lang->line('relative'); ?></option>
+                                                <option value="spouse"><?php print $this->lang->line('spouse'); ?></option>
+                                                <option value="siblings"><?php print $this->lang->line('siblings'); ?></option>
+                                                <option value="others"><?php print $this->lang->line('others'); ?></option>
 											</select>
 										</div>
 									</div>
@@ -230,3 +220,38 @@
 </div>
 <script src="<?php print base_url(); ?>assets/js/vendor/intl-tel-input/build/js/intlTelInput.js"></script>
 <script src="<?php print base_url(); ?>assets/js/adminpanel/add_member.js"></script>
+<script>
+var email ='<?php print Settings_model::$db_config["predefined_email"]; ?>';
+$(document).ready(function() {
+
+    $("#credentials :input").change(function(){
+        var flag = 0;
+        if (form_lock == true){
+
+            $("#credentials :input[name!='leader']").each(function(){
+                if($(this).val() == ""){
+                    flag = 1;
+                }
+            })
+
+            if(flag==0){
+                unlock_form();
+            } else {
+                lock_form();
+            }
+        }
+    })
+
+    // var gen_pass = randomPassword();
+    // $("#password").val(gen_pass);
+
+    $("#uname").change(function(){
+    	var name = $("#uname").val();
+    	$("#email").val(name+email);
+    })
+
+    $("#profile :input").prop("disabled", true);
+    $("#ids :input").prop("disabled", true);
+
+});
+</script>

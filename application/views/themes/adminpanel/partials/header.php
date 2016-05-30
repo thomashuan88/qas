@@ -11,8 +11,9 @@
         <div class="navbar-header">
             <a class="navbar-brand block" href="<?php print base_url(); ?>">
             
-                <img src="<?php print base_url(); ?>assets/img/bexcel.png">
+                <img src="<?php print base_url(); ?>assets/img/<?php print Settings_model::$db_config['logo']; ?>">
             </a>
+
         </div>
 
         <a id="js-showhide-menu" href="javascript:" class="btn navbar-btn">
@@ -38,10 +39,10 @@
             </a>
             <ul class = "dropdown-menu  language-menu " style="border:none;min-width:100%;background-color:#2a2f36;color:#979797;">    
                 <li style="">
-                    <a class="language" href ="english" style="color:#979797;">English </a>
+                    <a class="language" href="javascript:location.reload();" id ="english" style="color:#979797;">English </a>
                 </li>
                 <li>
-                    <a class="language" href ="chinese" style="color:#979797;">中文</a>
+                    <a class="language" href="javascript:location.reload();" id ="chinese" style="color:#979797;">中文</a>
                 </li>
             </ul>
         </li>
@@ -59,19 +60,9 @@ $(document).ready(function() {
 
      $("a.language").click(function(){
 
-        var link = $(this).attr('href');    
-        var data = 'language='+link;
-
-         $.ajax({
-            url: 'Header/change_language',
-            data: data,
-            type: 'post',
-            dataType: 'text',
-            success: function(result){
-                window.location.reload();
-            }
-        });
-
+        var link = $(this).attr('id');    
+        var data = {language:link};
+        $.post('/adminpanel/header/change_language', data);
      });
 });
 

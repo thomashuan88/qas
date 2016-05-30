@@ -6,7 +6,7 @@ class Users_model extends CI_Model {
         $this->load->helper('password');
       }
 
-    public function get_members($limit = 0, $offset = 0, $order_by = "username", $sort_order = "asc", $search_data) {
+    public function get_members($limit = 0, $offset = 0, $order_by = "username", $sort_order = "asc", $search_data, $users = array()) {
         $fields = $this->db->list_fields('users');
         if (!in_array($order_by, $fields)) return array();
 
@@ -14,7 +14,7 @@ class Users_model extends CI_Model {
         if (!empty($search_data)) {
             !empty($search_data['username']) ? $data['username'] = $search_data['username'] : "";
             !empty($search_data['real_name']) ? $data['real_name'] = $search_data['real_name'] : "";
-            !empty($search_data['last_name']) ? $data['leader_name'] = $search_data['leader_name'] : "";
+            !empty($search_data['leader']) ? $data['leader'] = $search_data['leader'] : "";
             !empty($search_data['email']) ? $data['email'] = $search_data['email'] : "";
         }
 
@@ -25,13 +25,15 @@ class Users_model extends CI_Model {
 
         $this->db->select('users.user_id, users.last_login, users.username, users.email, users.real_name, users.leader, users.role, users.phone, users.status');
         $this->db->from('users');
+
+        if( !empty( $users ) ) {
+            $this->db->where_in('username', $users);
+        }
         // $this->db->group_start();
         if(isset($status['data'])){
             if($status['data']!=="all"){
-                $this->db->where('status', $status['data']);
-            }else {
-                $this->db->where('status', '');
 
+                $this->db->where('status', $status['data']);
             }
         }
         // foreach($data as $key => $value) {
@@ -39,9 +41,9 @@ class Users_model extends CI_Model {
         //     $this->db->where($where_statement,null, false);
         // }
         if(!empty($data)) {
-                $this->db->group_start();
-             $this->db->like($data);
-              $this->db->group_end();
+            $this->db->group_start();
+            $this->db->like($data);
+            $this->db->group_end();
         }
         $this->db->order_by($order_by, $sort_order);
         $this->db->limit($limit, $offset);
@@ -54,6 +56,19 @@ class Users_model extends CI_Model {
         return false;
     }
 
+    public function get_member_id($username){
+        $this->db->select('user_id')
+            ->from('users')
+            ->where('username', $username)
+            ->limit(1);
+
+        $q = $this->db->get();
+
+        if ($q->num_rows() == 1) {
+            return $q;
+        }
+        return false;
+    }
     public function get_member_data($id) {
         $this->db->select('user_id, last_login, username, email, real_name, nickname, dob, role,
         windows_id, tb_lp_id, tb_lp_name, sy_lp_id, sy_lp_name, tb_bo,
@@ -71,11 +86,29 @@ class Users_model extends CI_Model {
 
         return false;
     }
+
+    public function get_member_info($username) {
+        $this->db->select('user_id, last_login, username, email, real_name, nickname, dob, role,
+        windows_id, tb_lp_id, tb_lp_name, sy_lp_id, sy_lp_name, tb_bo,
+        gd_bo, keno_bo, cyber_roam, rtx, emergency_contact, emergency_name, relationship,
+        leader, status, remark, phone')
+            ->from('users')
+            ->where('username', $username)
+            ->limit(1);
+
+        $q = $this->db->get();
+
+        if ($q->num_rows() == 1) {
+            return $q->row();
+        }
+
+        return false;
+    }
     public function count_all_members()
     {
         return $this->db->count_all_results('users');
     }
-    public function count_all_search_members($search_data) {
+    public function count_all_search_members($search_data, $users = array()) {
         $data = array();
 
         if (!empty($search_data)) {
@@ -91,7 +124,9 @@ class Users_model extends CI_Model {
         }
         $this->db->select('users.user_id, users.username, users.email, users.real_name, users.leader, users.role, users.phone, users.status');
         $this->db->from('users');
-        // $this->db->group_start();
+        if( !empty( $users ) ) {
+            $this->db->where_in('username', $users);
+        }
         if(isset($status['data'])){
         $this->db->where('status', $status['data']);
         }
@@ -106,7 +141,7 @@ class Users_model extends CI_Model {
     }
 
     public function get_leaders(){
-            $this->db->select('username')->from('users')->where('role !=', 'CS');
+            $this->db->select('username')->from('users');
             $q = $this->db->get();
                 if ($q->num_rows() > 0) {
                     return $q->result();
@@ -119,8 +154,8 @@ class Users_model extends CI_Model {
         $nonce = md5(uniqid(mt_rand(), true));
 
         $data = array(
-            'username' => $username,
-            'password' => hash_password($password, $nonce),
+            'username' => strtolower($username),
+            // 'password' => hash_password($password, $nonce),
             'email' => $email,
             'nonce' => $nonce,
             'role' => $role,
@@ -140,7 +175,6 @@ class Users_model extends CI_Model {
     }
 
     public function check_leader($role_name){
-        log_message("error",$role_name."model");
         $this->db->select('username');
         $this->db->from('users');
         $this->db->where('role',$role_name);
@@ -174,12 +208,13 @@ class Users_model extends CI_Model {
         return false;
     }
 
-    public function save_password($user_id, $new_password){
+    public function save_password($user_id, $new_password, $password_hint){
 
         $nonce = md5(uniqid(mt_rand(), true));
         $data = array(
             'password' => hash_password($new_password, $nonce),
-            'nonce' => $nonce
+            'nonce' => $nonce,
+            'password_hint' => $password_hint
         );
 
         $this->db->where('user_id', $user_id);
@@ -198,7 +233,7 @@ class Users_model extends CI_Model {
     }
 
     public function find_downline($username){
-       $query = $this->db->query("select t1.username AS root, t2.username as HOD, t3.username as supervisor, t4.username as leader, t5.username as senior, t6.username as cs, t7.username as extra FROM users AS t1 LEFT JOIN users AS t2 ON t2.leader = t1.username LEFT JOIN users AS t3 ON t3.leader = t2.username LEFT JOIN users AS t4 ON t4.leader = t3.username LEFT JOIN users AS t5 ON t5.leader = t4.username LEFT JOIN users AS t6 ON t6.leader = t5.username LEFT JOIN users AS t7 ON t7.leader = t6.username WHERE t1.username = '".$username."'");
-       return $query->result('array');  
+         $query = $this->db->query("select t1.username AS root, t2.username as HOD, t3.username as supervisor, t4.username as leader, t5.username as senior, t6.username as cs, t7.username as extra FROM users AS t1 LEFT JOIN users AS t2 ON t2.leader = t1.username LEFT JOIN users AS t3 ON t3.leader = t2.username LEFT JOIN users AS t4 ON t4.leader = t3.username LEFT JOIN users AS t5 ON t5.leader = t4.username LEFT JOIN users AS t6 ON t6.leader = t5.username LEFT JOIN users AS t7 ON t7.leader = t6.username WHERE t1.username = '".$username."'");
+       return $query->result('array');
     }
 }

@@ -23,7 +23,7 @@ class Email_tools_model extends CI_Model {
 
     public function get_data_by_email($email) {
 
-        $this->db->select('user_id, username, nonce, active');
+        $this->db->select('user_id, username, nonce, active, status');
         $this->db->from('users');
         $this->db->where('email', $email);
         $this->db->limit(1);

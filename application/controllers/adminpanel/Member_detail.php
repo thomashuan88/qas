@@ -8,9 +8,16 @@ class Member_detail extends Admin_Controller {
         // pre-load
         $this->load->helper('form');
         $this->load->library('form_validation');
+        $this->load->library('MY_Permission');
+
         $this->load->model('adminpanel/member_detail_model');
         $this->load->model('adminpanel/users_model');
         $this->load->model('adminpanel/roles_model');
+
+
+        if (! self::check_permissions(2)) {
+            redirect("/private/no_access");
+        }
 
     }
 
@@ -26,11 +33,22 @@ class Member_detail extends Admin_Controller {
             redirect('adminpanel/list_members');
         }
 
-        // if (! self::check_permissions(1)) {
-        //     redirect("/private/no_access");
-        // }
+        if (! self::check_permissions(1)) {
+            redirect("/private/no_access");
+        }
 
-        $content_data['member'] = $this->users_model->get_member_data($this->uri->segment(3));
+        // change default value "0" to ""
+        $member_data = $this->users_model->get_member_data($this->uri->segment(3));
+
+        if (!in_array($member_data->username, $this->my_permission->find_permission())) {
+            redirect("/private/no_access");
+        }
+        foreach($member_data as &$value){
+            if($value=="0" | $value=="+60"){
+                $value="";
+            }
+        }
+        $content_data['member'] = $member_data;
 
         $this->load->model('system/rbac_model');
         $content_data['roles'] = $this->roles_model->get_role_name();
@@ -41,23 +59,28 @@ class Member_detail extends Admin_Controller {
             redirect('adminpanel/list_members');
         }
 
-        $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel', $this->lang->line('member_detail'), 'member_detail', 'header', 'footer', '', $content_data);
+        $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel', $this->lang->line('user_details'), 'member_detail', 'header', 'footer', '', $content_data);
 
         return $this;
     }
 
-    public function get_remarks() {
+    public function get_remarks($username="") {
         $this->load->model('adminpanel/remarks_model');
 
+        if($username == $this->session->userdata('username') &&!in_array($username, $this->my_permission->find_permission())){
+             echo "no access";
+             exit();
+        }
+
        if ( $this->input->post() ) {
-           $array = $this->input->post();
-           $array1 = array_keys($array);
-           $paging = json_decode($array1[0], true);
+
+           $paging = json_decode($this->input->post('data'), true);
 
            $offset = $paging['offset'];
            $order_by = $paging['order_by'];
            $sort_order = $paging['sort_order'];
            $search_data = $paging['search_data'];
+
            $per_page = Settings_model::$db_config['members_per_page'];
 
            $remarks = $this->remarks_model->get_remarks($per_page, $offset, $order_by, $sort_order, $search_data);

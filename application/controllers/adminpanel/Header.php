@@ -8,11 +8,10 @@ class Header extends Admin_Controller {
      }
 
   public function change_language(){
-
+    
     $data['language'] = $this->input->post('language') ;
     $this->session->set_userdata('language', $data['language']);
     $language = $this->session->userdata("language");
     $this->lang->load("messages_lang", $language);
-
     }
 }

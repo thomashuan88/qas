@@ -36,11 +36,11 @@
 
 <script type="text/javascript">
 
-$(function(){
-
-    getNewData();
-    setHeaderIcon();
-});
+// $(function(){
+//
+//     getNewData();
+//     setHeaderIcon();
+// });
 
 
 var paging = {
@@ -48,7 +48,7 @@ var paging = {
     order_by : 'id',
     sort_order : 'desc',
     search_data : {'username' : '<?php print $member->username; ?>'},
-    ajaxUrl: "<?php print base_url('adminpanel/member_detail/get_remarks'); ?>"
+    ajaxUrl: "<?php print base_url('adminpanel/member_detail/get_remarks/'.$member->username); ?>"
 }
 
 // var searchData = function() {
@@ -66,8 +66,8 @@ var paging = {
 // }
 
 
-
-var drawTable = function (data) {
+var remark_drawTable = function (data) {
+    alert('inside remark');
     var html ='';
 
     if (data.length != 0) {
@@ -78,7 +78,6 @@ var drawTable = function (data) {
         $('#no_result').css('display', 'block');
     }
     var count = 1;
-    console.log(data);
     $.each( data, function( key, value ) {
 
         var date = new Date( Date.parse( value['create_time']) );

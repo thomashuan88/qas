@@ -83,20 +83,24 @@ class Category_group_model extends CI_Model {
     }
 
     public function insert_category_group($data) {
-        $new_data = array(
-            'content' => $data['content'],
-            'status' => $data['status'],
-            'created_by' => $this->user,
-            'created_time' => $this->time,
-            'last_updated_by' => $this->user,
-            'last_updated_time' => $this->time
-        );
-        $this->db->insert($this->table, $new_data);
-        return $this->is_query_working();
+        if ($this->check_duplicate($data)) {
+            $new_data = array(
+                'content' => $data['content'],
+                'status' => $data['status'],
+                'created_by' => $this->user,
+                'created_time' => $this->time,
+                'last_updated_by' => $this->user,
+                'last_updated_time' => $this->time
+            );
+            $this->db->insert($this->table, $new_data);
+            return $this->is_query_working();
+        } else {
+            return false;
+        }
     }
 
     public function edit_category_group($data){
-        if ($this->is_exist($data['id'])) {
+        if ($this->is_exist($data['id']) && $this->check_duplicate($data)) {
             $new_data = array(
                 'content' => $data['content'],
                 'status' => $data['status'],
@@ -130,6 +134,29 @@ class Category_group_model extends CI_Model {
             return true;
         }
         return false;
+    }
+
+    private function check_duplicate($data) {
+        if(!empty($data['id'])){
+            $cond = array(
+                'content' => $data['content'],
+                'category_group_id !=' => $data['id'],
+                'status !=' => 'delete'
+            );
+        } else {
+            $cond = array(
+                'content' => $data['content'],
+                'status !=' => 'delete'
+            );
+        }
+        $this->db->select($this->fields);
+        $this->db->from($this->table);
+        $this->db->where($cond);
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return false;
+        }
+        return true;
     }
 
     private function is_query_working() {

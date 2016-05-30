@@ -31,11 +31,6 @@ class Resend_activation extends Auth_Controller {
         // form input validation
         $this->form_validation->set_error_delimiters('<p>', '</p>');
         $this->form_validation->set_rules('email', $this->lang->line('email_address'), 'trim|required|is_valid_email');
-        if (Settings_model::$db_config['recaptchav2_enabled'] == true) {
-            //$this->form_validation->set_rules('recaptcha_response_field', 'captcha response field', 'required|check_captcha');
-            // this is the Recaptcha V2 code, above is for V1 but it's commented out, same in login view
-            $this->form_validation->set_rules('g-recaptcha-response', $this->lang->line('recaptchav2_response'), 'required|check_captcha');
-        }
 
         if (!$this->form_validation->run()) {
             $this->session->set_flashdata('error', validation_errors());
@@ -46,8 +41,8 @@ class Resend_activation extends Auth_Controller {
         $this->load->model('system/email_tools_model');
         $data = $this->email_tools_model->get_data_by_email($this->input->post('email'));
 
-        if ($data['active']) {
-            $this->session->set_flashdata('error', '<p>'. $this->lang->line('account_active') .'</p>');
+        if ($data['status'] == "Active") {
+            $this->session->set_flashdata('error', '<p>'.$this->lang->line('account_activated') .'</p>');
             redirect('resend_activation');
         }elseif (!empty($data['nonce'])) {
             $this->load->model('auth/resend_activation_model');
@@ -57,7 +52,11 @@ class Resend_activation extends Auth_Controller {
             $this->email->from(Settings_model::$db_config['admin_email_address'], $_SERVER['HTTP_HOST']);
             $this->email->to($this->input->post('email'));
             $this->email->subject($this->lang->line('resend_activation_subject'));
-            $this->email->message($this->lang->line('email_greeting') ." ". $data['username'] . $this->lang->line('resend_activation_message') . base_url() ."auth/activate_account/check/". urlencode($this->input->post('email')) ."/". $data['nonce']);
+
+            $message ="";
+            $message .=$this->lang->line('email_greeting') ." ".$this->input->post('uname');
+            $message .=$this->lang->line('resend_activation_message'). base_url() ."auth/activate_account/check/". urlencode($this->input->post('email')) ."/". $data['nonce']."/".$data['username']." ";
+            $this->email->message($message);
             if ($this->email->send()) {
                 $this->session->set_flashdata('success', '<p>'. $this->lang->line('resend_activation_success') .'</p>');
             }

@@ -19,20 +19,22 @@ $lang['change_password'] = 'Change Password';
 $lang['reset_password'] = 'Reset Password';
 $lang['change_password_success'] = 'Password changed successfully.';
 $lang['change_password_failed'] = 'Unable to change password.';
+$lang['password_hint'] = 'Password Hint';
 
 
 //confirmation message
 $lang['confirm_message'] = 'Are you sure that you want to submit this form?';
 $lang['delete_message'] = 'Are you sure that you want to delete this record?';
 $lang['reset_message'] = 'Are you sure that you want to reset password?';
+$lang['required_field_msg'] = 'Please Complete required fields before submit';
 
 
 
 $lang['forgot_password'] = 'Retrieve password';
 $lang['renew_password_title'] = 'Forgot password';
 $lang['forgot_password_subject'] = 'Reset password requested';
-$lang['forgot_password_message'] = ",\r\n\r\nThe password reset procedure was initiated. Please click the link below and receive a new password via e-mail.\r\n\r\n";
-$lang['forgot_password_success'] = 'A password link has been sent to your e-mail address.';
+$lang['forgot_password_message'] = ",\r\n\r\nThe password reset procedure was initiated. Please click the link below and receive a new password via e-mail.\r\n";
+$lang['forgot_password_success'] = 'A password link has been sent to %s.';
 $lang['send_password'] = 'Send password';
 $lang['reset_password_subject'] = 'New password created';
 $lang['reset_password_message'] = ",\r\n\r\nYour new password is: ";
@@ -46,6 +48,7 @@ $lang['remember_me'] = 'Remember me';
 $lang['date_registered'] = 'Date registered';
 
 // resend activation
+$lang['account_activation'] = 'Account activation';
 $lang['resend_activation'] = 'Resend activation link';
 $lang['resend_activation_subject'] = 'Activation required - resend';
 $lang['resend_activation_message'] = ",\r\n\r\nsomeone (probably you) requested to resend your activation link. To activate your account please visit the link below (or copy-paste into your browser). ";
@@ -53,7 +56,7 @@ $lang['resend_activation_success'] = 'Activation e-mail has been resent - please
 
 // login
 $lang['login'] = 'Log in';
-$lang['login_incorrect'] = 'Login incorrect.';
+$lang['login_incorrect'] = "Login incorrect.";
 $lang['login_disabled'] = 'Login has been disabled.';
 $lang['max_login_attempts_reached'] = 'Max login attempts hard ceiling reached. Please contact us to unlock your account.';
 $lang['last_login'] = 'Last login';
@@ -117,7 +120,7 @@ $lang['change_email'] = 'Change e-mail address';
 $lang['password_required_for_changes'] = 'Enter your password before updating profile';
 $lang['update_profile'] = 'Update profile';
 $lang['current_password'] = 'Current password';
-$lang['new_password'] = 'New password';
+// $lang['new_password'] = 'New password';
 $lang['new_password_again'] = 'New password again';
 $lang['send_copy_to_email'] = 'Send a copy of your new password to your e-mail?';
 $lang['update_password'] = 'Update password';
@@ -132,6 +135,8 @@ $lang['is_valid_email'] = 'Please enter a correct e-mail address.';
 $lang['is_valid_password'] = 'The password field must contain at least one uppercase,lowercase, symbol and number';
 $lang['is_valid_both_password'] = 'New password cannot be same as old password.';
 $lang['is_valid_new_password'] = 'The New Password field must contain at least one uppercase,lowercase, symbol and number.';
+$lang['is_new_password_secure'] = "The New Password cannot be used.";
+
 $lang['is_valid_confirm_password'] = 'The Confirm Password field must contain at least one uppercase,lowercase, symbol and number.';
 $lang['is_valid_username'] = 'The username field can only contain a-z A-Z 0-9 _ . and - characters.';
 $lang['is_db_cell_available'] = 'The %s already exists in our database.';
@@ -140,6 +145,9 @@ $lang['check_captcha'] = 'Verification code is incorrect (reCaptcha).';
 $lang['is_member_password'] = 'Your password is incorrect';
 $lang['is_valid_time'] = "Time format is incorrect.";
 $lang['is_valid_phone'] = "Invalid phone number.";
+$lang['is_account_id_exists'] = 'The Account ID already exists in our database.';
+$lang['is_product_type_exists'] = 'The Product Type already exists in our database.';
+
 
 
 
@@ -151,9 +159,11 @@ $lang['email_greeting'] = 'Hello';
 $lang['no_access'] = 'Access denied';
 $lang['no_access_view'] = 'You are not authorized to view this page.';
 $lang['no_access_add_record'] = 'You are not authorized to add new record.';
-$lang['no_access_view_record'] = 'You are not authorized to add this record.';
+$lang['no_access_view_record'] = 'You are not authorized to view this record.';
 $lang['no_access_edit_record'] = 'You are not authorized to edit this record.';
 $lang['no_access_delete_record'] = 'You are not authorized to delete this record.';
+$lang['no_access_pending_record'] = 'Please complete the pending record before add new.';
+$lang['exist_follow_up_record'] = 'Please complete the follow up records before change status to done.';
 
 // Oauth2
 $lang['invalid_state'] = "Invalid state.";
@@ -171,6 +181,10 @@ $lang['create_imgfolder_failed'] = "Problem creating image directory.";
 // messaging
 $lang['message_error_heading'] = "Please verify the following:";
 $lang['message_success_heading'] = "Success!!";
+$lang['activation_message_success_heading'] = "Successfully activate account";
+$lang['activation_message_error_heading'] = "Activation fail";
+
+
 
 // adminpanel
 $lang['enter_search_data'] = 'Please enter some search data.';
@@ -186,8 +200,8 @@ $lang['sessions_cleared'] = 'Session successfully deleted.';
 $lang['sessions_not_cleared'] = 'Nothing to clear.';
 $lang['banned'] = "banned.";
 $lang['unbanned'] = "unbanned.";
-$lang['activated'] = "activated.";
-$lang['deactivated'] = "deactivated.";
+$lang['activated'] = "activated";
+$lang['deactivated'] = "deactivated";
 $lang['site_disabled'] = 'Site has been disabled.';
 $lang['add_member'] = 'Add member';
 $lang['add_user'] = 'Add user';
@@ -201,23 +215,25 @@ $lang['export_title'] = "Export members list";
 $lang['backup_title'] = "Backup your database";
 $lang['id'] = "ID";
 $lang['title'] = "Title";
-$lang['remarks_title'] = "Remarks title";
-$lang['follow_up'] = "Follow up";
-$lang['follow_up_by'] = "Follow up by";
+$lang['remark_title'] = "Remark Title";
+$lang['follow_up'] = "Follow Up";
+$lang['follow_up_by'] = "Follow Up By";
 $lang['search'] = "Search";
 $lang['search_member'] = "Search member";
 $lang['search_user'] = "Search User";
 $lang['search_record'] = "Search Record";
 $lang['edit_record'] = "Edit Record";
+$lang['no_permission'] = "No Permission";
 
 $lang['duration'] = "Duration";
-$lang['submit_by'] = "Submit by";
-$lang['submit_time'] = "Submit time";
-$lang['submit_time_from'] = "Submit time (From)";
-$lang['submit_time_to'] = "Submit time (To)";
-$lang['time_start'] = "Start time";
-$lang['time_end'] = "End time";
+$lang['submit_by'] = "Submit By";
+$lang['submit_time'] = "Submit Time";
+$lang['submit_time_from'] = "Submit Time (From)";
+$lang['submit_time_to'] = "Submit Time (To)";
+$lang['time_start'] = "Start Time";
+$lang['time_end'] = "End Time";
 $lang['total_members'] = "Total members";
+$lang['total_users'] = "Total Users";
 $lang['list_members'] = 'List members';
 $lang['viewing_member'] = 'Viewing member';
 $lang['send_copy'] = 'E-mail member about profile updates made here.';
@@ -244,49 +260,58 @@ $lang['search_time_sheet'] = 'Search time sheet';
 $lang['search_question_content'] = 'Search Question Content';
 $lang['search_question_type'] = 'Search Question Type';
 $lang['shift_report'] = 'Shift Report';
-$lang['shift_report_insert'] = 'Add shift report';
-$lang['shift_report_edit'] = 'Edit shift report';
-$lang['shift_report_follow_up'] = 'Follow up shift report';
-$lang['shift_report_follow_up_insert'] = 'Insert follow up report';
-$lang['total_shift_reports'] = 'Total shift reports';
-$lang['total_follow_up_reports'] = 'Total follow up reports';
+$lang['shift_report_insert'] = 'Add Shift Report';
+$lang['shift_report_edit'] = 'Edit Shift Report';
+$lang['shift_report_follow_up'] = 'Follow Up Shift Report';
+$lang['shift_report_follow_up_insert'] = 'Insert Follow Up Report';
+$lang['shift_report_follow_up_edit'] = 'Edit Follow Up Report';
+$lang['total_shift_reports'] = 'Total Shift Reports';
+$lang['total_information_updates'] = 'Total Information Updates';
+$lang['total_follow_up_reports'] = 'Total Follow Up Reports';
 $lang['total_time_sheet'] = 'Total time sheets';
 $lang['total_question_type'] = 'Total question types';
 $lang['total_question_content'] = 'Total question contents';
 $lang['information_update'] = 'Information Update';
 $lang['time_sheet'] = 'Time Sheet';
-$lang['time_sheet_insert'] = 'Insert time sheet';
-$lang['time_sheet_details'] = 'Time sheet details';
+$lang['time_sheet_insert'] = 'Insert Time Sheet';
+$lang['time_sheet_edit'] = 'Edit Time Sheet';
+$lang['time_sheet_details'] = 'Time Sheet Details';
 $lang['question_type'] = 'Question Type';
-$lang['question_type_insert'] = 'Add question type';
-$lang['question_type_edit'] = 'Edit question type';
+$lang['question_type_insert'] = 'Add Question Type';
+$lang['question_type_edit'] = 'Edit Question Type';
 $lang['question_content'] = 'Question Content';
-$lang['question_content_insert'] = 'Add question content';
-$lang['question_content_edit'] = 'Edit question content';
-$lang['player_name'] = 'Player name';
+$lang['question_content_insert'] = 'Add Question Content';
+$lang['question_content_edit'] = 'Edit Question Content';
+$lang['player_name'] = 'Player Name';
 $lang['group'] = 'Group';
 $lang['shift'] = 'Shift';
 $lang['category'] = 'Category';
 $lang['sub_category'] = 'Sub-Category';
 $lang['finish_time'] = 'Finish Time';
-$lang['last_update_time'] = 'Last update time';
+$lang['last_update_time'] = 'Last UpdateTtime';
 $lang['content'] = 'Content';
 $lang['action'] = 'Action';
 $lang['no_result'] = 'No results found.';
 $lang['no_option'] = 'No option found.';
+$lang['no_category'] = 'No category selected.';
 $lang['delete_success'] = 'Record delete successfully.';
 $lang['delete_failure'] = 'Record fail to delete.';
 $lang['insert_success'] = 'Record add successfully.';
 $lang['insert_failure'] = 'Record fail to add.';
+$lang['insert_failure_duplicate'] = 'Record fail to add or already exists.';
 $lang['update_success'] = 'Record update successfully.';
 $lang['update_failure'] = 'Record fail to update.';
+$lang['update_failure_duplicate'] = 'Record fail to update or already exists.';
 $lang['invalid_data'] = 'Invalid data.';
 $lang['invalid_post_data'] = 'Invalid post data.';
-$lang['select'] = 'Please select';
+$lang['select'] = 'Please Select';
 $lang['back'] = 'Back';
 $lang['close'] = 'Close';
 $lang['save'] = 'Save';
-$lang['all'] = 'All';
+$lang['follow-up'] = 'Follow Up';
+$lang['done'] = 'Done';
+$lang['inform'] = 'Inform';
+$lang['informed'] = 'Informed';
 
 // backup & export
 $lang['backup_text'] = "This e-mail will be sent to the admin e-mail entered in site settings.";
@@ -332,13 +357,16 @@ $lang['access_token'] = "Access Token";
 $lang['access_token_secret'] = "Access Token Secret";
 $lang['add_live_person'] = "Add Live Person";
 $lang['edit_live_person'] = "Edit Live Person";
-$lang['account_id'] = "Accound ID";
+$lang['account_id'] = "Account ID";
 $lang['language'] = "Language";
 $lang['footer_title'] = "Footer Title";
 $lang['system_role'] = "System Role";
 $lang['predefined_email'] = "Predefined Email";
-$lang['website_url'] = "Website Url";
 $lang['logo'] = "Logo";
+$lang['confidential_data_masking'] = "Confidential Data Masking";
+$lang['search_section'] = "Search Section";
+$lang['collapse'] = "Collapse";
+$lang['open'] = "Open";
 
 
 
@@ -410,13 +438,25 @@ $lang['cancel'] = "Cancel";
 $lang['role'] = "Role";
 $lang['permissions'] = "Permissions";
 $lang['roles_permissions'] = "Roles & Permissions";
-$lang['show_all'] = "Show All";
+$lang['all'] = "All";
 
 //Role Page error msg
 $lang['deactivated_error'] = "This role is unable to inactive due to another user role exists";
 $lang['existed_error'] = "Role existed";
 $lang['add_success'] = "Role added successfully.";
 $lang['unable_add'] = "Unable to add role";
+$lang['never_allowed'] = "Never allowed to change admin role permissions";
+
+//Permissions
+$lang['module_name'] = "Module Name";
+$lang['add'] = "Add";
+$lang['edit'] = "Edit";
+$lang['delete'] = "Delete";
+$lang['view'] = "View";
+$lang['details'] = "Details";
+$lang['full_access'] = "Full Access";
+$lang['check_all'] = "Check All";
+$lang['confirm_msg'] = "Are you sure to";
 
 //performance report
 $lang['performance_report'] = "Performance Report";
@@ -425,7 +465,7 @@ $lang['monthly_qa'] = "Monthly QA";
 $lang['ops_monthly'] = "OPS Monthly";
 $lang['log_in_out'] = "Log In/Out";
 $lang['qa_evaluation'] = "QA Evaluation";
-$lang['operation_utilization'] = "Operation Utilization";
+$lang['operator_utilization'] = "Operator Utilization";
 $lang['daily_qa'] = "Daily QA";
 $lang['total_record'] = "Record No";
 $lang['view_pending'] = "View Pending";
@@ -444,21 +484,29 @@ $lang['update_date'] = "Update Date";
 $lang['update_by'] = "Update By";
 $lang['typing_test'] = "Typing Test";
 $lang['monthly_assessment'] = "Monthly Assesssment";
-
-$lang['msg_no_import'] = "No permission to import";
-$lang['msg_no_edit'] = "No permission to edit";
-$lang['msg_no_delete'] = "No permission to delete";
-$lang['msg_success_import'] = "Import Successful";
-$lang['msg_success_confirm_import'] = "Import Has Been Confirmed Successful";
-$lang['msg_import_clear_pending'] = "Please confirm or cancel your pending upload before upload new file.";
-$lang['msg_import_invalid_filename'] = "File name: ";
-$lang['msg_import_invalid_line'] = " contain invalid data in line: ";
-$lang['msg_import_invalid_file_size1'] = "Data invalid in line: ";
-$lang['msg_import_invalid_file_size2'] = "might contain invalid data or file size more than 500MB.";
 $lang['chat_log_id'] = "Chat log ID";
 $lang['imported_time'] = "Import Time";
 $lang['evaluate_mark'] = "Evaluation Mark";
 $lang['evaluate_by'] = "Evaluate By";
+$lang['msg_no_import'] = "No permission to import";
+$lang['msg_no_edit'] = "No permission to edit";
+$lang['msg_no_delete'] = "No permission to delete";
+$lang['msg_success_import'] = "Import Successful, do you want to confirm current import?";
+$lang['msg_success_confirm_import'] = "Import Has Been Confirmed Successful";
+$lang['msg_import_clear_pending'] = "Pending file is in progress, please complete before uploading new file. Pending by : ";
+$lang['msg_import_invalid_filename'] = "File name: ";
+$lang['msg_import_invalid_line'] = " contain invalid data in line: ";
+$lang['msg_import_invalid_file_size1'] = "Data invalid in file: ";
+$lang['msg_import_invalid_file_size2'] = " or contain invalid data or file size more than 500MB.";
+$lang['msg_confirm_import'] = "Are you sure to confirm this import?";
+$lang['msg_delete_import'] = "Are you sure to delete this import?";
+$lang['login_time'] = "Login Time";
+$lang['chat_time'] = "Chat Time";
+$lang['time_online'] = "Time Online";
+$lang['time_online_no_chat'] = "Time Online - Idle";
+$lang['time_not_available'] = "Time N/A";
+$lang['time_not_available_chat'] = "Time N/A but Chatting";
+$lang['percentage'] = "Percentage";
 
 //Roster management
 $lang['roster'] = "Roster";
@@ -469,9 +517,20 @@ $lang['month'] = "Month";
 $lang['monthly'] = "Monthly";
 $lang['schedule'] = "Schedule";
 $lang['week'] = "Week";
-$lang['date'] = "date";
+$lang['date'] = "Date";
 $lang['name'] = "Name";
 $lang['designation'] = "Designation";
+$lang['request'] = "Request";
+$lang['group_leader'] = "Leader";
+$lang['senior'] = "Senior";
+$lang['customer_service_short'] = "CS";
+$lang['head_count'] = "Counts";
+$lang['in_charge'] = "P.I.C";
+$lang['hod'] = "H.O.D";
+$lang['admin'] = "Admin";
+$lang['morning'] = "Morning";
+$lang['afternoon'] = "Afternoon";
+$lang['night'] = "Night";
 $lang['day_of_week_short']['sunday'] = "Sun";
 $lang['day_of_week_short']['monday'] = "Mon";
 $lang['day_of_week_short']['tuesday'] = "Tue";
@@ -488,31 +547,31 @@ $lang['day_of_week']['friday'] = "Friday";
 $lang['day_of_week']['saturday'] = "Saturday";
 
 //member details
+$lang['save_user'] = "Save User";
+$lang['user_information'] = "User Information";
 $lang['user_details'] = "User Details";
 $lang['user_profile'] = "User Profile";
 $lang['user_ids'] = "User IDs";
 $lang['leave_details'] = "Leave Details";
 $lang['user_profile'] = "User Profile";
+$lang['back'] = "Back";
+$lang['children'] = "Children";
+$lang['friends'] = "Friends";
+$lang['parents'] ="Parents";
+$lang['relative'] = "Relative";
+$lang['spouse'] = "Spouse";
+$lang['siblings'] = "Siblings";
+$lang['others'] = "Others";
+
+
 
 //others (buttons etc)
 $lang['expand'] = "Expand";
 $lang['collapse'] = "Collapse";
 $lang['to'] = "To";
 
-//Permissions
-$lang['module_name'] = "Module Name";
-$lang['add'] = "Add";
-$lang['edit'] = "Edit";
-$lang['delete'] = "Delete";
-$lang['view'] = "View";
-$lang['details'] = "Details";
-$lang['full_access'] = "Full Access";
-$lang['check_all'] = "Check All";
-
 //Operation
 $lang['operation'] = "Operation";
-
-
 
 //page 404
 $lang['page_not_found'] = "Page Not Found";

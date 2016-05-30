@@ -6,10 +6,10 @@
 
 
 <button id="js-search" type="button" class="btn btn-default" data-toggle="collapse" data-target="#search_wrapper">
-    <span id="js-search-text"><i class="fa fa-expand pd-r-5"></i> expand</span> search <i class="fa fa-search pd-l-5"></i>
+    <span id="js-search-text"><i class="fa fa-expand pd-r-5"></i> <?php print $this->lang->line('expand'); ?></span> <?php print $this->lang->line('search'); ?> <i class="fa fa-search pd-l-5"></i>
 </button>
 
-    <div id="search_wrapper" class="collapse">
+    <div id="search_wrapper" class="collapse <?php print Settings_model::$db_config['search_section']; ?>">
         <form name="list_members_form" id="list_members_form" onsubmit="return searchData();">
 
         <div class="pd-15 bg-primary mg-t-15 mg-b-10">
@@ -39,7 +39,7 @@
 
                 <div class="col-sm-3">
                     <div class="form-group">
-                        <label for="last_name"><?php print $this->lang->line('report_to'); ?></label>
+                        <label for="leader"><?php print $this->lang->line('report_to'); ?></label>
                         <input type="text" name="leader" id="leader" class="form-control">
                     </div>
                 </div>
@@ -49,9 +49,8 @@
                         <select name="status" id="status" class="form-control">
                             <option value="active"><?php print $this->lang->line('active'); ?></option>
                             <option value="inactive"><?php print $this->lang->line('inactive'); ?></option>
-                            <option value="inactive"><?php print $this->lang->line('pending'); ?></option>
+                            <option value="pending"><?php print $this->lang->line('pending'); ?></option>
                             <option value="all"><?php print $this->lang->line('all'); ?></option>
-
                         </select>
                     </div>
                 </div>
@@ -61,7 +60,7 @@
 		<div class="row mg-b-20">
 			<div class="col-xs-12 clearfix">
                 <button type="submit" name="member_search_submit" id="member_search_submit" class="btn btn-primary btn-lg js-btn-loading" data-loading-text="Searching...">
-                    <i class="fa fa-check pd-r-5"></i> <?php print $this->lang->line('search_user'); ?>
+                    <i class="fa fa-check pd-r-5"></i> <?php print $this->lang->line('search'); ?>
                 </button>
             </div>
 		</div>
@@ -74,7 +73,7 @@
             <div class="row">
                 <div class="col-xs-7">
                     <h4 class="text-uppercase f900">
-                        Total Users : <?php //print  $this->lang->line('total_members') .": "; ?> <span id="total-rows"></span>
+                        <?php print $this->lang->line('total_users'); ?> : <?php //print  $this->lang->line('total_members') .": "; ?> <span id="total-rows"></span>
         			</h4>
                 </div>
             </div>
@@ -82,7 +81,7 @@
             <table class="table table-hover user_listing">
                 <thead>
                 <tr>
-                    <th><a href="javascript:void(0)" onclick="chgOrder('user_id')"><i dataname="user_id" class="table-th"></i> ID</a></th>
+                    <th><a href="javascript:void(0)" onclick="chgOrder('count')"><i dataname="count" class="table-th"></i> No</a></th>
                     <th><a href="javascript:void(0)" onclick="chgOrder('username')"><i dataname="username" class="table-th"></i> <?php print $this->lang->line('username'); ?></a></th>
                     <th><a href="javascript:void(0)" onclick="chgOrder('real_name')"><i dataname="real_name" class="table-th"></i> <?php print $this->lang->line('full_name'); ?></a></th>
                     <th><a href="javascript:void(0)" onclick="chgOrder('role')"><i dataname="role" class="table-th"></i> <?php print $this->lang->line('role'); ?></a></th>
@@ -107,7 +106,11 @@
 	</div>
 
 <script>
+var permission = <?php echo json_encode($permission, true); ?>;
+
 $(document).ready(function($){
+
+
 getNewData();
 });
 
@@ -116,7 +119,7 @@ offset : 0,
 order_by : 'user_id',
 sort_order : 'desc',
 search_data : {},
-ajaxUrl: "<?php print base_url('adminpanel/List_members/get_report'); ?><?php isset($_GET['type'])? print '/'.$_GET['type'] : ''?>"
+ajaxUrl: "<?php print base_url('adminpanel/List_members/get_users'); ?><?php isset($_GET['type'])? print '/'.$_GET['type'] : ''?>"
 }
 
 var searchData = function() {
@@ -127,7 +130,7 @@ var new_leader = $('#leader').val();
 var new_status = $('#status').val();
 paging.search_data = {
     username : new_username,
-    real_name : encodeURIComponent(new_real_name),
+    real_name : new_real_name,
     email : new_email,
     leader : new_leader,
     status : new_status,
@@ -140,7 +143,6 @@ return false;
 
 var drawTable = function (data) {
 var html ='';
-
 if (data.length != 0) {
     $('#user_listing_table').css('display', 'block');
     $('#no_result').css('display', 'none');
@@ -148,17 +150,25 @@ if (data.length != 0) {
     $('#user_listing_table').css('display', 'none');
     $('#no_result').css('display', 'block');
 }
-
+var count = paging.offset+1;
 $.each( data, function( key, value ) {
 
 
-    var date = new Date( Date.parse(value['last_login']) );
-    var dateYMD = new Date(date).toISOString().slice(0, 10).replace(/-/g, '/');
+    var date = new Date(value['last_login'].substr(0, 4), value['last_login'].substr(5, 2), value['last_login'].substr(8, 2), value['last_login'].substr(11, 2), value['last_login'].substr(14, 2), value['last_login'].substr(17, 2));
+    var dateYMD = date.toISOString().slice(0, 10).replace(/-/g, '/');
     var dateHSi = (date.getHours() % 12) + ':' + date.getMinutes() + ' ' + ( ( date.getHours() >= 12 ) ? 'PM' : 'AM' );
+
+    for (var k in value){
+        if (value.hasOwnProperty(k)) {
+            if(value[k]=="0" ){
+                value[k] ="";
+            }
+        }
+    }
 
     html +='<tr>';
     // html +='<td>' + value['daily_qa_id'] + '</td>';
-    html +='<td>' + value['user_id'] + '</td>';
+    html +='<td>' + count + '</td>';
     html +='<td>' + value['username'] + '</td>';
     html +='<td>' + value['real_name'] + '</td>';
     html +='<td>' + value['role'] + '</td>';
@@ -177,11 +187,18 @@ $.each( data, function( key, value ) {
         html +='<td><label class="label label-danger">' + value['status'] + '</label></td>';
 
     }
-    // html +='<td><a href="#" class="btn btn-info btn-circle" title="" data-toggle="tooltip" data-placement="top" data-original-title="User Sessions"><i class="fa fa-list"></i></a>'
-    html +='<td><a href="<?php print base_url(); ?>adminpanel/member_detail/'+value['user_id']+'" class="btn btn-success btn-circle" title="" data-toggle="tooltip" data-placement="top" data-original-title="View User"><i class="fa fa-eye"></i></a>'
-    html +='<a href="<?php print base_url(); ?>adminpanel/Edit_member_detail/'+value['user_id']+'" class="btn btn-primary btn-circle edit" title="" data-toggle="tooltip" data-placement="top" data-original-title="Edit User"><i class="fa fa-pencil-square"></i></a>'
-    html +='<a href="#" onclick="inactiveUser(&quot;' +value['username'] + '&quot;,&quot;'+ value['status']+'&quot; )" class="btn btn-danger btn-circle" title="" data-toggle="tooltip" data-placement="top" data-original-title="Delete User"><i class="fa fa-power-off"></i></a></td>';
+    html +='<td >';
+    html +='<a href="<?php print base_url(); ?>adminpanel/member_detail/'+value['user_id']+'" class="btn btn-success btn-circle" title="" data-toggle="tooltip" data-placement="top" data-original-title="View User"><i class="fa fa-eye"></i></a>'
+
+    if ( permission.edit ) {
+        html +='<a href="<?php print base_url(); ?>adminpanel/Edit_member_detail/'+value['user_id']+'" class="btn btn-primary btn-circle edit" title="" data-toggle="tooltip" data-placement="top" data-original-title="Edit User"><i class="fa fa-pencil-square"></i></a>'
+    }
+    if ( permission.delete ) {
+        html +='<a href="#" onclick="inactiveUser(&quot;' +value['username'] + '&quot;,&quot;'+ value['status']+'&quot; )" class="btn btn-danger btn-circle" title="" data-toggle="tooltip" data-placement="top" data-original-title="Inactive User"><i class="fa fa-power-off"></i></a></td>';
+    }
+    html +='</td>';
     html +='</tr>';
+    count++
 });
 
 $('#table-data').html(html);
@@ -196,8 +213,8 @@ var inactiveUser = function(username, current_status) {
                 data: data,
                 type: "post",
                 success: function(data) {
+                        bootbox.alert(data);
                     getNewData();
-                    bootbox.alert(username+' has been deactivated');
                 },
                 error: function(data) {
                     console.log(data);

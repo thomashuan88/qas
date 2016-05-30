@@ -4,6 +4,8 @@ class Activate_account_model extends CI_Model {
 
     public function __construct() {
         parent::__construct();
+        $this->load->helper('password');
+
     }
 
     /**
@@ -16,9 +18,8 @@ class Activate_account_model extends CI_Model {
      *
      */
 
-    public function activate_member($email, $nonce) {
-        log_message("error",$email);
-        log_message("error",$nonce);
+    public function activate_member($email, $nonce, $password) {
+
         $this->db->select('email, nonce, active, status,
                            unix_timestamp(NOW()) - unix_timestamp(last_login) < '. Settings_model::$db_config['activation_link_expires'].' AS timediff')
             ->from('users')
@@ -33,12 +34,12 @@ class Activate_account_model extends CI_Model {
             $row = $q->row();
 
             // is account banned?
-            if ($row->status == "inactive") {
+            if ($row->status == "Inactive") {
                 return "inactive";
             }
 
             // is account activated?
-            if ($row->status == "active") {
+            if ($row->status == "Active") {
                 return "activated";
             }
 
@@ -48,7 +49,11 @@ class Activate_account_model extends CI_Model {
                 return "expired";
             }else{
                 // timestamp is ok -> everything is ok to activate account
-                $data = array('status' => "active");
+                $data = array(
+                    'status' => "Active",
+                    'password' => hash_password($password, $nonce)
+                );
+                $this->db->where('email', $email);
                 $this->db->update('users', $data);
                 if($this->db->affected_rows() == 1) {
                     return "validated";

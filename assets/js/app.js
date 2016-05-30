@@ -303,7 +303,7 @@ var waitForFinalEvent = (function() {
                     e.preventDefault();
                     bootbox.confirm(confirm_message, function (confirmed) {
                         if (confirmed) {
-                            $(this).button('loading');
+                            //$(this).button('loading');
                             $form.submit();
                         } else {
                             $parsley = $form.parsley();
@@ -358,10 +358,63 @@ var waitForFinalEvent = (function() {
             parsleyFactory( $oauth2FinalizeForm, $("#oauth2_finalize_submit") );
         }
 
+        // Parsley shift report insert form
+        var shift_report_insert_form = $("#shift_report_insert_form");
+        if (shift_report_insert_form.length) {
+            parsleyFactory( shift_report_insert_form, $("#shift_report_insert_submit") );
+        }
+
+        // Parsley shift report edit form
+        var shift_report_follow_up_insert_form = $("#shift_report_follow_up_insert_form");
+        if (shift_report_follow_up_insert_form.length) {
+            parsleyFactory( shift_report_follow_up_insert_form, $("#shift_report_follow_up_insert_submit") );
+        }
+
+        // Parsley shift report follow up insert form
+        var shift_report_edit_form = $("#shift_report_edit_form");
+        if (shift_report_edit_form.length) {
+            parsleyFactory( shift_report_edit_form, $("#shift_report_edit_submit") );
+        }
+
+        // Parsley shift report follow up edit form
+        var shift_report_follow_up_edit_form = $("#shift_report_follow_up_edit_form");
+        if (shift_report_follow_up_edit_form.length) {
+            parsleyFactory( shift_report_follow_up_edit_form, $("#shift_report_follow_up_edit_submit") );
+        }
+        // Parsley information update insert form
+        var information_update_insert_form = $("#information_update_insert_form");
+        if (information_update_insert_form.length) {
+            parsleyFactory( information_update_insert_form, $("#information_update_insert_submit") );
+        }
+
+        // Parsley information update edit form
+        var information_update_follow_up_insert_form = $("#information_update_follow_up_insert_form");
+        if (information_update_follow_up_insert_form.length) {
+            parsleyFactory( information_update_follow_up_insert_form, $("#information_update_follow_up_insert_submit") );
+        }
+
+        // Parsley information update follow up insert form
+        var information_update_edit_form = $("#information_update_edit_form");
+        if (information_update_edit_form.length) {
+            parsleyFactory( information_update_edit_form, $("#information_update_edit_submit") );
+        }
+
+        // Parsley information update follow up edit form
+        var information_update_follow_up_edit_form = $("#information_update_follow_up_edit_form");
+        if (information_update_follow_up_edit_form.length) {
+            parsleyFactory( information_update_follow_up_edit_form, $("#shift_report_follow_up_edit_submit") );
+        }
+
         // Parsley time sheet insert form
         var time_sheet_insert_form = $("#time_sheet_insert_form");
         if (time_sheet_insert_form.length) {
             parsleyFactory( time_sheet_insert_form, $("#time_sheet_insert_submit") );
+        }
+
+        // Parsley time sheet edit form
+        var time_sheet_edit_form = $("#time_sheet_edit_form");
+        if (time_sheet_edit_form.length) {
+            parsleyFactory( time_sheet_edit_form, $("#time_sheet_edit_submit") );
         }
 
         // Parsley question type insert form
@@ -370,39 +423,77 @@ var waitForFinalEvent = (function() {
             parsleyFactory( question_type_insert_form, $("#question_type_insert_submit") );
         }
 
+        // Parsley question type edit form
+        var question_type_edit_form = $("#question_type_edit_form");
+        if (question_type_edit_form.length) {
+            parsleyFactory( question_type_edit_form, $("#question_type_edit_submit") );
+        }
+
         // Parsley question content insert form
         var question_content_insert_form = $("#question_content_insert_form");
         if (question_content_insert_form.length) {
             parsleyFactory( question_content_insert_form, $("#question_content_insert_submit") );
         }
+
+        // Parsley question content insert form
+        var question_content_edit_form = $("#question_content_edit_form");
+        if (question_content_edit_form.length) {
+            parsleyFactory( question_content_edit_form, $("#question_content_edit_submit") );
+        }
+
         //Parsley shift setting edit form
         var shift_setting_edit_form = $("#shift_setting_edit_form");
         if (shift_setting_edit_form.length) {
             parsleyFactory( shift_setting_edit_form, $("#shift_setting_edit_submit") );
         }
 
-        //Parley product setting add form
+        //Parsley product setting add form
         var product_setting_add_form = $("#product_setting_add_form");
         if (product_setting_add_form.length) {
             parsleyFactory( product_setting_add_form, $("#product_setting_add_submit") );
         }
 
-        //Parley product setting add form
+        //Parsley product setting add form
         var product_setting_edit_form = $("#product_setting_edit_form");
         if (product_setting_edit_form.length) {
             parsleyFactory( product_setting_edit_form, $("#product_setting_edit_submit") );
         }
 
-        //Parley live person setting add form
+        //Parsley live person setting add form
         var live_person_setting_add_form = $("#live_person_setting_add_form");
         if (live_person_setting_add_form.length) {
             parsleyFactory( live_person_setting_add_form, $("#live_person_setting_add_submit") );
         }
 
-        //Parley live person setting edit form
+        //Parsley live person setting edit form
         var live_person_setting_edit_form = $("#live_person_setting_edit_form");
         if (live_person_setting_edit_form.length) {
             parsleyFactory( live_person_setting_edit_form, $("#live_person_setting_edit_submit") );
+        }
+
+        //Parsley change password form
+        var change_password_form = $("#change_password_form");
+        if (change_password_form.length) {
+            parsleyFactory( change_password_form, $("#change_password_submit") );
+        }
+
+        //Parsley system setting form
+        var system_setting_form = $("#system_setting_form");
+        if (system_setting_form.length) {
+            parsleyFactory( system_setting_form, $("#system_setting_submit") );
+        }
+
+        // //Parsely reset password form
+        // var reset_password_form = $("#reset_password_form");
+        // if (reset_password_form.length) {
+        //     parsleyFactory( reset_password_form, $("#reset_password_submit") );
+        // }
+
+
+
+        var $add_role_form = $("#add_role_form");
+        if ($add_role_form.length) {
+            parsleyFactory( $add_role_form, $("#add_role_save") );
         }
 
 

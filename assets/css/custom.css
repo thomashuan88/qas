@@ -87,6 +87,10 @@ body.modal-open {
     background: #FB7A48;
 }
 
+.label-info {
+    background: #9D9D9D;
+}
+
 .btn-circle {
     width: 30px;
     height: 30px;
@@ -131,4 +135,8 @@ th {
 }
 .monthly-qa th {
     text-align: center;
+}
+
+.table-hover > tbody > tr:hover {
+  background-color: #eeeeee !important; 
 }

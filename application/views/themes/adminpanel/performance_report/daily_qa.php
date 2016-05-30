@@ -2,16 +2,14 @@
 
 <?php $this->load->view('themes/'. Settings_model::$db_config['adminpanel_theme'] .'/partials/content_head.php'); ?>
 <link href="<?php print base_url(); ?>assets/js/vendor/plupload-2.1.9/js/jquery.ui.plupload/css/jquery.ui.plupload.css" rel="stylesheet">
-<!-- <script type="text/javascript" src="<?php print base_url(); ?>assets/js/vendor/jquery-ui-1.10.2.js"></script> -->
 <script src="<?php print base_url(); ?>assets/js/vendor/plupload-2.1.9/js/plupload.full.min.js"></script>
 <script src="<?php print base_url(); ?>assets/js/vendor/plupload-2.1.9/js/jquery.ui.plupload/jquery.ui.plupload.min.js"></script>
 
 <div class="row">
     <div class="col-md-4">
-        <div id="pending_list" style="display:none;"></div>
-        <button type="button" name="confirm_import" id="confirm_import" class="btn btn-default btn-md" style="display:none;" ><i class="fa fa-play"></i> &nbsp; <?php print $this->lang->line('confirm_import'); ?></button>
+        <button type="button" name="confirm_import" id="confirm_import" class="btn btn-success btn-md" style="display:none;" ><i class="fa fa-play"></i> &nbsp; <?php print $this->lang->line('confirm_import'); ?></button>
         <?php if ( isset( $permission['delete'] ) ): ?>
-        <button type="button" name="delete_import" id="delete_import" class="btn btn-default btn-md" style="display:none;" ><i class="fa fa-ban"></i> &nbsp; <?php print $this->lang->line('delete_import'); ?></button>
+        <button type="button" name="delete_import" id="delete_import" class="btn btn-danger btn-md" style="display:none;" ><i class="fa fa-ban"></i> &nbsp; <?php print $this->lang->line('delete_import'); ?></button>
         <?php endif; ?>
         <button id="js-search" type="button" class="btn btn-default" data-toggle="collapse" data-target="#search_wrapper">
             <span id="js-search-text"><i class="fa fa-compress pd-r-6"></i> <?php print $this->lang->line('collapse'); ?></span> <i class="fa fa-search pd-l-5"></i>
@@ -30,7 +28,7 @@
 </div>
 <!-- search -->
 <div id="search_container">
-    <div id="search_wrapper" class="collapse in">
+    <div id="search_wrapper" class="collapse <?php print Settings_model::$db_config['search_section']; ?>">
         <form name="daily_qa_form" id="daily_qa_form" onsubmit="return searchData();">
             <div class="pd-15 bg-primary mg-t-15 mg-b-10">
                 <h2 class="text-uppercase mg-t-0">
@@ -46,8 +44,8 @@
                     </div>
                     <div class="col-sm-3">
                         <div class="form-group contain-datepicker">
-                            <label for="import_date"><?php print $this->lang->line('import_date'); ?></label>
-                            <input type="text" name="import_date" id="import_date" class="form-control datepicker" autocomplete="off" />
+                            <label for="date"><?php print $this->lang->line('date'); ?></label>
+                            <input type="text" name="date" id="date" class="form-control datepicker" autocomplete="off" />
                         </div>
                     </div>
                 </div>
@@ -81,6 +79,7 @@
                 <tr>
                     <th><a href="javascript:void(0)" onclick="chgOrder('daily_qa_id')"><i dataname="daily_qa_id" class="table-th"></i> <?php print $this->lang->line('id'); ?></a></th>
                     <th><a href="javascript:void(0)" onclick="chgOrder('username')"><i dataname="username" class="table-th"></i> <?php print $this->lang->line('username'); ?></a></th>
+                    <th><a href="javascript:void(0)" onclick="chgOrder('date')"><i dataname="date" class="table-th"></i> <?php print $this->lang->line('date'); ?></a></th>
                     <th><a href="javascript:void(0)" onclick="chgOrder('yes')"><i dataname="yes" class="table-th"></i> <?php print $this->lang->line('yes'); ?></a></th>
                     <th><a href="javascript:void(0)" onclick="chgOrder('no')"><i dataname="no" class="table-th"></i><?php print $this->lang->line('no'); ?></a></th>
                     <th><a href="javascript:void(0)" onclick="chgOrder('csi')"><i dataname="csi" class="table-th"></i> CSI </a></th>
@@ -152,6 +151,7 @@ var paging = {
 // import file 
 jQuery(document).ready(function($){
     var errMsg = '<?php echo $this->lang->line('msg_success_import'); ?>';
+    var err = 0;
 
     var uploader = $("#uploader").plupload({
         // General settings
@@ -173,16 +173,28 @@ jQuery(document).ready(function($){
                 var response = JSON.parse(object.response);
                 if(response.error) {
                     errMsg = response.message;
+                    err = 1;
                 }
             },
             Error: function( uploader, error ) {
                 bootbox.alert( "<?php echo $this->lang->line('msg_import_invalid_file_size1'); ?>" + error.file.name + " <?php echo $this->lang->line('msg_import_invalid_file_size1'); ?>" );
+                err = 1;
             },
             UploadComplete: function( up, file, info ) { // upload callback
-                bootbox.alert( errMsg );
-                $('#confirm_import').prop('disabled', false);
-                $('#delete_import').prop('disabled', false);
-                getNewData();
+                if (err == 0) {
+                    bootbox.confirm(errMsg, function(confirmed){
+                        if (confirmed) {
+                            confirmImport();
+                        } else {
+                            $('#confirm_import').prop('disabled', false);
+                            $('#delete_import').prop('disabled', false);
+                            getNewData();
+                        }
+                    });
+                } else {
+                    bootbox.alert(errMsg);
+                }
+
                 up.splice();
             },
         },
@@ -210,14 +222,18 @@ $("#export_btn").click(function(){
         if (searchDataUrl != "") {
             searchDataUrl += "/";
         }
-        searchDataUrl += key + "/" + encodeURIComponent(paging.search_data[key]);
+        searchDataUrl += key + "/";
+        if (encodeURIComponent(paging.search_data[key]) == '') {
+            searchDataUrl +=  null;
+        } else {
+            searchDataUrl +=  encodeURIComponent(paging.search_data[key]);
+        }
     }
 
     window.open('<?php print base_url('adminpanel/daily_qa/export_report'); ?>/' + encodeURIComponent(paging.order_by) + '/' + encodeURIComponent(paging.sort_order) + '/' + searchDataUrl, '_blank' );
 });
 
 $("#pending").click(function() {
-    $("#pending_list").css("display", "block");
     $("#js-search").css("display", "none");
 
     $("#search_container").removeClass("collapse in");
@@ -240,12 +256,10 @@ $("#pending").click(function() {
             import_by : '<?php print $this->session->userdata('username'); ?>'
         }
     }
-
-    getPendingList();
+    getNewData();
 });
 
 $("#confirmed").click(function() {
-    $("#pending_list").css("display", "none");
     $("#js-search").css("display", "block");
 
     $("#search_container").removeClass("collapse");
@@ -272,30 +286,38 @@ $("#confirmed").click(function() {
 });
 
 $('#confirm_import').click(function() {
-    bootbox.confirm('Are you sure to confirm this import?', function(confirmed){
-        if (confirmed) {
-            var requestData = { import_by: paging.search_data.import_by };
-
-            $.ajax({
-                url: '<?php print base_url('adminpanel/daily_qa/confirm_pending'); ?>',
-                data: requestData,
-                type: 'post',
-                dataType: 'json',
-                success: function(data) {
-                    bootbox.alert(data.message);
-                    getPendingList();
-                    getNewData();
-                },
-                error: function(data) {
-                    bootbox.alert("Unknown error has occur.");
-                }
-            });
+    bootbox.confirm('<?php print $this->lang->line('msg_confirm_import'); ?>', function(confirmed){
+        if ( confirmed ) {
+            confirmImport();
         }
     });
 })
 
+var confirmImport = function () {
+    var requestData = { import_by: paging.search_data.import_by };
+
+    $.ajax({
+        url: '<?php print base_url('adminpanel/daily_qa/confirm_pending'); ?>',
+        data: requestData,
+        type: 'post',
+        dataType: 'json',
+        success: function(data) {
+            bootbox.alert(data.message);
+            $('#confirm_import').prop('disabled', true);
+            $('#delete_import').prop('disabled', true);
+            getNewData();
+        },
+        error: function(data) {
+            $('#pending').click();
+            $('#confirm_import').prop('disabled', false);
+            $('#delete_import').prop('disabled', false);
+            bootbox.alert("<?php print $this->lang->line('account_unknown_error'); ?>");
+        }
+    });
+}
+
 $('#delete_import').click(function() {
-    bootbox.confirm('Are you sure to delete this import?', function(confirmed){
+    bootbox.confirm('<?php print $this->lang->line('msg_delete_import'); ?>', function(confirmed){
         if (confirmed) {
             var requestData = { import_by: paging.search_data.import_by };
 
@@ -306,71 +328,24 @@ $('#delete_import').click(function() {
                 dataType: 'json',
                 success: function(data) {
                     bootbox.alert(data.message);
-                    getPendingList();
+                    $('#confirm_import').prop('disabled', true);
+                    $('#delete_import').prop('disabled', true);
                     getNewData();
                 },
                 error: function(data) {
-                    console.log(data)
-                    bootbox.alert("Unknown error has occur.");
+                    bootbox.alert("<?php print $this->lang->line('account_unknown_error'); ?>");
                 }
             });
         }
     });
 })
 
-var chgImportSession = function(selected) {
-    paging.search_data.import_by = selected.value;
-    getNewData();
-}
-
-var getPendingList = function() {
-    $.ajax({
-        url: '<?php print base_url('adminpanel/daily_qa/pending_list'); ?>',
-        success: function(data) {
-            var jsonData = JSON.parse(data);
-
-            if (jsonData.length > 0) {
-                $('#confirm_import').prop('disabled', false);
-                $('#delete_import').prop('disabled', false);
-                var html = '<div class="form-group"><select name="select_import_session" id="select_import_session" class="form-control" onchange="chgImportSession(this);">';
-
-                $.each( jsonData, function( key, value ) {
-                    html += '<option value = "' + value['import_by'] + '"';
-
-                    if( value['import_by'] == paging.search_data.import_by ) {
-                        html += 'selected';
-                    }
-
-                    html += '>' + value['import_by'] + 
-                        ' - ' + value['import_date'] + '</option>';
-                });
-
-                html += '</select></div>';
-
-                $('#pending_list').html(html);
-                
-                paging.search_data.import_by = $('#select_import_session option:selected').val();
-                
-            } else {
-                $('#confirm_import').prop('disabled', true);
-                $('#delete_import').prop('disabled', true);
-            }
-            getNewData();
-            setHeaderIcon();
-
-        },
-        error: function(data) {
-            // console.log(data);
-        }
-    });
-}
-
 var searchData = function() {
-    var new_importDate = $('#import_date').val();
+    var new_Date = $('#date').val();
     var new_username = $('#username').val();
 
     paging.search_data = {
-        import_date : new_importDate,
+        date : new_Date,
         username : new_username,
     };
 
@@ -384,7 +359,7 @@ var deleteData = function(data_id) {
         if (confirmed) {
             $.ajax({
                 url: "<?php print base_url('adminpanel/daily_qa/delete_report'); ?>",
-                data: JSON.stringify(data_id),
+                data: { data:JSON.stringify( data_id  ) },
                 type: "post",
                 dataType: 'json',
                 success: function(data) {
@@ -394,128 +369,18 @@ var deleteData = function(data_id) {
                         bootbox.alert(data.message);
                     }
 
-                    getPendingList();
                     getNewData();
                 },
                 error: function(data) {
-                    bootbox.alert('Unknown Error.');
+                    bootbox.alert("<?php print $this->lang->line('account_unknown_error'); ?>");
                 }
             });
         }
     });
 }
 
-var editData = function(data_id) {
-    var datarow =  $( '[data_id=' + data_id +']' ).children();
-    var id = datarow[0].innerText;
-    var username = datarow[1].innerText;
-    var yes = datarow[2].innerText;
-    var no = datarow[3].innerText;
-    var csi = datarow[4].innerText;
-    var art = datarow[5].innerText;
-    var aht = datarow[6].innerText;
-    var quantity = datarow[7].innerText;
-    var import_date = datarow[8].innerText;
-    import_date = import_date.slice(0,10) + " " + import_date.slice(11,16);
-    var import_by = datarow[9].innerText;
-    
-    bootbox.dialog({
-            title: "<?php print $this->lang->line('edit_record'); ?>",
-            message: 
-    '<div class="row">' +
-        '<div class="col-md-12">' +
-            '<form class="form-horizontal" id="edit_form">' +
-                '<input id="record_id" name="record_id" type="hidden" value="' + id + '" class="form-control input-md">' +
-                '<div class="form-group">' +
-                    '<label class="col-md-4 control-label" for="username"><?php print $this->lang->line('username'); ?> : </label>' +
-                    '<div class="col-md-4">' +
-                        '<input id="username" name="username" type="text" disabled value="' + username + '" class="form-control input-md">' +
-                    '</div>' +
-                '</div>' +
-                '<div class="form-group">' +
-                    '<label class="col-md-4 control-label" for="yes"><?php print $this->lang->line('yes'); ?> : </label>' +
-                    '<div class="col-md-4">' +
-                        '<input id="yes" name="yes" type="text" value="' + yes + '" class="form-control input-md">' +
-                    '</div>' +
-                '</div>' +
-                '<div class="form-group">' +
-                    '<label class="col-md-4 control-label" for="no"><?php print $this->lang->line('no'); ?> : </label>' +
-                    '<div class="col-md-4">' +
-                        '<input id="no" name="no" type="text" value="' + no + '" class="form-control input-md">' +
-                    '</div>' +
-                '</div>' +
-                '<div class="form-group">' +
-                    '<label class="col-md-4 control-label" for="csi">CSI : </label>' +
-                    '<div class="col-md-4">' +
-                        '<input id="csi" name="csi" type="text" value="' + csi + '" class="form-control input-md">' +
-                    '</div>' +
-                '</div>' +
-                '<div class="form-group">' +
-                    '<label class="col-md-4 control-label" for="art">ART : </label>' +
-                    '<div class="col-md-4">' +
-                        '<input id="art" name="art" type="text" value="' + art+ '" class="form-control input-md">' +
-                    '</div>' +
-                '</div>' +
-                '<div class="form-group">' +
-                    '<label class="col-md-4 control-label" for="aht">AHT : </label>' +
-                    '<div class="col-md-4">' +
-                        '<input id="aht" name="aht" type="text" value="' + aht + '" class="form-control input-md">' +
-                    '</div>' +
-                '</div>' +
-                '<div class="form-group">' +
-                    '<label class="col-md-4 control-label" for="quantity"><?php print $this->lang->line('quantity'); ?> : </label>' +
-                    '<div class="col-md-4">' +
-                        '<input id="quantity" name="quantity" type="text" value="' + quantity + '" class="form-control input-md">' +
-                    '</div>' +
-                '</div>' +
-                '<div class="form-group">' +
-                    '<label class="col-md-4 control-label" for="import_date"><?php print $this->lang->line('import_date'); ?> : </label>' +
-                    '<div class="col-md-4">' +
-                        '<input id="import_date" name="import_date" disabled type="text" value="' + import_date + '" class="form-control input-md">' +
-                    '</div>' +
-                '</div>' +
-                '<div class="form-group">' +
-                    '<label class="col-md-4 control-label" for="import_by"><?php print $this->lang->line('import_by'); ?> : </label>' +
-                    '<div class="col-md-4">' +
-                        '<input id="import_by" name="import_by" disabled type="text" value="' + import_by + '" class="form-control input-md">' +
-                    '</div>' +
-                '</div>' +
-                '</div>' +
-            '</form>' +
-        '</div>' +
-    '</div>',
-            buttons: {
-                success: {
-                    label: "Save",
-                    className: "btn-success",
-                    callback: function () {
-                        $.ajax({
-                            url: "<?php print base_url('adminpanel/daily_qa/edit_report'); ?>",
-                            data: $('#edit_form').serialize(),
-                            type: "post",
-                            dataType: "json",
-                            success: function(data) {
-                                bootbox.alert(data.message);
-                                paging.order_by = 'update_date';
-                                paging.sort_order = 'desc';
-                                paging.offset = 0;
-                                getNewData();
-                                setHeaderIcon();
-                                bootbox.alert('Record Successfully Updated.');
-                            },
-                            error: function(data) {
-                                bootbox.alert('Invalid Action.');
-                            }
-                        });
-                    }
-                }
-            }
-        }
-    );
-}
-
 var drawTable = function (data) {
-    var html ='';
+    var html = '';
     if (data.length != 0) {
         $('#dailyqa_table').css('display', 'block');
         $('#no_result').css('display', 'none');
@@ -525,21 +390,25 @@ var drawTable = function (data) {
     }
 
     $.each( data, function( key, value ) {
+        var dateDate = new Date(value['date']) ;
+        var dateYMD = dateDate.getFullYear() + '/' + (dateDate.getMonth() + 1) + '/' + dateDate.getDate();
 
-        var date = new Date(value['import_date'].substr(0, 4), value['import_date'].substr(5, 2), value['import_date'].substr(8, 2), value['import_date'].substr(11, 2), value['import_date'].substr(14, 2), value['import_date'].substr(17, 2));
-        var dateYMD = date.toISOString().slice(0, 10).replace(/-/g, '/');
-        var dateHSi = (date.getHours() % 12) + ':' + date.getMinutes() + ' ' + ( ( date.getHours() >= 12 ) ? 'PM' : 'AM' );
-        
+        var importDate = new Date(value['import_date']) ;
+        var importYMD =  importDate.getFullYear() + '/' + (importDate.getMonth() + 1) + '/' + importDate.getDate();
+        if(importDate.getHours() >12 ) { var p = 'PM'} else {var p =  'AM'};
+        var importHSi = (importDate.getHours() % 12 || 12) + ':' + importDate.getMinutes() +  ' ' + p ;
+
         html +='<tr data_id="' + value['daily_qa_id'] + '">';
         html +='<td>' + value['daily_qa_id'] + '</td>';
         html +='<td>' + value['username'] + '</td>';
+        html +='<td>' + dateYMD + '</td>';
         html +='<td>' + value['yes'] + '</td>';
         html +='<td>' + value['no'] + '</td>';
         html +='<td>' + value['csi'] + '</td>';
         html +='<td>' + value['art'] + '</td>';
         html +='<td>' + value['aht'] + '</td>';
         html +='<td>' + value['quantity'] + '</td>';
-        html +='<td>' + dateYMD + '<br />' + dateHSi + '</td>';
+        html +='<td>' + importYMD + '<br />' + importHSi + '</td>';
         html +='<td>' + value['import_by'] + '</td>';
 
         if ( permission.delete ) {
@@ -550,7 +419,6 @@ var drawTable = function (data) {
     });
 
     $('#table-data').html(html);
-    // $('a[data-original-title]').tooltip();
 }
 
 </script>

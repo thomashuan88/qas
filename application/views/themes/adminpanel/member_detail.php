@@ -30,19 +30,29 @@
 <div class="container">
     <div class="row">
 		<div class="col-xs-12">
-		  <h3>User Details </h3>
-          <div class="col-xs-11">
+            <!-- <div class="col-xs-2">
+                <a href="<?php print base_url()?>/adminpanel/list_members?type=session" class="btn btn-default js-btn-loading" data-loading-text="Going Back.."><i class="fa fa-reply"></i> Back</a>
+                <br />
+            </div> -->
+            <div class="clearfix"></div>
+
+            <div class="col-xs-11">
             <div class="panel with-nav-tabs panel-default">
                 <div class="panel-heading">
+                    <div class="pull-right">
+                        <a href="<?php print base_url()?>/adminpanel/list_members?type=session" class="btn btn-default js-btn-loading" data-loading-text="Going Back.."><i class="fa fa-reply"></i> <?php print $this->lang->line('back')?></a>
+                        <br />
+                    </div>
+                    <div class="clearfix"></div>
                     <ul class="nav nav-tabs">
-                        <li class="active"><a href="#user_info" data-toggle="tab">User Information</a></li>
-                        <li><a href="#daily_qa" data-toggle="tab">Daily QA</a></li>
-                        <li><a href="#monthly_qa" data-toggle="tab">Monthly QA</a></li>
-                        <li><a href="#ops_monthly" data-toggle="tab">OPS Monthly</a></li>
-                        <li><a href="#login_logout" data-toggle="tab">Login/Logout</a></li>
-                        <li><a href="#operator" data-toggle="tab">Operator Utilization</a></li>
-                        <li><a href="#qa_evaluation" data-toggle="tab">QA Evaluation</a></li>
-                        <li><a href="#remarks" data-toggle="tab">Remarks</a></li>
+                        <li class="active"><a href="#user_info" data-toggle="tab"><?php print $this->lang->line('user_information')?></a></li>
+                        <li><a href="#daily_qa" data-toggle="tab"><?php print $this->lang->line('daily_qa')?></a></li>
+                        <li ><a href="#monthly_qa" data-toggle="tab"><?php print $this->lang->line('monthly_qa')?></a></li>
+                        <li ><a href="#ops_monthly" data-toggle="tab"><?php print $this->lang->line('ops_monthly')?></a></li>
+                        <li ><a href="#login_logout" data-toggle="tab"><?php print $this->lang->line('login')?>/<?php print $this->lang->line('logout')?></a></li>
+                        <li ><a href="#operator" data-toggle="tab"><?php print $this->lang->line('operator_utilization')?></a></li>
+                        <li ><a href="#qa_evaluation" data-toggle="tab"><?php print $this->lang->line('qa_evaluation')?></a></li>
+                        <li ><a href="#remarks" data-toggle="tab"><?php print $this->lang->line('remarks')?></a></li>
                     </ul>
                 </div>
                 <div class="panel-body">
@@ -127,8 +137,6 @@
                                                     <td><?php print $this->lang->line('relationship')?> : </td>
                                                    <td><?php print $member->relationship?></td>
                                                 </tr>
-
-
                                                </tbody>
                                             </table>
                                         </div>
@@ -219,6 +227,7 @@
 			            </div>
                         </div>
                         <div class="tab-pane fade" id="daily_qa">
+
                         </div>
                         <div class="tab-pane fade" id="monthly_qa">Default 3</div>
                         <div class="tab-pane fade" id="login_logout">Default 4</div>
@@ -233,11 +242,8 @@
             </div>
         </div>
 
-			<!-- tabs -->
-
-			<!-- /tabs -->
 		</div>
 	</div>
 </div>
 
-<script src="<?php print base_url(); ?>assets/js/adminpanel/member_details.js"></script>
+<script src="<?php print base_url(); ?>assets/js/adminpanel/view_member.js"></script>

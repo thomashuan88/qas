@@ -64,9 +64,12 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => '10.105.1.15',
-	'username' => 'qas',
-	'password' => '123qwe!@#',
+	'hostname' => '127.0.0.1',
+	'username' => 'homestead',
+	'password' => 'secret',
+	// 'hostname' => '10.105.1.15',
+	// 'username' => 'qas',
+	// 'password' => '123qwe!@#',
 	'database' => 'qas',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',

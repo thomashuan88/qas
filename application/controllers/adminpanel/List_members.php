@@ -10,6 +10,11 @@ class List_members extends Admin_Controller {
         $this->load->library('form_validation');
         $this->load->model('adminpanel/list_members_model');
         $this->load->model('adminpanel/users_model');
+        if (! self::check_permissions(2)) {
+            redirect("/private/no_access");
+        }
+        $this->permission = self::check_action(2);
+        $this->load->library('MY_Permission');
 
     }
 
@@ -24,17 +29,21 @@ class List_members extends Admin_Controller {
      */
 
      public function index() {
-        $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel',  $this->lang->line('user_listing'), 'list_members', 'header', 'footer', '');
+         $content_data['permission'] = array();
+         ($this->permission->add == 'yes') ?  $content_data['permission']['add'] = TRUE : '';
+         ($this->permission->edit == 'yes') ?  $content_data['permission']['edit'] = TRUE : '';
+         ($this->permission->delete == 'yes') ?  $content_data['permission']['delete'] = TRUE : '';
+
+        $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel',  $this->lang->line('user_listing'), 'list_members', 'header', 'footer', '', $content_data);
     }
 
-    public function get_report($type="") {
+    public function get_users($type="") {
         $paging = $this->session->userdata('paging');
 
         if($type == 'session' && !empty($paging)){
             if($this->input->post()){
-                $array = $this->input->post();
-                $array1 = array_keys($array);
-                $post_data = json_decode($array1[0], true);
+                $post_data = json_decode($this->input->post('data'), true);
+
                 if(!empty($post_data['search_data'])){
                     $search_session = array('paging' => $post_data);
                     $this->session->set_userdata($search_session);
@@ -43,11 +52,7 @@ class List_members extends Admin_Controller {
             }
         } else{
             if($this->input->post()){
-                $array = $this->input->post();
-
-                $array1 = array_keys($array);
-                $post_data = json_decode($array1[0], true);
-
+                $post_data = json_decode($this->input->post('data'), true);
                 if(!empty($post_data['search_data'])){
                     $search_session = array('paging' => $post_data);
                     $this->session->set_userdata($search_session);
@@ -66,8 +71,8 @@ class List_members extends Admin_Controller {
                $sort_order = $paging['sort_order'];
                $search_data = $paging['search_data'];
                $per_page = Settings_model::$db_config['members_per_page'];
-               $users_data = $this->users_model->get_members($per_page, $offset, $order_by, $sort_order, $search_data);
-               $content_data['total_rows'] = $this->users_model->count_all_search_members($search_data);
+               $users_data = $this->users_model->get_members($per_page, $offset, $order_by, $sort_order, $search_data, $this->my_permission->find_permission());
+               $content_data['total_rows'] = $this->users_model->count_all_search_members($search_data, $this->my_permission->find_permission());
 
                if ( $content_data['total_rows'] > 0 ) {
                    $content_data['table_data'] = $users_data->result();
@@ -75,31 +80,32 @@ class List_members extends Admin_Controller {
                    $content_data['table_data'] = array();
                }
 
-               $content_data['total_rows'] = $this->users_model->count_all_search_members($search_data);
+               $content_data['total_rows'] = $this->users_model->count_all_search_members($search_data, $this->my_permission->find_permission());
                $content_data['offset'] = $offset;
                $content_data['per_page'] = Settings_model::$db_config['members_per_page'];
                echo json_encode($content_data, true);
+
    }
 
    public function change_status() {
+       $member_data = $this->users_model->get_member_info($this->session->userdata('username'));
+       if($member_data->role !== "Administrator"){
+           echo "You have no permission to perform this action";
+           exit();
+       }
        if ( $this->input->post() ) {
 
            $value = $this->input->post();
 
-           //
-        //    $data =array();
-        //    $data['username'] =  $value['username'];
-        //    $data['status'] = "inactive";
-
            try {
                $this->users_model->toggle_active($value['username'], $value['current_status']);
-               echo json_encode( array('error' => false),true );
+              $message =  ($value['current_status']=='Active'?'deactivated' : 'activated');
+               echo "has been "+ $message;
            } catch ( Exception $e ){
-               echo json_encode( array('error' => true),true );
+               echo "Fail to change user status";
            }
        }
    }
-
 
     /**
      *

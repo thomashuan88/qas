@@ -1,6 +1,5 @@
-var qas_app = {};
-
 $(function () {
+
     //form conformation
     $('.form-confirm').on('submit', function (e) {
         e.preventDefault();
@@ -54,10 +53,9 @@ $(function () {
 
 // pagination
 var getNewData = function(callback) {
-    // console.log(JSON.stringify(paging));
     $.ajax({
         url: paging.ajaxUrl,
-        data:JSON.stringify(paging),
+        data: {data:JSON.stringify( paging  ) },
         type: "post",
         success: function(data) {
             var jsonData = JSON.parse(data);
@@ -66,7 +64,7 @@ var getNewData = function(callback) {
             drawPager(jsonData);
             $('a[data-original-title]').tooltip();
             if (callback) {
-                callback();
+                callback(); // any change to callback refer to thomas
             }
         },
         error: function(data) {

@@ -48,12 +48,19 @@ class MY_Form_validation extends CI_Form_validation {
      */
 
     public function is_valid_password($password) {
-        if(preg_match('/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=.\-_*])([a-zA-Z0-9@#$%^&+=*.\-_]){6,20}$/',$password)){
+        if(preg_match('/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=.\-_*])([a-zA-Z0-9@#$%^&+=*.\-_]){8,20}$/',$password)){
+            $array= array('abc', 'abc123', 'abcd1234', '123qwe', '123qwer', '1qaz2wsx', 'password');
+            foreach($array as $a){
 
+                if (strpos($password,$a) !== false) {
+                    return false;
+                }
+            }
             return true;
         }
         return false;
     }
+
 
     public function is_valid_phone($phone) {
         if(preg_match('/^([0-9 +-]){8,}$/',$phone)){
@@ -222,10 +229,22 @@ class MY_Form_validation extends CI_Form_validation {
 
     public function is_valid_new_password($password) {
 
-        if(preg_match('/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=.\-_*])([a-zA-Z0-9@#$%^&+=*.\-_]){6,20}$/',$password)){
+        if(preg_match('/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=.\-_*])([a-zA-Z0-9@#$%^&+=*.\-_]){8,20}$/',$password)){
+         
             return true;
         }
         return false;
+    }
+
+    public function is_new_password_secure($password){
+        
+         $array= array('abc', 'abc123', 'abcd1234', '123qwe', '123qwer', '1qaz2wsx', 'password');
+            foreach($array as $a){
+                if (strpos($password,$a) !== false) {
+                    return false;
+                }
+            }
+            return true;
     }
 
     public function is_valid_confirm_password($password) {
@@ -239,6 +258,37 @@ class MY_Form_validation extends CI_Form_validation {
     public function is_valid_time($time){
 
         if(preg_match('/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/',$time)){
+            return true;
+        }
+        return false;
+    }
+
+
+    public function is_account_id_exists($account_id){
+        $this->CI->db->select('value');
+        $this->CI->db->from('system_setting');
+        $this->CI->db->where('type', 'live_person');
+        $this->CI->db->where('key', 'account_id');
+        $this->CI->db->where('value', $account_id);
+        $this->CI->db->limit(1);
+        $query = $this->CI->db->get();
+
+        if($query->num_rows()== 0) {
+            return true;
+        }
+        return false;
+    }
+
+    public function is_product_type_exists($product){
+
+        $this->CI->db->select('type, group');
+        $this->CI->db->from('system_setting');
+        $this->CI->db->where('type', 'live_person');
+        $this->CI->db->where('group', $product);
+        $this->CI->db->limit(1);
+        $query = $this->CI->db->get();
+
+        if($query->num_rows()== 0) {
             return true;
         }
         return false;

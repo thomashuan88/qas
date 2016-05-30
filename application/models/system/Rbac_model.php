@@ -45,18 +45,6 @@ class Rbac_model extends CI_Model {
         return false;
     }
 
-    // public function get_member_permissions($user_id) {
-    //     $this->db->select('p.permission_id, p.permission_description')->from('permission p')
-    //         ->join('role_permission rp', 'rp.permission_id = p.permission_id')
-    //         ->join('user_role ur', 'ur.role_id = rp.role_id')
-    //         ->where('ur.user_id', $user_id);
-    //     $q = $this->db->get();
-    //     if ($q->num_rows() > 0) {
-    //         return $q->result();
-    //     }
-    //     return false;
-    // }
-
     public  function create_user_role($data) {
         $this->db->insert('user_role', $data);
         return $this->db->affected_rows();
@@ -85,8 +73,16 @@ class Rbac_model extends CI_Model {
         return $this->db->affected_rows();
     }
 
-
-
+    public function find_role($userid){
+        $this->db->select('role_id');
+        $this->db->from('user_role');
+        $this->db->where('user_id',$userid);
+        $q = $this->db->get();
+        if($q->num_rows() > 0) {
+            return $q->row();
+        }
+        return false; 
+    }
 }
 
 

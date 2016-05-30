@@ -15,12 +15,14 @@ class Login extends Auth_Controller {
 
     public function index() {
         $data = array();
-        $data["language"] = "english";
 
         if($this->input->get("language")){
             $data["language"] = $this->input->get("language");
              $this->lang->load("messages_lang", $data["language"]);
-        } 
+        } else {
+           $data["language"] = Settings_model::$db_config['site_language']  ;
+            $this->lang->load("messages_lang", $data["language"]); 
+        }
                    
         // if OAuth2 enabled
         if (Settings_model::$db_config['oauth2_enabled']) {
@@ -72,11 +74,13 @@ class Login extends Auth_Controller {
         // else{
 
             $data = $this->login_model->validate_login($this->input->post('username'), $this->input->post('password'));
+            $password_hint = $this->login_model->get_password_hint($this->input->post('username'));
+
 
             if (is_array($data)) {
             // set session data
 
-                if ($data['status'] == "inactive") //check active
+                if ($data['status'] != "Active" ) //check active
                 {  
                     $this->session->set_flashdata('error', '<p>'. $this->lang->line('is_account_active') .'</p>');
                     redirect('login');
@@ -86,7 +90,8 @@ class Login extends Auth_Controller {
                     $this->session->set_userdata('logged_in', true);
                     $this->session->set_userdata('user_id', $data['user_id']);
                     $this->session->set_userdata('username', $data['username']);
-                }    
+                    $this->session->set_userdata('role', $data['role']);
+                }
 
                 $data['language'] = $this->input->post('language') ;
                 $this->session->set_userdata('language', $data['language']);
@@ -95,11 +100,63 @@ class Login extends Auth_Controller {
 
             
             }else{
-                $this->session->set_flashdata('error', $this->lang->line('login_incorrect'));
+                $this->session->set_flashdata('error', '<p>'. $this->lang->line('login_incorrect') .'</p>');
+                $this->session->set_flashdata('hint', $password_hint->password_hint);
                 redirect('login');
             }
         // }     
     }
+
+
+    public function reset($email, $token) {
+
+        $this->load->model('adminpanel/reset_password_model');
+        $data = $this->reset_password_model->verify_token(urldecode($email), $token);
+        $this->reset_password_model->delete_token_data($token);
+        $user_id = $this->reset_password_model->get_user(urldecode($email));
+
+        if (!empty($data['date_added'])) {
+            $time_diff = strtotime("now") - strtotime($data['date_added']);
+        }
+
+        if (isset($time_diff) && $time_diff > Settings_model::$db_config['password_link_expires']) {
+
+            $this->session->set_flashdata('error', '<p>'. $this->lang->line('renew_password_link_expired') .'</p>');  //dun have language
+            redirect('auth/login');
+            exit();
+
+        }elseif (isset($data['token']) && $data['token'] == $token) { 
+
+            $this->load->library("password");
+            $new_password = $this->password->password_gen(8);
+
+            if ($this->reset_password_model->update_password_and_nonce(urldecode($email), $new_password)) {
+
+                $this->load->helper('send_email');
+                $this->load->library('email', load_email_config(Settings_model::$db_config['email_protocol']));
+                $this->email->from(Settings_model::$db_config['admin_email_address'], $_SERVER['HTTP_HOST']);
+                $this->email->to(urldecode($email));
+                $this->email->subject($this->lang->line('reset_password_subject'));
+                $this->email->message($this->lang->line('email_greeting') ." ". $data['username'] . $this->lang->line('reset_password_message'). addslashes($new_password));
+
+                $this->email->send();
+                $this->session->set_flashdata('success', '<p>'. $this->lang->line('reset_password_success') .'</p>');
+                
+            redirect('auth/login');
+
+            }else{
+                            
+                $this->session->set_flashdata('error', '<p>'. $this->lang->line('reset_password_failed_db') .'</p>');
+            }
+        }else{
+
+            $this->session->set_flashdata('error', '<p>'. $this->lang->line('reset_password_failed_token') .'</p>');
+        }
+            redirect('auth/login');
+
+    }
+
+
 
     // public function validate() {
 

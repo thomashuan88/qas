@@ -14,13 +14,14 @@
       <div class="panel-body">
         <div class="row">
           <div class="form-group col-md-6">
-            <label for="Product Type"><?php print $this->lang->line('product_type'); ?></label>
-            <input type="text" class="form-control" id="product" name="product"  value="<?php print $product; ?>" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled required>
+            <label for="Account ID"><?php print $this->lang->line('account_id'); ?></label>
+            <input type="text" class="form-control" id="account_id" name="account_id" value="<?php print $live_person[$product]["account_id"]; ?>" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled required readonly>
           </div>
           <div class="form-group col-md-6">
-            <label for="Account ID"><?php print $this->lang->line('account_id'); ?></label>
-            <input type="text" class="form-control" id="account_id" name="account_id" value="<?php print $live_person[$product]["account_id"]; ?>" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled required>
+            <label for="Product Type"><?php print $this->lang->line('product_type'); ?></label>
+            <input type="text" class="form-control" id="product" name="product"  value="<?php print $product; ?>" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled required readonly>
           </div>
+          
         </div>
         <div class="row">
           <div class="form-group col-md-6">

@@ -20,44 +20,41 @@
       </ul>
     </div>
      <div class="tab-content">
-    <?php foreach ($roles as $role_id => $role) { //log_message("error",print_r($role,true)); ?>
+    <?php foreach ($roles as $role_id => $role) { ?>
             <div class="tab-pane" id="<?php print $role_id; ?>">
-            <?php print form_open('adminpanel/roles/save_role_permissions', 'id="save_role_permissions_form_'. $role_id .'"') ."\r\n"; ?>
+            <?php print form_open('adminpanel/permissions/save_role_permissions', 'id="save_role_permissions_form_'. $role_id .'" class="form-confirm"') ."\r\n"; ?>
                 <table class="table table-bordered table-hover list table-condensed table-striped" id="table_list">
                     <thead>
                         <tr >
-                        <!-- <th style="width: 30px;cursor:default; color:#333333;text-shadow: 0 1px 0 #FFFFFF;background-color: #e6e6e6;text-align: center;">No.</th> -->
-                        <th rowspan="2" style="width: 60%;cursor:default; color:#333333;text-shadow: 0 1px 0 #FFFFFF;background-color: white;text-align: center;"><?php print $this->lang->line('module_name')?></th>
-                        <th style="width: 25%;cursor:default; color:#333333;text-shadow: 0 1px 0 #FFFFFF;background-color: white;text-align: center;"><?php print $this->lang->line('action')?></th>
-                        <th style="width: 30%;cursor:default; color:#333333;text-shadow: 0 1px 0 #FFFFFF;background-color: white;text-align: center;"><input type="checkbox" name="<?php print $role_id; ?>" class="check_full_access"/> full access</th>
+                        <th rowspan="2" style="width: 60%;cursor:default; color:#333333;text-shadow: 0 1px 0 #FFFFFF;background-color: white;text-align: center;vertical-align: middle;"><?php print $this->lang->line('module_name')?></th>
+                        <th rowspan="2" style="width: 28%;cursor:default; color:#333333;text-shadow: 0 1px 0 #FFFFFF;background-color: white;text-align: center;vertical-align: middle;"><?php print $this->lang->line('action')?></th>
+                        <th style="width: 30%;cursor:default; color:#333333;text-shadow: 0 1px 0 #FFFFFF;background-color: white;text-align: center;"><input type="checkbox" name="<?php print $role_id; ?>" class="check_full_access"/> <?php print $this->lang->line('full_access')?></th>
                         </tr>
                         <tr>
-                         <th style="width: 30%;cursor:default; color:#333333;text-shadow: 0 1px 0 #FFFFFF;background-color: white;text-align: center;"></th>
-                        <th style="width: 30%;cursor:default; color:#333333;text-shadow: 0 1px 0 #FFFFFF;background-color: white;text-align: center;">check all</th>
+                         
+                        <th style="width: 30%;cursor:default; color:#333333;text-shadow: 0 1px 0 #FFFFFF;background-color: white;text-align: center;"><?php print $this->lang->line('check_all')?></th>
                         </tr>
                     </thead>
                     <tbody>
                     <?php $i=1; foreach ($role['permissions'] as $id => $permission) {  ?>
                         <?php if($permission['parentid'] == 0){ ?>
                         <tr>
-                            <!-- <th style="text-align:center;"><?php echo $i;?></th> -->
                             <th><?php print $permission['description']; ?></th>
                             <th></th>
                             <th></th>
                         </tr>
                         <?php }else{  ?>
                         <tr id ="<?php print $id; ?>" name="check_list" class="check_list">
-                            <!-- <td style="text-align:center;"><?php echo $i;?></td> -->
                             <td><?php print $permission['description']; ?>  </td>
                             <td style="text-align:center;">
                             <label class="checkbox inline">
-                                <?php print form_checkbox(array('name' => 'add[]', 'class' => 'check_action', 'value' => $id, 'id' => $role_id, 'checked' => ($permission['add'] == 'yes' ? true : false))); ?> Add</label>
+                                <?php print form_checkbox(array('name' => 'add[]', 'class' => 'check_action', 'value' => $id, 'id' => $role_id, 'checked' => ($permission['add'] == 'yes' ? true : false))); ?> <?php print $this->lang->line('add')?></label>
                             <label class="checkbox inline">
-                                <?php print form_checkbox(array('name' => 'edit[]', 'class' => 'check_action', 'value' => $id, 'id' => $role_id,'checked' => ($permission['edit'] == 'yes' ? true : false))); ?> Edit</label>
+                                <?php print form_checkbox(array('name' => 'edit[]', 'class' => 'check_action', 'value' => $id, 'id' => $role_id,'checked' => ($permission['edit'] == 'yes' ? true : false))); ?> <?php print $this->lang->line('edit')?></label>
                             <label class="checkbox inline">
-                                <?php print form_checkbox(array('name' => 'delete[]', 'class' => 'check_action', 'value' => $id, 'id' => $role_id, 'checked' => ($permission['delete'] == 'yes' ? true : false))); ?> Delete</label>
+                                <?php print form_checkbox(array('name' => 'delete[]', 'class' => 'check_action', 'value' => $id, 'id' => $role_id, 'checked' => ($permission['delete'] == 'yes' ? true : false))); ?> <?php print $this->lang->line('delete')?></label>
                             <label class="checkbox inline"> 
-                                <?php print form_checkbox(array('name' => 'view[]', 'class' => 'check_action', 'value' => $id, 'id' => $role_id, 'checked' => ($permission['view'] == 'yes' ? true : false))); ?>view</label>
+                                <?php print form_checkbox(array('name' => 'view[]', 'class' => 'check_action', 'value' => $id, 'id' => $role_id, 'checked' => ($permission['view'] == 'yes' ? true : false))); ?> <?php print $this->lang->line('view')?></label>
                             </td>
                             <td style="text-align:center;">
                             <?php if($permission['view'] == "yes" && $permission['add'] == "yes" && $permission['edit'] == "yes" && $permission['delete'] == "yes"){ 
@@ -77,7 +74,7 @@
                     </tbody>
                 </table>
                  <div class="form-group mg-b-0">
-                    <button type="submit" name="save_roles" class="btn btn-success"><i class="fa fa-check pd-r-5"></i> Save</button>
+                    <button type="submit" name="save_roles" class="btn btn-success"><i class="fa fa-floppy-o pd-r-5"></i> <?php print $this->lang->line('save')?></button>
                     <input type="hidden" name="role_id" value="<?php print $role_id; ?>">
                 </div>
                 <?php print form_close() ."\r\n"; ?>
@@ -94,17 +91,11 @@ $(document).ready(function(){
 
     if(role_id != ""){
         $('.nav-tabs a[href="#' + role_id + '"]').tab('show');
+        var role_session_id = '<?php echo $roleid; ?>';
+        $("#"+role_session_id).find('.check_action:not(:checked)').attr('disabled', 'disabled');
+        $("#"+role_session_id).find('.check_full_access:not(:checked)').attr('disabled', 'disabled');
+        $("#"+role_session_id).find('.check_all:not(:checked)').attr('disabled', 'disabled');
     }
-    //alert($("input[name='add[]']").length);
-
-    $(".check_all").each(function(){
-        var chkAllID = $(this).attr("name");
-        //alert(chkAllID);
-
-        if($("#" + chkAllID + " .check_action:checked").length == $("#" + chkAllID + " .check_action").length){
-             $("#"+chkAllID +".check_full_access").prop('checked', true); 
-        }
-    });
 
     $(".check_all").change(function(e){
         var checkedStatus = this.checked;
@@ -112,14 +103,35 @@ $(document).ready(function(){
         var role_id = $(this).attr("name");
         $("#"+role_id).find("#"+permi_id+" td label input").each(function () {
             $(this).prop('checked', checkedStatus);
-        });       
+        }); 
+
+        if($("#"+role_id).find(".check_all").length == $("#"+role_id).find(".check_all:checked").length) {
+            $("#"+role_id).find(".check_full_access").attr("checked", "checked");
+            $("#"+role_id).find(".check_full_access").prop('checked', true);
+        } else {
+            $("#"+role_id).find(".check_full_access").removeAttr("checked");
+        }
     });
 
     $(".check_action").change(function(e){
         var checkedStatus = this.checked;
         var permi_id = $(this).val();
         var role_id = $(this).attr("id"); 
-        $("#"+role_id).find("#"+permi_id+" td label .check_all").prop('checked', false); 
+
+        if($("#"+role_id).find("#"+permi_id+" td label .check_action").length == $("#"+role_id).find("#"+permi_id+" td label .check_action:checked").length) {
+           $("#"+role_id).find("#"+permi_id+" td label .check_all").attr('checked', 'checked');
+           $("#"+role_id).find("#"+permi_id+" td label .check_all").prop('checked', true);
+        } else {
+          $("#"+role_id).find("#"+permi_id+" td label .check_all").removeAttr("checked");
+        }
+
+        if($("#"+role_id).find(".check_action").length == $("#"+role_id).find(".check_action:checked").length) {
+            $("#"+role_id).find(".check_full_access").attr("checked", "checked");
+            $("#"+role_id).find(".check_full_access").prop('checked', true);
+        } else {
+            $("#"+role_id).find(".check_full_access").removeAttr("checked");
+        }
+
     });
 
     $(".check_full_access").change(function(e){
@@ -127,7 +139,12 @@ $(document).ready(function(){
         var role_id = $(this).attr("name"); 
         $("#"+role_id).find("td label input").prop('checked', checkedStatus); 
     });
+
+    var role_id = '<?php echo $roleid; ?>';
+    $('a[href="#'+role_id+'"]').click(function(){
+         $("#"+role_id).find('.check_action:not(:checked)').attr('disabled', 'disabled');
+         $("#"+role_id).find('.check_full_access:not(:checked)').attr('disabled', 'disabled');
+         $("#"+role_id).find('.check_all:not(:checked)').attr('disabled', 'disabled');
+    }); 
 });
-
-
 </script>

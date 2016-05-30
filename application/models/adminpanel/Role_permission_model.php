@@ -17,36 +17,6 @@ class Role_permission_model extends CI_Model {
         return false;
     }
 
-    // public function insert_checked_permission($permission_id) {
-    //     $this->db->select("role_id,permission_id");
-    //     $this->db->from("role_permission");
-    //     $this->db->where("role_id",$this->input->post('role_id'));
-    //     $this->db->where("permission_id",$permission_id);
-    //     $q = $this->db->get();
-    //     if($q->num_rows() > 0) {
-    //         $result = 1;
-    //     }else{
-    //          $result = 0;
-    //     }
-
-    //     if($result == 1){
-    //         $this->db->set('add', "yes");
-    //         $this->db->set('edit', "yes");
-    //         $this->db->set('view', "yes");
-    //         $this->db->where('role_id', $this->input->post('role_id'));
-    //         $this->db->where('permission_id', $permission_id);
-    //         $this->db->update('role_permission');
-    //         if($this->db->affected_rows() == 1) {
-    //             return true;
-    //         }
-    //         return false;
-    //     }else{
-    //         $insert_query = $this->db->insert_string('role_permission', array('role_id' => $this->input->post('role_id'), 'permission_id' => $permission_id,'add' => 'yes','edit' => 'yes','view' => 'yes'));
-    //         $insert_query = str_replace('INSERT INTO', 'INSERT IGNORE INTO', $insert_query);
-    //         $this->db->query($insert_query);
-    //     }
-    // }
-
     public function check_exist($permi_id){
         $this->db->select("role_id,permission_id");
         $this->db->from("role_permission");
@@ -86,7 +56,6 @@ class Role_permission_model extends CI_Model {
     }
 
     public function select_action($role_id,$permi_id){
-
         $this->db->select("add,edit,delete");
         $this->db->from("role_permission");
         $this->db->where("role_id",$role_id);
@@ -121,5 +90,17 @@ class Role_permission_model extends CI_Model {
         $this->db->where_in("permission_id",$parent);
         $this->db->update('role_permission');
         return $this->db->affected_rows(); 
+    }
+
+    public function all_permission($role_id){
+        $this->db->select("permission_id,add,edit,delete,view");
+        $this->db->from("role_permission");
+        $this->db->where("role_id",$role_id);
+        $q = $this->db->get();
+        if($q->num_rows() > 0) {
+           return $q->result('array');
+        }else{
+            return false;
+        }
     }
 }

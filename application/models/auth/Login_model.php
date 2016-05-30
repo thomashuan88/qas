@@ -20,7 +20,7 @@ class Login_model extends CI_Model {
 
         $this->load->helper('password');
 
-        $this->db->select('user_id, username, password, date_registered, nonce, active, banned, login_attempts,status');
+        $this->db->select('user_id, username, password, date_registered, nonce, active, banned, login_attempts,status,role');
         $this->db->select('username, password');
         $this->db->from('users');
         $this->db->where('username', $username);
@@ -42,6 +42,7 @@ class Login_model extends CI_Model {
 
                $array['user_id'] = $row->user_id;
                $array['username'] = $row->username;
+               $array['role'] = $row->role;
                $array['date_registered'] = $row->date_registered;
                $array['active'] = $row->active;
                $array['nonce'] = $row->nonce;
@@ -152,6 +153,21 @@ class Login_model extends CI_Model {
             return true;
         }
         return false;
+    }
+
+    public function get_password_hint($username){
+
+        $this->db->select('password_hint');
+        $this->db->from('users');
+        $this->db->where('username',$username);
+        $query = $this->db->get();
+
+        if($query->num_rows() == 1) {
+
+            return $query->row();
+        }
+        return false;
+
     }
 
 }

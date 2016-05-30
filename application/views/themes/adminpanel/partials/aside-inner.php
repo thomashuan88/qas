@@ -29,7 +29,7 @@
     </li>
     <?php }?>
     <?php if (Site_Controller::check_permissions(7)) {  ?>
-    <li<?php print ( in_array(Site_Controller::$page, array("daily_qa","monthly_qa","ops_monthly","log_in_out","qa_evaluation","operation_utilization")) ? ' class="open"' : ""); ?>><a href="javascript:"><span class="menu-link-icon fa fa-file-text"></span> <span class="menu-link-title"><?php print $this->lang->line('performance_report')?></span></a>
+    <li<?php print ( in_array(Site_Controller::$page, array("daily_qa","monthly_qa","ops_monthly","log_in_out","qa_evaluation","operator_utilization")) ? ' class="open"' : ""); ?>><a href="javascript:"><span class="menu-link-icon fa fa-file-text"></span> <span class="menu-link-title"><?php print $this->lang->line('performance_report')?></span></a>
         <ul>
         <?php if (Site_Controller::check_permissions(8)) {  ?>
             <li<?php print ((Site_Controller::$page == "daily_qa") ? ' class="open"' : ""); ?>><a href="<?php print base_url(); ?>adminpanel/daily_qa"><span class="menu-link-icon fa fa-angle-right"></span> <?php print $this->lang->line('daily_qa')?></a></li>
@@ -47,30 +47,28 @@
             <li<?php print ((Site_Controller::$page == "qa_evaluation") ? ' class="open"' : ""); ?>><a href="<?php print base_url(); ?>adminpanel/qa_evaluation"><span class="menu-link-icon fa fa-angle-right"></span> <?php print $this->lang->line('qa_evaluation')?></a></li>
         <?php }?>
         <?php if (Site_Controller::check_permissions(13)) {  ?>
-            <li<?php print ((Site_Controller::$page == "operation_utilization") ? ' class="open"' : ""); ?>><a href="<?php print base_url(); ?>adminpanel/operation_utilization"><span class="menu-link-icon fa fa-angle-right"></span>  <?php print $this->lang->line('operation_utilization')?></a></li>
+            <li<?php print ((Site_Controller::$page == "operator_utilization") ? ' class="open"' : ""); ?>><a href="<?php print base_url(); ?>adminpanel/operator_utilization"><span class="menu-link-icon fa fa-angle-right"></span>  <?php print $this->lang->line('operator_utilization')?></a></li>
         <?php }?>
         </ul>
     </li>
     <?php }?>
-    <?php if (Site_Controller::check_permissions(14)) { 
-// print Site_Controller::$page;
-     ?>
-    <li <?php print (Site_Controller::$page == "operation") ? ' class="open"' : ""; ?>><a href="javascript:"><span class="menu-link-icon fa fa-file-text"></span> <span class="menu-link-title">Operation</span></a>
+    <?php if (Site_Controller::check_permissions(14)) { ?>
+    <li <?php print (Site_Controller::$page == "operation") ? ' class="open"' : ""; ?>><a href="javascript:"><span class="menu-link-icon fa fa-file-text"></span> <span class="menu-link-title"><?php print $this->lang->line('operation')?></span></a>
         <ul>
         <?php if (Site_Controller::check_permissions(15)) {  ?>
-            <li<?php print ((Site_Controller::$page == "shift_report") ? ' class="open"' : ""); ?>><a href="<?php print base_url(); ?>adminpanel/operation/shift_report"><span class="menu-link-icon fa fa-angle-right"></span>&nbsp;<?php print $this->lang->line('shift_report')?></a></li>
+            <li<?php print ((substr(Site_Controller::$method, 0, 12) == "shift_report") ? ' class="open"' : ""); ?>><a href="<?php print base_url(); ?>adminpanel/operation/shift_report"><span class="menu-link-icon fa fa-angle-right"></span>&nbsp;<?php print $this->lang->line('shift_report')?></a></li>
         <?php }?>
         <?php if (Site_Controller::check_permissions(16)) {  ?>
-            <li<?php print ((Site_Controller::$page == "information_update") ? ' class="open"' : ""); ?>><a href="<?php print base_url(); ?>adminpanel/operation/information_update"><span class="menu-link-icon fa fa-angle-right"></span>&nbsp;<?php print $this->lang->line('information_update')?></a></li>
+            <li<?php print ((substr(Site_Controller::$method, 0, 18) == "information_update") ? ' class="open"' : ""); ?>><a href="<?php print base_url(); ?>adminpanel/operation/information_update"><span class="menu-link-icon fa fa-angle-right"></span>&nbsp;<?php print $this->lang->line('information_update')?></a></li>
         <?php }?>
         <?php if (Site_Controller::check_permissions(17)) {  ?>
-            <li<?php print ((Site_Controller::$page == "time_sheet") ? ' class="open"' : ""); ?>><a href="<?php print base_url(); ?>adminpanel/operation/time_sheet"><span class="menu-link-icon fa fa-angle-right"></span>&nbsp;<?php print $this->lang->line('time_sheet')?></a></li>
+            <li<?php print ((substr(Site_Controller::$method, 0, 10) == "time_sheet") ? ' class="open"' : ""); ?>><a href="<?php print base_url(); ?>adminpanel/operation/time_sheet"><span class="menu-link-icon fa fa-angle-right"></span>&nbsp;<?php print $this->lang->line('time_sheet')?></a></li>
         <?php }?>
         <?php if (Site_Controller::check_permissions(18)) {  ?>
-            <li<?php print ((Site_Controller::$page == "question_type") ? ' class="open"' : ""); ?>><a href="<?php print base_url(); ?>adminpanel/operation/question_type"><span class="menu-link-icon fa fa-angle-right"></span>&nbsp;<?php print $this->lang->line('question_type')?></a></li>
+            <li<?php print ((substr(Site_Controller::$method, 0, 13) == "question_type") ? ' class="open"' : ""); ?>><a href="<?php print base_url(); ?>adminpanel/operation/question_type"><span class="menu-link-icon fa fa-angle-right"></span>&nbsp;<?php print $this->lang->line('question_type')?></a></li>
         <?php }?>
         <?php if (Site_Controller::check_permissions(19)) {  ?>
-            <li<?php print ((Site_Controller::$page == "question_content") ? ' class="open"' : ""); ?>><a href="<?php print base_url(); ?>adminpanel/operation/question_content"><span class="menu-link-icon fa fa-angle-right"></span>&nbsp;<?php print $this->lang->line('question_content')?></a></li>
+            <li<?php print ((substr(Site_Controller::$method, 0, 16) == "question_content") ? ' class="open"' : ""); ?>><a href="<?php print base_url(); ?>adminpanel/operation/question_content"><span class="menu-link-icon fa fa-angle-right"></span>&nbsp;<?php print $this->lang->line('question_content')?></a></li>
         <?php }?>
         </ul>
     </li>

@@ -12,25 +12,24 @@
 	<link href="<?php print base_url(); ?>assets/js/vendor/jquery-ui-1.11.4/jquery-ui.min.css" rel="stylesheet">
     <link href="<?php print base_url(); ?>assets/js/vendor/datetimepicker/jquery.datetimepicker.css" rel="stylesheet">
 
-
     <!-- Google web font -->
     <link href='http://fonts.googleapis.com/css?family=Lato:100,300,400,700,900,100italic,300italic,400italic,700italic,900italic' rel='stylesheet' type='text/css'>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.3/jquery.min.js"></script>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
-    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-    <script>window.jQuery || document.write('<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js">\x3C/script>')</script>
+    <script src="<?php print base_url(); ?>assets/js/vendor/jquery-2.1.4.min.js"></script>
     <script src="<?php print base_url(); ?>assets/js/vendor/jquery-ui-1.11.4/jquery-ui.min.js"></script>
     <script src="<?php print base_url(); ?>assets/js/vendor/bootstrap.min.js"></script>
     <script type="text/javascript">// solve conflict between bootstrap and jquery-ui
         var btn = $.fn.button.noConflict();
         $.fn.btn = btn;</script>
+
     <script src="<?php print base_url(); ?>assets/js/vendor/jquery.navgoco.js"></script>
     <script src="<?php print base_url(); ?>assets/js/vendor/jquery.slimscroll.min.js"></script>
     <script src="<?php print base_url(); ?>assets/js/vendor/bootbox.min.js"></script>
     <script src="<?php print base_url(); ?>assets/js/vendor/datetimepicker/jquery.datetimepicker.full.js"></script>
     <script src="<?php print base_url(); ?>assets/js/custom.js"></script>
+    <script src="<?php print base_url(); ?>assets/js/qas_app.js"></script>
     <!-- Set locale for bootbox.js -->
     <script type="text/javascript">
         var short_lang = "";
@@ -66,6 +65,7 @@
 </head>
 
 <body>
+<div id="qas_app_info" style="display:none" baseurl="<?php print base_url(); ?>"></div>
 <div class="wrap header-fixed">
 
 

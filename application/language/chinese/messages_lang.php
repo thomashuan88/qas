@@ -19,12 +19,14 @@ $lang['change_password'] = '更换密码';
 $lang['reset_password'] = '重置密码';
 $lang['change_password_success'] = '密码更改成功。';
 $lang['change_password_failed'] = '无法更改密码。';
+$lang['password_hint'] = '密码提示';
 
 
 //confirmation message
 $lang['confirm_message'] = '您确定要提交此表？';
 $lang['delete_message'] = '您确定要删除此记录？';
 $lang['reset_message'] = '您确定要重置密码？';
+$lang['required_field_msg'] = '请在提交之前填写字段';
 
 
 $lang['forgot_password'] = '找回密码';
@@ -108,7 +110,7 @@ $lang['status'] = '状态';
 $lang['nickname'] = '昵称';
 $lang['dob'] = '出生日期';
 $lang['emergency_name'] = '紧急联系人';
-$lang['emergency_contact'] = '紧急联系人姓名';
+$lang['emergency_contact'] = '紧急联系人电话';
 $lang['relationship'] = '关系';
 
 
@@ -132,8 +134,8 @@ $lang['is_valid_email'] = 'Please enter a correct e-mail address.';
 $lang['is_valid_password'] = 'The password field must contain at least one of these characters: $.[]|()?*+{}@#! AND must contain at least one number.';
 $lang['is_valid_both_password'] = '新密码不能与旧密码相同。';
 $lang['is_valid_new_password'] = '您的新密码字段至少包含一个大写、小写、符号与数字。';
+$lang['is_new_password_secure'] = "您的新密码不能使用。";
 $lang['is_valid_confirm_password'] = '您的确认密码字段至少包含一个大写、小写、符号与数字。';
-$lang['is_valid_new_password'] = '';
 $lang['is_valid_username'] = 'The username field can only contain a-z A-Z 0-9 _ and - characters.';
 $lang['is_db_cell_available'] = 'That %s already exists in our database.';
 $lang['is_db_cell_available_by_id'] = 'That %s already exists in our database.';
@@ -141,6 +143,9 @@ $lang['check_captcha'] = 'Verification code is incorrect (reCaptcha).';
 $lang['is_member_password'] = 'Your password is incorrect';
 $lang['is_valid_time'] = "时间格式不正确。";
 $lang['is_valid_phone'] = "无效的电话号码.";
+$lang['is_account_id_exists'] = '帐户ID已经存在于我们的数据库。';
+$lang['is_product_type_exists'] = '产品类别已经存在于我们的数据库。';
+
 
 
 // e-mail greetings
@@ -149,7 +154,13 @@ $lang['email_greeting'] = '您好';
 
 // access
 $lang['no_access'] = '进入拒绝';
-$lang['no_access_text'] = '无权查看此页!';
+$lang['no_access_view'] = '无权查看此页!';
+$lang['no_access_add_record'] = 'You are not authorized to add new record.';
+$lang['no_access_view_record'] = 'You are not authorized to view this record.';
+$lang['no_access_edit_record'] = 'You are not authorized to edit this record.';
+$lang['no_access_delete_record'] = 'You are not authorized to delete this record.';
+$lang['no_access_pending_record'] = 'Please complete the pending record before add new.';
+$lang['exist_follow_up_record'] = 'Please complete the follow up records before change status to done.';
 
 // Oauth2
 $lang['invalid_state'] = "Invalid state.";
@@ -165,14 +176,17 @@ $lang['oauth2_not_active'] = 'Account is inactive - please contact an admin.';
 $lang['create_imgfolder_failed'] = "Problem creating image directory.";
 
 // messaging
-$lang['message_error_heading'] = "Please verify the following:";
+$lang['message_error_heading'] = "请确认以下 ：";
 $lang['message_success_heading'] = "成功!!";
+$lang['activation_message_success_heading'] = "成功激活帐号";
+$lang['activation_message_error_heading'] = "激活帐号失败";
+
 
 // adminpanel
 $lang['enter_search_data'] = 'Please enter some search data.';
 $lang['admin_noban'] = 'Not allowed to ban main administrator account.';
 $lang['admin_noactivate'] = 'Not allowed to deactivate main administrator account.';
-$lang['member_updated'] = 'Member with username %s and ID %s updated.';
+$lang['member_updated'] = 'Member with username %s updated.';
 $lang['toggle_ban'] = "Member with username %s ";
 $lang['toggle_active'] = "Member with username %s ";
 $lang['main_not_found'] = 'Theme file not found: %s.';
@@ -182,8 +196,8 @@ $lang['sessions_cleared'] = 'Session successfully deleted.';
 $lang['sessions_not_cleared'] = 'Nothing to clear.';
 $lang['banned'] = "banned.";
 $lang['unbanned'] = "unbanned.";
-$lang['activated'] = ".激活";
-$lang['deactivated'] = "停用.";
+$lang['activated'] = "激活";
+$lang['deactivated'] = "停用";
 $lang['site_disabled'] = 'Site has been disabled.';
 $lang['add_member'] = '添加会员';
 $lang['add_user'] = '添加用户';
@@ -207,6 +221,7 @@ $lang['submit_time'] = "提交时间";
 $lang['submit_time_from'] = "提交时间（从）";
 $lang['submit_time_to'] = "提交时间 (至）";
 $lang['total_members'] = "Total members";
+$lang['total_users'] = "用户数量";
 $lang['list_members'] = 'List members';
 $lang['viewing_member'] = 'Viewing member';
 $lang['send_copy'] = 'E-mail member about profile updates made here.';
@@ -277,10 +292,12 @@ $lang['language'] = "语言";
 $lang['footer_title'] = "页脚标题";
 $lang['system_role'] = "系统角色";
 $lang['predefined_email'] = "预定电子邮件";
-$lang['website_url'] = "网址";
 $lang['logo'] = "标志";
-
-
+$lang['confidential_data_masking'] = "机密数据屏蔽";
+$lang['search_section'] = "搜索部分";
+$lang['collapse'] = "打开";
+$lang['open'] = "关闭";
+$lang['no_result'] = "沒有找到相关资料";
 
 
 
@@ -342,6 +359,7 @@ $lang['enable_oauth_p'] = "Disable or enable the social login integration comple
 //Roles Page
 $lang['active'] = "有效";
 $lang['inactive'] = "无效";
+$lang['pending'] = "待处理";
 $lang['role_name'] = "职位名称";
 $lang['status'] = "状态";
 $lang['add_role'] = "添加职位";
@@ -350,13 +368,25 @@ $lang['cancel'] = "取消";
 $lang['role'] = "职位";
 $lang['permissions'] = "权限";
 $lang['roles_permissions'] = "职位和权限管理";
-$lang['show_all'] = "显示全部";
+$lang['all'] = "全部";
+
 
 //Role Page  msg
 $lang['deactivated_error'] = "由于职位还有下属，所以无法停用";
 $lang['existed_error'] = "职位已存在";
 $lang['add_success'] = "成功添加职位";
 $lang['unable_add'] = "无法添加职位";
+$lang['never_allowed'] = "不允许更改管理员的权限";
+
+//Permissions
+$lang['module_name'] = "组件名";
+$lang['add'] = "添加";
+$lang['edit'] = "更改";
+$lang['delete'] = "删除";
+$lang['view'] = "点阅";
+$lang['full_access'] = "全权限";
+$lang['check_all'] = "选择所有";
+$lang['confirm_msg'] = "你确定";
 
 
 //performance report
@@ -367,9 +397,10 @@ $lang['total_record'] = "记录数量";
 $lang['ops_monthly'] = "每月OPS";
 $lang['log_in_out'] = "登录/注销";
 $lang['qa_evaluation'] = "QA评估";
-$lang['operation_utilization'] = "利用操作";
+$lang['operator_utilization'] = "操作人员使用率";
 $lang['view_pending'] = "待处理导入";
 $lang['confirm_import'] = "确认导入";
+$lang['delete_import'] = "删除未决导入";
 $lang['import_done'] = "已导入记录";
 $lang['import'] = "导入";
 $lang['export'] = "导出";
@@ -387,6 +418,26 @@ $lang['chat_log_id'] = "聊天记录ID";
 $lang['imported_time'] = "导入时间";
 $lang['evaluate_mark'] = "积分";
 $lang['evaluate_by'] = "评价者";
+$lang['msg_no_import'] = "没有许可执行导入";
+$lang['msg_no_edit'] = "没有许可执行编辑";
+$lang['msg_no_delete'] = "没有许可执行删除";
+$lang['msg_success_import'] = "导入成功, 确认此导入？";
+$lang['msg_success_confirm_import'] = "确认导入成功";
+$lang['msg_import_clear_pending'] = "请确认或删除未处理导入。处理人： ";
+$lang['msg_import_invalid_filename'] = "文件名： ";
+$lang['msg_import_invalid_line'] = " 含无效数据的行数：";
+$lang['msg_import_invalid_file_size1'] = "无效文件名称: ";
+$lang['msg_import_invalid_file_size2'] = "可能包含无效数据或文件大小超过500MB以上。";
+$lang['msg_confirm_import'] = "确认此导入？?";
+$lang['msg_delete_import'] = "删除此导入？";
+$lang['percentage'] = "巴显率";
+
+$lang['login_time'] = "登录时间";
+$lang['chat_time'] = "聊天时间";
+$lang['time_online'] = "在线时间";
+$lang['time_online_no_chat'] = "在线时间 - 空闲";
+$lang['time_not_available'] = "时间不可用";
+$lang['time_not_available_chat'] = "时间不可用，但聊天";
 //Header
 // $lang['logged_in'] = "登入为：";
 
@@ -403,6 +454,17 @@ $lang['week'] = "周";
 $lang['date'] = "日期";
 $lang['name'] = "名";
 $lang['designation'] = "职位";
+$lang['request'] = "要求";
+$lang['group_leader'] = "组长";
+$lang['senior'] = "资深";
+$lang['customer_service_short'] = "客服";
+$lang['head_count'] = "人数";
+$lang['in_charge'] = "主管";
+$lang['hod'] = "部门主管";
+$lang['admin'] = "行政";
+$lang['morning'] = "早班";
+$lang['afternoon'] = "午班";
+$lang['night'] = "晚班";
 $lang['day_of_week_short']['sunday'] = "周日";
 $lang['day_of_week_short']['monday'] = "周一";
 $lang['day_of_week_short']['tuesday'] = "周二";
@@ -419,32 +481,89 @@ $lang['day_of_week']['friday'] = "星期五";
 $lang['day_of_week']['saturday'] = "星期六";
 
 //member details
-$lang['user_details'] = "用户详细信息";
-$lang['useupdateile'] = "用户档案";
+$lang['save_user'] = "保存用户";
+$lang['user_information'] = "用户资料";
+$lang['user_details'] = "用户详细资料";
+$lang['user_profile'] = "个人资料";
 $lang['user_ids'] = "用户 IDs";
-$lang['leave_details'] = "假日信息";
+$lang['leave_details'] = "休假详情";
+$lang['back'] = "回去";
+$lang['children'] = "孩子";
+$lang['friends'] = "朋友";
+$lang['parents'] ="父母";
+$lang['relative'] = "亲戚";
+$lang['spouse'] = "伴侣";
+$lang['siblings'] = "兄弟姐妹";
+$lang['others'] = "其他";
+
+
 
 //others (buttons etc)
 $lang['expand'] = "扩大";
 $lang['collapse'] = "折叠";
 $lang['to'] = "至";
 
-//Permissions
-$lang['module_name'] = "组件名";
-$lang['add'] = "添加";
-$lang['edit'] = "更改";
-$lang['delete'] = "删除";
-$lang['view'] = "View";
-$lang['full_access'] = "全权限";
-$lang['check_all'] = "全权限";
-
 //Operation
-$lang['operation'] = "Operation";
-$lang['shift_report'] = "Shift Report";
-$lang['information_update'] = "Information Update";
-$lang['time_sheet'] = "Time Sheet";
-$lang['question_type'] = "Question Type";
-$lang['question_content'] = "Question Content";
+$lang['operation'] = "行动组";
+$lang['shift_report'] = "交班表";
+$lang['information_update'] = "资料更新";
+$lang['time_sheet'] = "工作日志";
+$lang['question_type'] = "问题种类";
+$lang['question_content'] = "问题内容";
+$lang['content'] = "内容";
+$lang['search_shift_report'] = '搜索交班表';
+$lang['search_information_update'] = '搜索资料更新';
+$lang['search_time_sheet'] = '搜索工作日志';
+$lang['search_question_content'] = '搜索问题内容';
+$lang['search_question_type'] = '搜索问题种类';
+$lang['shift_report_insert'] = '添加交班表';
+$lang['information_update_insert'] = '添加资料更新';
+$lang['shift_report_edit'] = '更改交班表';
+$lang['information_update_edit'] = 'Edit Information Update';
+$lang['shift_report_follow_up'] = 'Follow Up Shift Report';
+$lang['information_update_follow_up'] = 'Follow Up Information Update';
+$lang['shift_report_follow_up_insert'] = 'Insert Follow Up Report';
+$lang['information_update_follow_up_insert'] = 'Insert Follow Up Information Update';
+$lang['shift_report_follow_up_edit'] = 'Edit Follow Up Report';
+$lang['information_update_follow_up_edit'] = 'Edit Follow Up Information Update';
+$lang['total_shift_reports'] = 'Total Shift Reports';
+$lang['total_information_updates'] = 'Total Information Updates';
+$lang['total_follow_up_reports'] = 'Total Follow Up Reports';
+$lang['total_time_sheet'] = 'Total time sheets';
+$lang['total_question_type'] = 'Total question types';
+$lang['total_question_content'] = 'Total question contents';
+$lang['time_sheet_insert'] = 'Insert Time Sheet';
+$lang['time_sheet_edit'] = 'Edit Time Sheet';
+$lang['time_sheet_details'] = 'Time Sheet Details';
+$lang['question_type_insert'] = 'Add Question Type';
+$lang['question_type_edit'] = 'Edit Question Type';
+$lang['question_content_insert'] = 'Add Question Content';
+$lang['question_content_edit'] = 'Edit Question Content';
+$lang['player_name'] = 'Player Name';
+$lang['group'] = 'Group';
+$lang['sub_category'] = 'Sub-Category';
+$lang['finish_time'] = 'Finish Time';
+$lang['last_update_time'] = 'Last Update Ttime';
+$lang['no_result'] = 'No results found.';
+$lang['no_option'] = 'No option found.';
+$lang['no_category'] = 'No category selected.';
+$lang['delete_success'] = 'Record delete successfully.';
+$lang['delete_failure'] = 'Record fail to delete.';
+$lang['insert_success'] = 'Record add successfully.';
+$lang['insert_failure'] = 'Record fail to add.';
+$lang['insert_failure_duplicate'] = 'Record fail to add or already exists.';
+$lang['update_success'] = 'Record update successfully.';
+$lang['update_failure'] = 'Record fail to update.';
+$lang['update_failure_duplicate'] = 'Record fail to update or already exists.';
+$lang['invalid_data'] = 'Invalid data.';
+$lang['invalid_post_data'] = 'Invalid post data.';
+$lang['select'] = 'Please Select';
+$lang['close'] = 'Close';
+$lang['follow-up'] = 'Follow Up';
+$lang['done'] = 'Done';
+$lang['inform'] = 'Inform';
+$lang['informed'] = 'Informed';
+$lang['details'] = 'Details';
 
 
 //page 404

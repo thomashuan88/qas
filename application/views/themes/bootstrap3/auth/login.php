@@ -15,15 +15,17 @@
         <div class="form-group">
             <input type="text" name="username" id="username" class="form-control input-lg" placeholder="<?php print $this->lang->line('username'); ?>" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled required>
         </div>
-
         <div class="form-group">
             <input type="password" name="password" id="password" class="form-control input-lg" placeholder="<?php print $this->lang->line('password'); ?>" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled required>
+            <?php if($this->session->flashdata('hint')!=""){ ?>
+            <label style="color:#e16e41;"><?php print $this->lang->line('password_hint'); ?>: <?php print $this->session->flashdata('hint')?> </label>
+            <?php }?>
+            
         </div>
-
         <div class="form-group">
             <select class="form-control input-lg" name="language" id="language" >
-                <option value="english" selected>English</option>
-                <option value="chinese">中文</option>
+                <option value="english" <?php (Settings_model::$db_config['site_language'] == 'english' )?  print 'selected' : ''; ?>>English</option>
+                <option value="chinese" <?php (Settings_model::$db_config['site_language'] == 'chinese' )?  print 'selected' : ''; ?>>中文</option>
             </select>
         </div>
     

@@ -79,7 +79,7 @@ emergency_Input.intlTelInput({
     //     callback(countryCode);
     //   });
     // },
-    initialCountry: "auto",
+    initialCountry: "my",
     // nationalMode: false,
     // numberType: "MOBILE",
     // onlyCountries: ['us', 'gb', 'ch', 'ca', 'do'],

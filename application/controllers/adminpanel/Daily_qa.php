@@ -6,16 +6,18 @@ class Daily_Qa extends Admin_Controller {
     public function __construct() {
         parent::__construct();
 
-        if (! self::check_permissions(7)) {
+        if (! self::check_permissions(8)) {
             redirect("/private/no_access");
         }
 
-        $this->permission = self::check_action(7);
+        $this->permission = self::check_action(8);
         $this->load->model('adminpanel/Performance_daily_qa_model');
+        $this->load->library('MY_Permission');
     }
 
     public function index() {
-        $content_data['permission'] = array();
+        $content_data = array();
+        $content_data['permission'] = $this->my_permission->find_permission();
         ($this->permission->add == 'yes') ?  $content_data['permission']['add'] = TRUE : '';
         ($this->permission->edit == 'yes') ?  $content_data['permission']['edit'] = TRUE : '';
         ($this->permission->delete == 'yes') ?  $content_data['permission']['delete'] = TRUE : '';
@@ -24,11 +26,8 @@ class Daily_Qa extends Admin_Controller {
     }
 
     public function get_report() {
-
         if ( $this->input->post() ) {
-            $array = $this->input->post();
-            $array1 = array_keys($array);
-            $paging = json_decode($array1[0], true);
+            $paging = json_decode($this->input->post('data'), true);
             
             $offset = $paging['offset'];
             $order_by = $paging['order_by'];
@@ -36,8 +35,8 @@ class Daily_Qa extends Admin_Controller {
             $search_data = $paging['search_data'];
 
             $per_page = Settings_model::$db_config['members_per_page'];
-            $dailyQaObj = $this->Performance_daily_qa_model->get_daily_qa($per_page, $offset, $order_by, $sort_order, $search_data, 1);
-            $content_data['total_rows'] = $this->Performance_daily_qa_model->count_confirm_daily_qa($search_data);
+            $dailyQaObj = $this->Performance_daily_qa_model->get_daily_qa($per_page, $offset, $order_by, $sort_order, $search_data, 1, $this->my_permission->find_permission());
+            $content_data['total_rows'] = $this->Performance_daily_qa_model->count_confirm_daily_qa($search_data, $this->my_permission->find_permission() );
 
             $content_data['table_data'] = ( $dailyQaObj != false ) ? $dailyQaObj->result() : array();
 
@@ -48,138 +47,16 @@ class Daily_Qa extends Admin_Controller {
         }
     }
 
-    public function pending_list() {
-        $dailyQaObj = $this->Performance_daily_qa_model->pending_list();
-        $pendingList = ( $dailyQaObj != false ) ? $dailyQaObj->result('array') : array();
-
-        echo json_encode($pendingList, true);
-    }
-
-    public function get_pending() {
-        if ( $this->input->post() ) {
-            $array = $this->input->post();
-            $array1 = array_keys($array);
-            $paging = json_decode($array1[0], true);
-            
-            $offset = $paging['offset'];
-            $order_by = $paging['order_by'];
-            $sort_order = $paging['sort_order'];
-            $search_data = $paging['search_data'];
-
-            $per_page = Settings_model::$db_config['members_per_page'];
-            $dailyQaObj = $this->Performance_daily_qa_model->get_daily_qa($per_page, $offset, $order_by, $sort_order, $search_data, 0);
-            $content_data['total_rows'] = $this->Performance_daily_qa_model->count_pending_daily_qa($search_data);
-
-            if ( $content_data['total_rows'] > 0 ) {
-                $content_data['table_data'] = $dailyQaObj->result();
-            } else {
-                $content_data['table_data'] = array();
-            }
-
-            $content_data['offset'] = $offset;
-            $content_data['per_page'] = Settings_model::$db_config['members_per_page'];
-
-            echo json_encode($content_data, true);
-        }
-    }
-
-    public function confirm_pending() {
-        // check permission
-        if($this->permission->add != 'yes') { 
-            echo json_encode( array( 'error' => true, 'message' => $this->lang->line('msg_no_import') ), true);
-            exit();
-        }
-
-        if ( $this->input->post() ) {
-            $arr = $this->input->post();
-
-            try {
-                $this->Performance_daily_qa_model->confirm_dailyqa_import( $arr['import_by'] );
-                echo json_encode( array( 'error' => false, 'message' => $this->lang->line('msg_success_confirm_import') ), true );
-            } catch ( Exception $e ){
-                echo json_encode( array( 'error' => true, 'message' => $this->lang->line('account_unknown_error') ), true ); 
-            }
-        }
-    }
-
-    public function import_report() {
-        // check permission
-        if($this->permission->add != 'yes') { 
-            echo json_encode( array( 'error' => true, 'message' => $this->lang->line('msg_no_import') ), true);
-            exit();
-        }
-
-        // check pending upload exists
-        $total_rows = $this->Performance_daily_qa_model->count_not_current_upload(array( 'username' => $this->session->userdata('username') ), 0);
-        if ( $total_rows > 0 ) {
-            echo json_encode( array( 'error' => true, 'message' => $this->lang->line('msg_import_clear_pending') ), true);
-            exit();
-        }
-
-        // upload file
-        if( isset($_FILES['file']) ) {
-            $spreadData = array();
-            $error = false;
-            
-            $objPHPExcel = PHPExcel_IOFactory::load($_FILES['file']['tmp_name']);
-            $allDataInSheet = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
-
-            $arrayCount = count($allDataInSheet); // total row
-            $today = date('Y-m-d H:i:s');
-            $myUsername = $this->session->userdata('username');
-
-            for( $i = 2; $i <= $arrayCount; $i++ ) {
-
-                if (
-                    !preg_match( "/^\S{6,}$/", $allDataInSheet[$i]["A"] ) ||
-                    !is_numeric( $allDataInSheet[$i]["B"] ) ||
-                    !is_numeric( $allDataInSheet[$i]["C"] ) ||
-                    !is_numeric( trim( $allDataInSheet[$i]["D"] , '%') ) ||
-                    !preg_match( "/^\d+:\d{2}:\d{2}$/", $allDataInSheet[$i]["E"] ) ||
-                    !preg_match( "/^\d+:\d{2}:\d{2}$/", $allDataInSheet[$i]["F"] ) ||
-                    !is_numeric( $allDataInSheet[$i]["G"] )
-                    ) {
-
-                    $error = true;
-                    $errorLine = $i;
-
-                    break;
-                }
-
-                $spreadData[] = array(
-                        'username' => $allDataInSheet[$i]["A"],
-                        'yes' => $allDataInSheet[$i]["B"],
-                        'no' => $allDataInSheet[$i]["C"],
-                        'csi' => trim($allDataInSheet[$i]["D"], '%'),
-                        'art' => $allDataInSheet[$i]["E"],
-                        'aht' => $allDataInSheet[$i]["F"],
-                        'quantity' => $allDataInSheet[$i]["G"],
-                        'import_date' => $today,
-                        'import_by' => $myUsername
-                );
-            }
-
-            if ($error) {
-                echo json_encode( array('error' => true, 'message' => $this->lang->line('msg_import_invalid_filename') . $_FILES['file']['name'] . $this->lang->line('msg_import_invalid_line') . $errorLine ), true );
-            } else {
-                $this->Performance_daily_qa_model->insert_multi_daily_qa($spreadData);
-                
-                echo json_encode( array('error' => false), true );
-            }
-
-        }
-    }
-
     public function export_report() {
         $order_by = $this->uri->segment(4);
         $sort_order = $this->uri->segment(5);
         $search_data = array();
         $search_data = $this->uri->uri_to_assoc(6);
 
-        $dailyQaObj = $this->Performance_daily_qa_model->get_daily_qa( 0, 0, $order_by, $sort_order, $search_data );
-        $total_rows = $this->Performance_daily_qa_model->count_confirm_daily_qa($search_data);
+        $dailyQaObj = $this->Performance_daily_qa_model->get_daily_qa( 0, 0, $order_by, $sort_order, $search_data, 1, $this->my_permission->find_permission() );
+        $total_rows = $this->Performance_daily_qa_model->count_confirm_daily_qa($search_data, $this->my_permission->find_permission() );
 
-        if ($total_rows >0) {
+        if ( $total_rows > 0 ) {
             $data = $dailyQaObj->result('array');
         } else {
             die("Record is empty");
@@ -192,7 +69,7 @@ class Daily_Qa extends Admin_Controller {
         $aht = array();
         $totalRow = count( $data );
 
-        $excel->getActiveSheet()->fromArray( array('ID', 'Username', 'Yes', 'No', 'CSI', 'ART', 'AHT', 'Quantity', 'Import Date', 'Import By'), NULL, 'A1');
+        $excel->getActiveSheet()->fromArray( array('ID', 'date', 'Username', 'Yes', 'No', 'CSI', 'ART', 'AHT', 'Quantity', 'Import Date', 'Import By'), NULL, 'A1');
 
         foreach ($data as $value) {
             $excel->getActiveSheet()->fromArray( array_values($value), NULL, 'A' . $num_rows); 
@@ -204,7 +81,7 @@ class Daily_Qa extends Admin_Controller {
             $num_rows++;
         }
 
-        $excel->getActiveSheet()->getStyle('F2:F'.$num_rows)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_DATE_TIME6);
+        // $excel->getActiveSheet()->getStyle('F2:F'.$num_rows)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_DATE_TIME6);
 
         $this->load->helper('get_average_time');
 
@@ -227,24 +104,95 @@ class Daily_Qa extends Admin_Controller {
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
     }
-    
-    // unused
-    public function edit_report() {
+
+    public function get_pending() {
+        if ( $this->input->post() ) {
+            $paging = json_decode($this->input->post('data'), true);
+            
+            $offset = $paging['offset'];
+            $order_by = $paging['order_by'];
+            $sort_order = $paging['sort_order'];
+            $search_data = $paging['search_data'];
+
+            $per_page = Settings_model::$db_config['members_per_page'];
+            $dailyQaObj = $this->Performance_daily_qa_model->get_daily_qa($per_page, $offset, $order_by, $sort_order, array(), 0, array() );
+            $content_data['total_rows'] = $this->Performance_daily_qa_model->count_pending_daily_qa();
+
+            if ( $content_data['total_rows'] > 0 ) {
+                $content_data['table_data'] = $dailyQaObj->result();
+            } else {
+                $content_data['table_data'] = array();
+            }
+
+            $content_data['offset'] = $offset;
+            $content_data['per_page'] = Settings_model::$db_config['members_per_page'];
+
+            echo json_encode($content_data, true);
+        }
+    }
+
+    public function import_report() {
         // check permission
-        if($this->permission->edit != 'yes') { 
-            echo json_encode( array( 'error' => true, 'message' => $this->lang->line('msg_no_edit') ), true);
+        if($this->permission->add != 'yes') {
+            echo json_encode( array( 'error' => true, 'message' => $this->lang->line('msg_no_import') ), true);
             exit();
         }
-        if ( $this->input->post() ) {
-            $array = $this->input->post();
-            $today = date('Y-m-d H:i:s');
-            $myUsername = $this->session->userdata('username');
+        // check pending upload exists
+        $pendingNo = $this->Performance_daily_qa_model->count_not_my_pending();
+        $total_rows = $this->Performance_daily_qa_model->count_not_current_upload();
 
-            try {
-                $this->Performance_daily_qa_model->edit_daily_qa($array['record_id'], $array['yes'], $array['no'], $array['csi'], $array['art'], $array['aht'], $array['quantity'], $today, $myUsername);
-                echo json_encode( array('error' => false, 'message' => $this->lang->line('update_success') ),true ); 
-            } catch ( Exception $e ){
-                echo json_encode( array('error' => true, 'message' => $this->lang->line('account_unknown_error') ),true ); 
+        if ( $total_rows > 0 || $pendingNo > 0 ) {
+            $pendingBy = $this->Performance_daily_qa_model->get_pending_import_by();
+        
+            echo json_encode( array( 'error' => true, 'message' => $this->lang->line('msg_import_clear_pending') . $pendingBy[0]['import_by'] ), true);
+        
+        } else { // upload file
+            if( isset( $_FILES['file'] ) ) {
+                $spreadData = array();
+                $error = false;
+                
+                $objPHPExcel = PHPExcel_IOFactory::load( $_FILES['file']['tmp_name'] );
+                $allDataInSheet = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
+
+                $arrayCount = count($allDataInSheet); // total row
+                $today = date('Y-m-d H:i:s');
+                $myUsername = $this->session->userdata('username');
+
+                for( $i = 2; $i <= $arrayCount; $i++ ) {
+                    if (
+                        !isset($allDataInSheet[$i]["A"]) ||
+                        !isset($allDataInSheet[$i]["B"]) ||
+                        !isset($allDataInSheet[$i]["C"]) ||
+                        !isset($allDataInSheet[$i]["D"]) ||
+                        !isset($allDataInSheet[$i]["E"]) ||
+                        !isset($allDataInSheet[$i]["F"]) ||
+                        !isset($allDataInSheet[$i]["G"]) ||
+                        !isset($allDataInSheet[$i]["H"]) 
+                        ) {
+                        die(json_encode( array('error' => true, 'message' => $this->lang->line('account_unknown_error') ),true )); 
+                    }
+                    $spreadData[] = array(
+                            'date' => $allDataInSheet[$i]["A"],
+                            'username' => $allDataInSheet[$i]["B"],
+                            'yes' => $allDataInSheet[$i]["C"],
+                            'no' => $allDataInSheet[$i]["D"],
+                            'csi' => trim($allDataInSheet[$i]["E"], '%'),
+                            'art' => $allDataInSheet[$i]["F"],
+                            'aht' => $allDataInSheet[$i]["G"],
+                            'quantity' => $allDataInSheet[$i]["H"],
+                            'import_date' => $today,
+                            'import_by' => $myUsername
+                    );
+                }
+
+                if ($error) {
+                    echo json_encode( array('error' => true, 'message' => $this->lang->line('msg_import_invalid_filename') . $_FILES['file']['name'] . $this->lang->line('msg_import_invalid_line') . $errorLine ), true );
+                } else {
+                    $this->Performance_daily_qa_model->insert_multi_daily_qa($spreadData);
+                    
+                    echo json_encode( array('error' => false), true );
+                }
+
             }
         }
     }
@@ -258,38 +206,62 @@ class Daily_Qa extends Admin_Controller {
 
         //delete record
         if ( $this->input->post() ) {
-            $array = $this->input->post();
-            $array1 = array_keys($array);
-            $id = json_decode($array1[0], true);
+            $id = json_decode($this->input->post('data'), true);
+            $recordDetails = $this->Performance_daily_qa_model->get_single_record( $id )->result('array');
 
-            try {
-                $this->Performance_daily_qa_model->delete_daily_qa($id);
-                echo json_encode( array('error' => false, 'message' => $this->lang->line('delete_success') ),true ); 
-            } catch ( Exception $e ){
-                echo json_encode( array('error' => true, 'message' => $this->lang->line('account_unknown_error') ),true ); 
+            if (  in_array( $this->session->userdata('username'), $this->my_permission->find_permission() ) ) {
+                try {
+                    $this->Performance_daily_qa_model->delete_daily_qa($id);
+                    echo json_encode( array('error' => false, 'message' => $this->lang->line('delete_success') ),true ); 
+                } catch ( Exception $e ){
+                    echo json_encode( array('error' => true, 'message' => $this->lang->line('account_unknown_error') ),true ); 
+                }
+            } else {
+                echo json_encode( array( 'error' => true, 'message' => $this->lang->line('no_permission') ), true ); 
             }
         }
     }
 
-    public function delete_pending() {
+    public function confirm_pending() {
         // check permission
-        if($this->permission->delete != 'yes') { 
-            echo json_encode( array( 'error' => true, 'message' => $this->lang->line('msg_no_delete') ), true);
+        if( $this->permission->add != 'yes' ) {
+            echo json_encode( array( 'error' => true, 'message' => $this->lang->line('msg_no_import') ), true);
             exit();
         }
 
-        //delete pending record
         if ( $this->input->post() ) {
-            $array = $this->input->post();
+            $array = $this->Performance_daily_qa_model->get_pending_import_by();
 
-            try {
-                $this->Performance_daily_qa_model->delete_pending_daily_qa($array['import_by']);
-                echo json_encode( array('error' => false, 'message' => $this->lang->line('delete_success') ),true ); 
-            } catch ( Exception $e ){
-                echo json_encode( array('error' => true, 'message' => $this->lang->line('account_unknown_error') ),true ); 
+            if ( in_array( $array[0]['import_by'], $this->my_permission->find_permission() ) ) {
+                try {
+                    $this->Performance_daily_qa_model->confirm_dailyqa_import();
+                    echo json_encode( array( 'error' => false, 'message' => $this->lang->line('msg_success_confirm_import') ), true );
+                } catch ( Exception $e ){
+                    echo json_encode( array( 'error' => true, 'message' => $this->lang->line('account_unknown_error') ), true ); 
+                }
             }
         }
     }
-
     
+    public function delete_pending() {
+        if($this->permission->delete != 'yes') {  // check permission
+            echo json_encode( array( 'error' => true, 'message' => $this->lang->line('msg_no_delete') ), true);
+            exit();
+        } else { //delete pending record
+            if ( $this->input->post() ) {
+                $array = $this->Performance_daily_qa_model->get_pending_import_by();
+                
+                if ( in_array( $array[0]['import_by'], $this->my_permission->find_permission() ) ) {
+                    try {
+                        $this->Performance_daily_qa_model->delete_pending_daily_qa();
+                        echo json_encode( array('error' => false, 'message' => $this->lang->line('delete_success') ),true );
+                    } catch ( Exception $e ){
+                        echo json_encode( array( 'error' => true, 'message' => $this->lang->line('account_unknown_error') ), true ); 
+                    }
+                } else {
+                    echo json_encode( array( 'error' => true, 'message' => $this->lang->line('no_permission') ), true ); 
+                }
+            }
+        }
+    }
 }

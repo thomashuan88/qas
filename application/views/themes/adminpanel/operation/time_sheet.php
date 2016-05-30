@@ -7,7 +7,7 @@
 <div class="row">
     <div class="col-xs-2">
         <button id="js-search" type="button" class="btn btn-default" data-toggle="collapse" data-target="#search_wrapper">
-            <span id="js-search-text"><i class="fa fa-expand pd-r-5"></i> expand</span> search <i class="fa fa-search pd-l-5"></i>
+            <span id="js-search-text"><i class="fa fa-expand pd-r-5"></i> expand</span>&nbsp;<?php print $this->lang->line('search'); ?>&nbsp;<i class="fa fa-search pd-l-5"></i>
         </button>
     </div>
     <?php if ($add) { ?>
@@ -98,7 +98,7 @@
         sort_order: 'desc',
         search_data: {},
         permission: {},
-        ajaxUrl: "<?php print base_url('adminpanel/operation/get_time_sheet'); ?>"
+        ajaxUrl: "<?php print base_url('adminpanel/operation/get_time_sheet') . (!empty($_GET['type']) ? '/' . $_GET['type'] : ''); ?>"
     };
 
     var searchData = function () {
@@ -117,45 +117,19 @@
             type: "post",
             dataType: "json",
             success: function (data) {
+                console.log(data);
                 bootbox.dialog({
-                        title: "<?php print $this->lang->line('time_sheet_details'); ?>",
-                        message: '<div class="panel-body table-responsive"><table class="table"><tr><td><label>' +
-                        '<?php print $this->lang->line('id'); ?>' + '</label></td><td><span class="info">' + data['time_sheet_id'] + '</span></td></tr><tr><td><label>' +
-                        '<?php print $this->lang->line('shift'); ?>' + '</label></td><td><span class="info">' + data['shift'] + '</span></td></tr><tr><td><label>' +
-                        '<?php print $this->lang->line('remark'); ?>' + '</label></td><td><span class="info">' + data['remarks'] + '</span></td></tr><tr><td><label>' +
-                        '<?php print $this->lang->line('submit_by'); ?>' + '</label></td><td><span class="info">' + data['created_by'] + '</span></td></tr><tr><td><label>' +
-                        '<?php print $this->lang->line('submit_time'); ?>' + '</label></td><td><span class="info">' + data['created_time'] + '</span></td></tr></table></div>',
-                        buttons: {
-                            close: {
-                                label: "<?php print $this->lang->line('close'); ?>",
-                                className: "btn-default",
-                                callback: function () {
-                                }
-                            }
-                        }
-                    }
-                );
-            },
-            error: function (data) {
-                bootbox.alert(data['responseText']);
-            }
-        });
-    };
-
-    var editData = function(id) {
-        $.ajax({
-            url: "/adminpanel/operation/time_sheet_details/" + id,
-            type: "post",
-            dataType: "json",
-            success: function (data) {
-                bootbox.dialog({
-                        title: "<?php print $this->lang->line('time_sheet_details'); ?>",
-                        message: '<div class="panel-body table-responsive"><table class="table"><tr><td><label>' +
-                        '<?php print $this->lang->line('id'); ?>' + '</label></td><td><span class="info">' + data['time_sheet_id'] + '</span></td></tr><tr><td><label>' +
-                        '<?php print $this->lang->line('shift'); ?>' + '</label></td><td><span class="info">' + data['shift'] + '</span></td></tr><tr><td><label>' +
-                        '<?php print $this->lang->line('remark'); ?>' + '</label></td><td><span class="info">' + data['remarks'] + '</span></td></tr><tr><td><label>' +
-                        '<?php print $this->lang->line('submit_by'); ?>' + '</label></td><td><span class="info">' + data['created_by'] + '</span></td></tr><tr><td><label>' +
-                        '<?php print $this->lang->line('submit_time'); ?>' + '</label></td><td><span class="info">' + data['created_time'] + '</span></td></tr></table></div>',
+                    message: '<div class="panel-body table-responsive"><table class="table"><tr><td><label>' +
+                    '<?php print $this->lang->line('id'); ?>' + '</label></td><td><span class="info">' + data['time_sheet_id'] + '</span></td></tr><tr><td style="white-space: nowrap;"><label>' +
+                    '<?php print $this->lang->line('shift'); ?>' + '</label></td><td><span class="info">' + data['shift'] + '</span></td></tr><tr><td style="white-space: nowrap;"><label>' +
+                    '<?php print $this->lang->line('product'); ?>' + '</label></td><td><span class="info">' + data['product'] + '</span></td></tr><tr><td style="white-space: nowrap;"><label>' +
+                    '<?php print $this->lang->line('time_start'); ?>' + '</label></td><td><span class="info">' + data['time_start'] + '</span></td></tr><tr><td style="white-space: nowrap;"><label>' +
+                    '<?php print $this->lang->line('time_end'); ?>' + '</label></td><td><span class="info">' + data['time_end'] + '</span></td></tr><tr><td style="white-space: nowrap;"><label>' +
+                    '<?php print $this->lang->line('remark_title'); ?>' + '</label></td><td><span class="info">' + data['title'] + '</span></td></tr><tr><td style="white-space: nowrap;"><label>' +
+                    '<?php print $this->lang->line('remark'); ?>' + '</label></td><td><span class="info">' + data['remarks'] + '</span></td></tr><tr><td style="white-space: nowrap;"><label>' +
+                    '<?php print $this->lang->line('submit_by'); ?>' + '</label></td><td><span class="info">' + data['created_by'] + '</span></td></tr><tr><td style="white-space: nowrap;"><label>' +
+                    '<?php print $this->lang->line('submit_time'); ?>' + '</label></td><td><span class="info">' + data['created_time'] + '</span></td></tr></table></div>',
+                    title: "<?php print $this->lang->line('time_sheet_details'); ?>",
                         buttons: {
                             close: {
                                 label: "<?php print $this->lang->line('close'); ?>",
@@ -214,7 +188,7 @@
             html += '<td style="white-space: nowrap;">';
             html += '<a href="#" onclick="viewData(' + value['time_sheet_id'] + ');" class="btn btn-success btn-circle" title="<?php print $this->lang->line('details')?>" data-toggle="tooltip" data-placement="top" data-original-title="View"><i class="fa fa-eye"></i></a>';
             if (paging.permission['edit']) {
-                html += '<a href="#" onclick="editData(' + value['time_sheet_id'] + ');" class="btn btn-primary btn-circle edit" title="<?php print $this->lang->line('edit')?>" data-toggle="tooltip" data-placement="top" data-original-title="Edit"><i class="fa fa-pencil-square"></i></a>';
+                html += '<a href="<?php print base_url('adminpanel/operation/time_sheet_edit')?>/' + value['time_sheet_id'] + '" class="btn btn-primary btn-circle edit" title="<?php print $this->lang->line('edit')?>" data-toggle="tooltip" data-placement="top" data-original-title="Edit"><i class="fa fa-pencil-square"></i></a>';
             }
             if (paging.permission['delete']) {
                 html += '<a href="#" onclick="deleteData(' + value['time_sheet_id'] + ');" class="btn btn-danger btn-circle" title="<?php print $this->lang->line('delete')?>" data-toggle="tooltip" data-placement="top" data-original-title="DELETE" data-method="DELETE"><i class="fa fa-trash"></i></a>';
