@@ -61,6 +61,11 @@
         color:#01587F;
     }
 
+    .offday {
+        color: black;
+        background-color: #E9EAEA;
+    }
+
     .schedule_table th,td{
         line-height: 10px !important;
     }
@@ -105,8 +110,14 @@
    </div> <!-- /container -->
 </div>
 
+<div>
+    <a href="#" id="status" data-type="select" data-url="" data-title="Select status"></a>
+</div>
+
 <link href="<?php print base_url(); ?>assets/js/vendor/monthpicker/MonthPicker.css" rel="stylesheet">
+<link href="<?php print base_url(); ?>assets/js/vendor/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
 <script src="<?php print base_url(); ?>assets/js/vendor/monthpicker/MonthPicker.js"></script>
+<script src="<?php print base_url(); ?>assets/js/vendor/bootstrap3-editable/js/bootstrap-editable.js"></script>
 <script type="text/javascript">
     /*** Languages ***/
     //days of week
@@ -141,30 +152,48 @@
         return days;
     }
 
-    function randomStuff(_type){
-        var reData = "";
-        switch(_type) {
-            case 'code':
-                var text = "";
-                var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    function xeditable_initial(){
+        //name
+        $('.selectable_name').editable({
+            showbuttons: false,
+            placement: 'left',
+            toggle: 'manual',
+            title: 'Select username',
+            source: [
+                  {value: 1, text: 'Active'},
+                  {value: 2, text: 'Blocked'},
+                  {value: 3, text: 'Deleted'}
+               ]
+        });
 
-                for( var i=0; i < 7; i++ )
-                    reData += possible.charAt(Math.floor(Math.random() * possible.length));
-                break;
-            case 'role':
-                var role = ["S-ECS", "ECS", "CS", "TL", "New-ECS"];
-                reData = role[Math.floor(Math.random() * role.length)];
-                break;
-            case 'shift':
-                var shift = ["Morning", "Noon", "Night"];
-                reData = shift[Math.floor(Math.random() * shift.length)];
-                break;
-            default:
-                reData = "random";
-                break;
-        }
-        return reData;
+        //remarks
+        $('.selectable_remark').editable({ 
+            showbuttons: false,
+            title: 'Enter remark',
+            placement: 'right',
+            toggle: 'manual'
+        });
+
+        //shifts
+        $('.selectable_shift').editable({
+            showbuttons: false,
+            title: 'Select shift',
+            placement: 'right',
+            toggle: 'manual',
+            source: [
+                  {value: 1, text: '07:00'},
+                  {value: 2, text: '14:00'},
+                  {value: 3, text: '22:30'}
+               ]
+        });
     }
+
+    function click_manager(a,b,c,d){
+        //alert(a+"-"+b+"-"+c+"-"+d);
+
+    }
+
+
 
     function generateSchedule(_date=''){
         //setup new schedule
@@ -237,14 +266,18 @@
             $('.row_week').append(row_last_week);
             
             var _day = return_date.length + 4;
-            var _people = 50;
 
-            //draw data content
+            //** draw data content start **//
             $('.table-loop-content').html('');
             var blank_row = "<tr><td colspan='"+_day+"' class='blankTD'></td></tr>";
 
             //offdays preset
-            var offdays = data.offdays;
+            var offdays_admin = data.offdays.admin;
+            var offdays_leader = data.offdays.leader;
+            var offdays_senior = data.offdays.senior;
+            var offdays_cs = data.offdays.cs;
+
+            var offday_color = "offday";
 
             //data table looping
             for(shift=1; shift<=data.table_structure.shift_per_day; shift++ ){
@@ -276,7 +309,6 @@
                     if(i!=10 && i!=11){
                         for(j=0; j<_day; j++){
                             //loop day
-                            var r_name = randomStuff('code');
                             if(j==0){
                                 switch(i) {
                                     case 1:
@@ -294,16 +326,17 @@
                                 //user name
                                 var post_id = "";
                                 if(i==1){
-                                    post_id = "leader";
+                                    post_id = "Leader";
                                 }else if(i==2){
-                                    post_id = "senior";
+                                    post_id = "Senior";
                                 }else{
-                                    post_id = "cs";
+                                    post_id = "CS";
                                 }
-                                row += "<td class='tdMinWidth clickable' id='"+post_id+"_"+shift+"_"+i+"'></td>";
+                                //row += "<td class='tdMinWidth'><div><span class='fa fa-plus clickable'></span> <a href='#' class='selectable' id='name_"+post_id+"_"+shift+"_"+i+"' data-type='select' data-url='' data-title='Select status'>&nbsp;</a></div></td>";
+                                row += "<td class='tdMinWidth clickable'><a href='#' class='selectable_name' id='name_"+post_id+"_"+shift+"_"+i+"' data-type='select' data-url='' data-title='Select status'></a></td>";
                             }else if(j==2){
                                 //remarks
-                                row += "<td class='clickable'></td>";
+                                row += "<td class='clickable'><a href='#' class='selectable_remark' id='remark_"+post_id+"_"+shift+"_"+i+"' data-type='text' data-url='' data-title='Remarks'></a></td>";
                             }else if(j==3){
                                 //shift slot
                                 switch(shift) {
@@ -321,38 +354,27 @@
                                 //actual roster
                                 var post_roster = j+1;
                                 var day_of_week = j - 4;
+                                var cs_slot = i-2;
                                 //looping preset offday
                                 var _shifts = "";
-                                if( (i==3 && return_date[day_of_week]==1) || ( i==9 && return_date[day_of_week]==1) || ( shift==2 && i==1 && return_date[day_of_week]==1) || ( shift==3 && i==2 && return_date[day_of_week]==1) ) {
-                                    //monday
+                                var background = back_color;
+
+                                _shifts = shiftTime;offday_color
+
+                                if(i==1 && offdays_leader[shift][return_date[day_of_week]] == 'off'){
+                                    background = offday_color;
                                     _shifts = "<span style='color:black;'>OFF</span>";
-                                }else if( (i==8 && return_date[day_of_week]==2) || ( i==9 && return_date[day_of_week]==2) || ( shift==2 && i==1 && return_date[day_of_week]==2) || ( shift==3 && i==2 && return_date[day_of_week]==2) ){
-                                    //tuesday
+                                }else if (i==2 && offdays_senior[shift][return_date[day_of_week]] == 'off'){
+                                    background = offday_color;
                                     _shifts = "<span style='color:black;'>OFF</span>";
-                                }else if( (i==7 && return_date[day_of_week]==3) || ( i==8 && return_date[day_of_week]==3) || ( shift==1 && i==1 && return_date[day_of_week]==3) ){
-                                    //wednesday
+                                }else if (i!=1 && i!=2 && offdays_cs[cs_slot][return_date[day_of_week]] == 'off'){
+                                    background = offday_color;
                                     _shifts = "<span style='color:black;'>OFF</span>";
-                                }else if( (i==6 && return_date[day_of_week]==4) || ( i==7 && return_date[day_of_week]==4) || ( shift==1 && i==1 && return_date[day_of_week]==4) || ( shift==2 && i==2 && return_date[day_of_week]==4) ){
-                                    //thursday
-                                    _shifts = "<span style='color:black;'>OFF</span>";
-                                }else if( (i==5 && return_date[day_of_week]==5) || ( i==6 && return_date[day_of_week]==5) || ( shift==2 && i==2 && return_date[day_of_week]==5) || ( shift==3 && i==1 && return_date[day_of_week]==5) ){
-                                    //friday
-                                    _shifts = "<span style='color:black;'>OFF</span>";
-                                }else if( (i==4 && return_date[day_of_week]==6) || ( i==5 && return_date[day_of_week]==6) || ( shift==1 && i==2 && return_date[day_of_week]==6) || ( shift==3 && i==1 && return_date[day_of_week]==6) ){
-                                    //saturday
-                                    _shifts = "<span style='color:black;'>OFF</span>";
-                                }else if( (i==3 && return_date[day_of_week]==0) || ( i==4 && return_date[day_of_week]==0) || ( shift==1 && i==2 && return_date[day_of_week]==0) ){
-                                    //sunday
-                                    _shifts = "<span style='color:black;'>OFF</span>";
-                                }else{
-                                    _shifts = shiftTime;
                                 }
-
-                                // if(i==1){
-
-                                // }
+                                
                                 //_shifts = shiftTime;
-                                row += "<td class='"+back_color+" clickable' id='"+shift+"_"+i+"_"+post_roster+"'>"+_shifts+"</td>";
+                                //row += "<td class='"+background+" clickable' id='shifts_"+shift+"_"+i+"_"+post_roster+"'>"+_shifts+"</td>";
+                                row += "<td class='"+background+" clickable'><a href='#' class='selectable_shift' id='shifts_"+shift+"_"+i+"_"+post_roster+"' data-type='select' data-url='' data-title='Select shift'>"+_shifts+"</a></td>";
                             }
                         }
 
@@ -403,13 +425,23 @@
                     if(j==0){
                         row_admin += "<td>"+ _pos +"</td>";
                     }else if(j==1){
-                        row_admin += "<td class='clickable'></td>";
+                        row_admin += "<td class='clickable'><a href='#' class='selectable_name' id='name_Administrator_4_"+a+"' data-type='select' data-url='' data-title='Select admin'></a></td>";
                     }else if(j==2){
-                        row_admin += "<td class='clickable'></td>";
+                        row_admin += "<td class='clickable'><a href='#' class='selectable_remark' id='remark_Administrator_4_"+a+"' data-type='text' data-url='' data-title='Remarks'></a></td>";
                     }else if(j==3){
                         row_admin += "<td>"+admin+"</td>";
                     }else{
-                        row_admin += "<td class='admin_shift_back admin_shift_word clickable'>"+normalShift+"</td>";
+                        //admin shift
+                        var _shifts = normalShift;
+                        var day_of_week = j - 4;
+                        var shift_slot = j + 1;
+                        var background = "admin_shift_back admin_shift_word";
+                        if(offdays_admin[a][return_date[day_of_week]] == 'off'){
+                            background = offday_color;
+                            _shifts = "<span style='color:black;'>OFF</span>";
+                        }
+
+                        row_admin += "<td class='"+background+" clickable' id='shift_admin_"+a+"_"+shift_slot+"'>"+_shifts+"</td>";
                     }
 
                 }
@@ -419,18 +451,54 @@
             $('.table-loop-content').append(blank_row);
 
             $('.clickable').click(function(event){
-                var _id = $(this).attr("id");
-                bootbox.confirm('Clicked - '+_id, function (confirmed) {
-                    if (confirmed) {
-                        //return false;
-                    }else{
-                        //return false;
-                    }
-                });
+                //var _id = $(this).next().attr('id');
+                var _id = $(this).children().attr('id');
+                //alert(_id);
+                //var _id = $(this).attr("id");
+                var arr = _id.split('_');
+                //arr[0] - type (shift, name, remarks)
+                //arr[1] - position (leader, senior, cs, admin) or shift (shift1, shift2..)
+                //arr[2] - which row, determines shift slots *need to change, inconsistent
+                //arr[3] - day slot, determines which date of shift
+                //click_manager(_id, arr[0], arr[1], arr[2], arr[3]);
+
+                event.stopPropagation();
+                switch(arr[0]){
+                    case 'shift':
+                    case 'name':
+                        $('#'+_id).editable('toggle');
+                        break;
+                    case 'remark':
+                        $('#'+_id).editable('toggle');
+                        break;
+                }
                 
             });
 
+
+            //initialize x-editable
+            xeditable_initial();
         }, "JSON");
+    }
+
+    function click_manager(id, a, b, c, d){
+        switch(a){
+            case 'shift':
+            case 'name':
+                e.stopPropagation();
+                $('#'+id).editable({});
+                break;
+            case 'remark':
+                break;
+        }
+        // $('#'+id).editable({
+        //     source: [
+        //           {value: 1, text: 'Active'},
+        //           {value: 2, text: 'Blocked'},
+        //           {value: 3, text: 'Deleted'}
+        //        ]
+        // });
+        //$('#'+id).editable('toggle');
     }
 
     $(function() {

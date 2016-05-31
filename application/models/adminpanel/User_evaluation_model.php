@@ -2,7 +2,7 @@
 
 class User_evaluation_model extends CI_Model {
     public $tablename = 'user_evaluation';
-    public $fields = '`id`, `username`, `imported_time`, `status`, `evaluate_mark`, `evaluate_by`, `mark_delete`, `evaluate_time`, `chat_start_time`, `chat_end_time`, `duration`, `chat_starting_page`, `opterator`, `browser`, `os`, `host_address`, `host_ip`, `real_time_session_ref`, `country`, `city`, `organization`, `world_region`, `time_zone`, `isp`, `player`, `brand`, `update_time`, `update_by`';
+    public $fields = '`id`, `username`, `imported_time`, `status`, `coverage`, `evaluate_mark`, `evaluate_by`, `mark_delete`, `evaluate_time`, `chat_start_time`, `chat_end_time`, `duration`, `chat_starting_page`, `opterator`, `browser`, `os`, `host_address`, `host_ip`, `real_time_session_ref`, `country`, `city`, `organization`, `world_region`, `time_zone`, `isp`, `player`, `brand`, `areas_of_strength`, `areas_of_improvement`, `action_plan`, `employee_comments`, `update_time`, `update_by`';
 
     public function __construct() {
         parent::__construct();

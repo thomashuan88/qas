@@ -10,6 +10,8 @@ class List_members extends Admin_Controller {
         $this->load->library('form_validation');
         $this->load->model('adminpanel/list_members_model');
         $this->load->model('adminpanel/users_model');
+        $this->load->model('adminpanel/roles_model');
+
         if (! self::check_permissions(2)) {
             redirect("/private/no_access");
         }
@@ -33,6 +35,13 @@ class List_members extends Admin_Controller {
          ($this->permission->add == 'yes') ?  $content_data['permission']['add'] = TRUE : '';
          ($this->permission->edit == 'yes') ?  $content_data['permission']['edit'] = TRUE : '';
          ($this->permission->delete == 'yes') ?  $content_data['permission']['delete'] = TRUE : '';
+         (Settings_model::$db_config['data_mask'] == 'Yes') ?  $content_data['permission']['data_mask'] = TRUE : '';
+
+
+
+
+         $content_data['roles'] = $this->roles_model->get_role_name();
+
 
         $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel',  $this->lang->line('user_listing'), 'list_members', 'header', 'footer', '', $content_data);
     }
@@ -94,16 +103,42 @@ class List_members extends Admin_Controller {
            exit();
        }
        if ( $this->input->post() ) {
-
            $value = $this->input->post();
-
-           try {
-               $this->users_model->toggle_active($value['username'], $value['current_status']);
-              $message =  ($value['current_status']=='Active'?'deactivated' : 'activated');
-               echo "has been "+ $message;
-           } catch ( Exception $e ){
+           if($this->users_model->toggle_active($value['username'], $value['current_status'])){
+               $message =  ($value['current_status']=='Active'?'deactivated' : 'activated');
+                echo "User has been " .$message;
+           }else {
                echo "Fail to change user status";
            }
+       }
+   }
+
+
+   public function resend_link_ajax(){
+       $this->load->helper(array('form', 'send_email'));
+       $this->load->model('system/email_tools_model');
+       $data = $this->email_tools_model->get_data_by_email($this->input->post('email'));
+
+       if ($data['status'] == "Active") {
+           echo "Account is already activated";
+       }elseif (!empty($data['nonce'])) {
+           $this->load->model('auth/resend_activation_model');
+           $this->resend_activation_model->update_last_login($data['username']);
+           $this->load->helper('send_email');
+           $this->load->library('email', load_email_config(Settings_model::$db_config['email_protocol']));
+           $this->email->from(Settings_model::$db_config['admin_email_address'], $_SERVER['HTTP_HOST']);
+           $this->email->to($this->input->post('email'));
+           $this->email->subject($this->lang->line('resend_activation_subject'));
+
+           $message ="";
+           $message .=$this->lang->line('email_greeting') ." ".$this->input->post('uname');
+           $message .=$this->lang->line('resend_activation_message'). base_url() ."auth/activate_account/check/". urlencode($this->input->post('email')) ."/". $data['nonce']."/".$data['username']." ";
+           $this->email->message($message);
+           if ($this->email->send()) {
+               echo "Activation email has been resend";
+           }
+       }else{
+           echo "Email not found";
        }
    }
 

@@ -11,14 +11,6 @@ class MY_Form_validation extends CI_Form_validation {
         return $this->_error_array;
     }
 
-
-    // public function is_valid_password($password) {
-    //     if(preg_match('/^(?=.*\d)(?=.*[@#\-_$%^&+=§!\?])(?=.*[a-z])(?=.*[A-Z])[0-9A-Za-z@#\-_$%^&+=§!\?]{8,20}$/',$password)){
-    //         return true;
-    //     }
-    //     return false;
-    // }
-
     /**
      *
      * is_valid_email: verify validity of e-mail addresses - is also used for AJAX calls
@@ -48,10 +40,10 @@ class MY_Form_validation extends CI_Form_validation {
      */
 
     public function is_valid_password($password) {
-        if(preg_match('/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=.\-_*])([a-zA-Z0-9@#$%^&+=*.\-_]){8,20}$/',$password)){
-            $array= array('abc', 'abc123', 'abcd1234', '123qwe', '123qwer', '1qaz2wsx', 'password');
+        if(preg_match('/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&+=.\-_*])([a-zA-Z0-9@#$%^&+=*.\-_]){8,20}$/',$password)){
+            $array= array('abc', 'abc123', 'abcd1234', '123qwe', '1234qwer', 'abcd1234','1qa2ws3ed','1qaz2wsx', 'password');
             foreach($array as $a){
-
+                $password=strtolower($password);
                 if (strpos($password,$a) !== false) {
                     return false;
                 }
@@ -230,15 +222,17 @@ class MY_Form_validation extends CI_Form_validation {
     public function is_valid_new_password($password) {
 
         if(preg_match('/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=.\-_*])([a-zA-Z0-9@#$%^&+=*.\-_]){8,20}$/',$password)){
-         
+
             return true;
         }
         return false;
     }
 
     public function is_new_password_secure($password){
-        
-         $array= array('abc', 'abc123', 'abcd1234', '123qwe', '123qwer', '1qaz2wsx', 'password');
+
+         $array= array('abc', 'abc123', 'abcd1234', '123qwe','abcd1234','1qa2ws3ed', '1234qwer', '1qaz2wsx', 'password');
+         $password=strtolower($password);
+
             foreach($array as $a){
                 if (strpos($password,$a) !== false) {
                     return false;
@@ -247,13 +241,17 @@ class MY_Form_validation extends CI_Form_validation {
             return true;
     }
 
-    public function is_valid_confirm_password($password) {
+    public function password_not_equal_username($password, $username){
+        $password=strtolower($password);
+        $username=strtolower($username);
 
-        if(preg_match('/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=.\-_*])([a-zA-Z0-9@#$%^&+=*.\-_]){6,20}$/',$password)){
-            return true;
+
+        if (strpos($password, $username) !== false) {
+            return false;
         }
-        return false;
+        return true;
     }
+
 
     public function is_valid_time($time){
 
@@ -293,5 +291,4 @@ class MY_Form_validation extends CI_Form_validation {
         }
         return false;
     }
-
 }

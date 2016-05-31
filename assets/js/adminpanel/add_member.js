@@ -95,7 +95,8 @@ var form_lock = true;
 $("#unlock").click(function(){
     var status = $("#unlock span").text();
 
-    if(status == "Unlock"){
+
+    if(status == unlock){
         unlock_form();
         form_lock = false;
     } else {
@@ -111,7 +112,7 @@ function unlock_form(){
         $("#profile").removeClass("lock-overlay");
         $("#ids").removeClass("lock-overlay");
         $("#unlock i").removeClass("fa-unlock").addClass("fa-lock");
-        $("#unlock span").text("Lock");
+        $("#unlock span").text(lock);
 
         $("#profile :input").prop("disabled", false);
         $("#ids :input").prop("disabled", false);
@@ -124,7 +125,7 @@ function lock_form(){
         $("#profile").addClass("lock-overlay");
         $("#ids").addClass("lock-overlay");
         $("#unlock i").removeClass("fa-lock").addClass("fa-unlock");
-        $("#unlock span").text("Unlock");
+        $("#unlock span").text(unlock);
 
         $("#profile :input").prop("disabled", true);
         $("#ids :input").prop("disabled", true);

@@ -32,7 +32,7 @@ class Email_tools_model extends CI_Model {
 
         if($query->num_rows() == 1) {
             $row = $query->row();
-            return array('user_id' => $row->user_id, 'username' => $row->username, 'nonce' => $row->nonce, 'active' => $row->active);
+            return array('user_id' => $row->user_id, 'username' => $row->username, 'nonce' => $row->nonce, 'active' => $row->active, 'status' => $row->status);
         }
         return "";
     }

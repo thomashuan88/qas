@@ -27,7 +27,6 @@ class Log_in_out extends Admin_Controller {
     public function get_report() {
         if ( $this->input->post() ) {
             $paging = json_decode($this->input->post('data'), true);
-
             
             $offset = $paging['offset'];
             $order_by = $paging['order_by'];
@@ -35,7 +34,7 @@ class Log_in_out extends Admin_Controller {
             $search_data = $paging['search_data'];
             $per_page = Settings_model::$db_config['members_per_page'];
 
-            $resultObj = $this->Performance_log_in_out_model->get_records($per_page, $offset, $order_by, $sort_order, $search_data, 1, $this->my_permission->find_permission());
+            $resultObj = $this->Performance_log_in_out_model->get_records($per_page, $offset, $order_by, $sort_order, $search_data, 1, $this->my_permission->find_permission() );
 
             $content_data['total_rows'] = $this->Performance_log_in_out_model->count_confirm_records($search_data, $this->my_permission->find_permission() );
 
@@ -67,13 +66,19 @@ class Log_in_out extends Admin_Controller {
         $num_rows = 2;
         $totalRow = count( $data );
 
-        $excel->getActiveSheet()->fromArray( array('ID', 'Username', 'Login Time', 'Chat Time', 'Time Online', 'Time Online No Chat', 'Time Not Available', 'Time Not Available Chat', 'Month',  'Leader', 'Import Date', 'Import By'), NULL, 'A1');
+        $excel->getActiveSheet()->fromArray( array('ID', 'Username', 'Date', 'Login Time', 'Chat Time', 'Time Online', 'Time Online No Chat', 'Time Not Available', 'Time Not Available Chat', 'Month',  'Leader', 'Import By', 'Import Date'), NULL, 'A1');
+
+        foreach ($data as $value) {
+            $excel->getActiveSheet()->fromArray( array_values( $value ), NULL, 'A' . $num_rows);
+            
+            $num_rows++;
+        }
 
         $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel5');
 
         // force download
         header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment; filename="log_in_out.xls"');
+        header('Content-Disposition: attachment; filename="log_in_out-' . date("Y-m-d") . '.xls"');
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
     }
@@ -115,67 +120,62 @@ class Log_in_out extends Admin_Controller {
         $total_rows = $this->Performance_log_in_out_model->count_not_current_upload();
 
         if ( $total_rows > 0 || $pendingNo > 0 ) {
-            $pendingBy = $this->Performance_daily_qa_model->get_pending_import_by();
+            $pendingBy = $this->Performance_log_in_out_model->get_pending_import_by();
         
             echo json_encode( array( 'error' => true, 'message' => $this->lang->line('msg_import_clear_pending') . $pendingBy[0]['import_by'] ), true);
         
         } else { // upload file
-            try{
-                if( isset( $_FILES['file'] ) ) {
-                    $spreadData = array();
-                    $error = false;
-                    
-                    $objPHPExcel = PHPExcel_IOFactory::load( $_FILES['file']['tmp_name'] );
-                    $allDataInSheet = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
+            if( isset( $_FILES['file'] ) ) {
+                $spreadData = array();
+                $error = false;
+                
+                $objPHPExcel = PHPExcel_IOFactory::load( $_FILES['file']['tmp_name'] );
+                $allDataInSheet = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
 
-                    $arrayCount = count($allDataInSheet); // total row
-                    $today = date('Y-m-d H:i:s');
-                    $myUsername = $this->session->userdata('username');
+                $arrayCount = count($allDataInSheet); // total row
+                $today = date('Y-m-d H:i:s');
+                $myUsername = $this->session->userdata('username');
 
-                    for( $i = 2; $i <= $arrayCount; $i++ ) {
-                        if (
-                            !isset($allDataInSheet[$i]["A"]) ||
-                            !isset($allDataInSheet[$i]["B"]) ||
-                            !isset($allDataInSheet[$i]["C"]) ||
-                            !isset($allDataInSheet[$i]["D"]) ||
-                            !isset($allDataInSheet[$i]["E"]) ||
-                            !isset($allDataInSheet[$i]["F"]) ||
-                            !isset($allDataInSheet[$i]["G"]) ||
-                            !isset($allDataInSheet[$i]["H"]) ||
-                            !isset($allDataInSheet[$i]["I"]) ||
-                            !isset($allDataInSheet[$i]["J"]) 
-                            ) {
-                            die(json_encode( array('error' => true, 'message' => $this->lang->line('account_unknown_error') ),true )); 
-                        }
-
-                        $spreadData[] = array(
-                            'date' => $allDataInSheet[$i]["A"],
-                            'username' => $allDataInSheet[$i]["B"],
-                            'login_time' => $allDataInSheet[$i]["C"],
-                            'chat_time' => $allDataInSheet[$i]["D"],
-                            'time_online' => $allDataInSheet[$i]["E"],
-                            'time_online_no_chat' => $allDataInSheet[$i]["F"],
-                            'time_not_available' => $allDataInSheet[$i]["G"],
-                            'time_not_available_chat' => $allDataInSheet[$i]["H"],
-                            'month' => $allDataInSheet[$i]["I"],
-                            'leader' => $allDataInSheet[$i]["J"],
-                            'import_date' => $today,
-                            'import_by' => $myUsername
-                        );
+                for( $i = 2; $i <= $arrayCount; $i++ ) {
+                    if (
+                        !isset($allDataInSheet[$i]["A"]) ||
+                        !isset($allDataInSheet[$i]["B"]) ||
+                        !isset($allDataInSheet[$i]["C"]) ||
+                        !isset($allDataInSheet[$i]["D"]) ||
+                        !isset($allDataInSheet[$i]["E"]) ||
+                        !isset($allDataInSheet[$i]["F"]) ||
+                        !isset($allDataInSheet[$i]["G"]) ||
+                        !isset($allDataInSheet[$i]["H"]) ||
+                        !isset($allDataInSheet[$i]["I"]) ||
+                        !isset($allDataInSheet[$i]["J"]) 
+                        ) {
+                        die(json_encode( array('error' => true, 'message' => $this->lang->line('account_unknown_error') ),true )); 
                     }
 
-                    log_message('error', print_r($spreadData , true));
-
-                    if ($error) {
-                        echo json_encode( array('error' => true, 'message' => $this->lang->line('msg_import_invalid_filename') . $_FILES['file']['name'] . $this->lang->line('msg_import_invalid_line') . $errorLine ), true );
-                    } else {
-                        $this->Performance_log_in_out_model->insert_multi_records($spreadData);
-                        
-                        echo json_encode( array('error' => false), true );
-                    }
-                }catch (Exception $e) {
-                    echo json_encode( array('error' => true, 'message' => $this->lang->line('account_unknown_error') ),true ); 
+                    $spreadData[] = array(
+                        'date' => $allDataInSheet[$i]["A"],
+                        'username' => $allDataInSheet[$i]["B"],
+                        'login_time' => $allDataInSheet[$i]["C"],
+                        'chat_time' => $allDataInSheet[$i]["D"],
+                        'time_online' => $allDataInSheet[$i]["E"],
+                        'time_online_no_chat' => $allDataInSheet[$i]["F"],
+                        'time_not_available' => $allDataInSheet[$i]["G"],
+                        'time_not_available_chat' => $allDataInSheet[$i]["H"],
+                        'month' => $allDataInSheet[$i]["I"],
+                        'leader' => $allDataInSheet[$i]["J"],
+                        'import_date' => $today,
+                        'import_by' => $myUsername
+                    );
                 }
+
+                if ($error) {
+                    echo json_encode( array('error' => true, 'message' => $this->lang->line('msg_import_invalid_filename') . $_FILES['file']['name'] . $this->lang->line('msg_import_invalid_line') . $errorLine ), true );
+                } else {
+                    $this->Performance_log_in_out_model->insert_multi_records($spreadData);
+                    
+                    echo json_encode( array('error' => false), true );
+                }
+                // echo json_encode( array('error' => true, 'message' => $this->lang->line('account_unknown_error') ),true ); 
             }
         }
     }
@@ -197,6 +197,7 @@ class Log_in_out extends Admin_Controller {
                     $this->Performance_log_in_out_model->delete_record($id);
                     echo json_encode( array('error' => false, 'message' => $this->lang->line('delete_success') ),true ); 
                 } catch ( Exception $e ){
+                    echo $e;
                     echo json_encode( array('error' => true, 'message' => $this->lang->line('account_unknown_error') ),true ); 
                 }
             } else {
@@ -222,6 +223,8 @@ class Log_in_out extends Admin_Controller {
                 } catch ( Exception $e ){
                     echo json_encode( array( 'error' => true, 'message' => $this->lang->line('account_unknown_error') ), true ); 
                 }
+            } else {
+                    echo json_encode( array( 'error' => true, 'message' => $this->lang->line('no_permission') ), true ); 
             }
         }
     }

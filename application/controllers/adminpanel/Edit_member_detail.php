@@ -34,6 +34,7 @@ class Edit_member_detail extends Admin_Controller {
             $current_user = $this->users_model->get_member_info($this->session->userdata('username'));
 
             $content_data['permission']['user_details']['disable_input'] = ($current_user->role == "Administrator" && $this->session->userdata('username') != $member_data->username) ?' ' : 'disabled';
+            
             $content_data['permission']['user_profile']['disable_input'] = ($current_user->role == "Administrator" || $this->session->userdata('username') == $member_data->username) ?' ' : 'disabled';
             $content_data['permission']['user_ids']['disable_input'] =($current_user->role == "Administrator" && $this->session->userdata('username') != $member_data->username)?  ' ' : 'disabled';
             $content_data['permission']['user_remark']['disable_input'] =(($current_user->role == "Administrator" || in_array($this->session->userdata('username'), $this->my_permission->find_permission())) && $this->session->userdata('username') != $member_data->username ) ? ' ' : 'disabled';
@@ -113,7 +114,6 @@ class Edit_member_detail extends Admin_Controller {
         isset($_POST['leader'])?$data['leader']= $this->input->post('leader') : "";
         isset($_POST['status'])?$data['status']= $this->input->post('status') : "";
         isset($_POST['windows_id'])?$data['windows_id']= $this->input->post('windows_id') : "";
-
         $this->load->model('system/rbac_model');
 
         if ($result = $this->roles_model->get_role_id($_POST['role']) ) {
@@ -221,8 +221,8 @@ class Edit_member_detail extends Admin_Controller {
 
         $this->form_validation->set_error_delimiters('<p>', '</p>');
         $this->form_validation->set_rules('old_password', $this->lang->line('old_password'), 'trim|required|max_length[20]|min_length[8]|is_member_password');
-        $this->form_validation->set_rules('new_password', $this->lang->line('new_password'), 'trim|required|max_length[20]|min_length[8]|is_valid_new_password|is_new_password_secure|is_valid_both_password');
-        $this->form_validation->set_rules('confirm_password', $this->lang->line('confirm_password'), 'trim|required|max_length[20]|min_length[8]|matches[new_password]|is_new_password_secure|is_valid_confirm_password');
+        $this->form_validation->set_rules('new_password', $this->lang->line('new_password'), 'trim|required|max_length[20]|min_length[8]|is_valid_new_password|is_new_password_secure|is_valid_both_password|password_not_equal_username['.$this->input->post("username").']');
+        $this->form_validation->set_rules('confirm_password', $this->lang->line('confirm_password'), 'trim|required|max_length[20]|min_length[8]|matches[new_password]');
         $this->form_validation->set_rules('password_hint', $this->lang->line('password_hint'), 'trim|required|max_length[30]');
         if (!$this->form_validation->run()) {
             $this->session->set_flashdata('error', validation_errors());

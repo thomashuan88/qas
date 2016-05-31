@@ -2,13 +2,13 @@
 
 <ul id="demo1" class="menu">
     <li class="hidden-folded">
-        <div class="menu-section-title text-left">Control Panel</div>
+        <div class="menu-section-title text-left"><?php print $this->lang->line("control_panel"); ?></div>
     </li>
     <?php if (Site_Controller::check_permissions(1)) {  ?>
-    <li<?php print ( in_array(Site_Controller::$page, array("list_members","add_member")) ? ' class="open"' : ""); ?>><a href="javascript:"><span class="menu-link-icon fa fa-users"></span> <span class="menu-link-title"><?php print $this->lang->line('user_management')?></span></a>
+    <li<?php print ( in_array(Site_Controller::$page, array("list_members","add_member","Edit_member_detail", "member_detail")) ? ' class="open"' : ""); ?>><a href="javascript:"><span class="menu-link-icon fa fa-users"></span> <span class="menu-link-title"><?php print $this->lang->line('user_management')?></span></a>
         <ul>
         <?php if (Site_Controller::check_permissions(2)) {  ?>
-            <li<?php print ((trim(Site_Controller::$page) == "list_members") ? ' class="open"' : ""); ?>><a href="<?php print base_url(); ?>adminpanel/list_members"><span class="menu-link-icon fa fa-angle-right"></span> <?php print $this->lang->line('user_listing')?></a></li>
+            <li<?php print ( in_array(Site_Controller::$page, array("list_members")) ? ' class="open"' : ""); ?>><a href="<?php print base_url(); ?>adminpanel/list_members"><span class="menu-link-icon fa fa-angle-right"></span> <?php print $this->lang->line('user_listing')?></a></li>
         <?php } ?>
          <?php if (Site_Controller::check_permissions(3)) {  ?>
             <li<?php print ((Site_Controller::$page == "add_member") ? ' class="open"' : ""); ?>><a href="<?php print base_url(); ?>adminpanel/add_member"><span class="menu-link-icon fa fa-angle-right"></span> <?php print $this->lang->line('add_user')?></a></li>
@@ -29,7 +29,7 @@
     </li>
     <?php }?>
     <?php if (Site_Controller::check_permissions(7)) {  ?>
-    <li<?php print ( in_array(Site_Controller::$page, array("daily_qa","monthly_qa","ops_monthly","log_in_out","qa_evaluation","operator_utilization")) ? ' class="open"' : ""); ?>><a href="javascript:"><span class="menu-link-icon fa fa-file-text"></span> <span class="menu-link-title"><?php print $this->lang->line('performance_report')?></span></a>
+    <li<?php print ( in_array(Site_Controller::$page, array("daily_qa","monthly_qa","ops_monthly","log_in_out","qa_evaluation","operator_utilization")) ? ' class="open"' : ""); ?>><a href="javascript:"><span class="menu-link-icon fa fa-line-chart"></span> <span class="menu-link-title"><?php print $this->lang->line('performance_report')?></span></a>
         <ul>
         <?php if (Site_Controller::check_permissions(8)) {  ?>
             <li<?php print ((Site_Controller::$page == "daily_qa") ? ' class="open"' : ""); ?>><a href="<?php print base_url(); ?>adminpanel/daily_qa"><span class="menu-link-icon fa fa-angle-right"></span> <?php print $this->lang->line('daily_qa')?></a></li>
@@ -53,7 +53,7 @@
     </li>
     <?php }?>
     <?php if (Site_Controller::check_permissions(14)) { ?>
-    <li <?php print (Site_Controller::$page == "operation") ? ' class="open"' : ""; ?>><a href="javascript:"><span class="menu-link-icon fa fa-file-text"></span> <span class="menu-link-title"><?php print $this->lang->line('operation')?></span></a>
+    <li <?php print (Site_Controller::$page == "operation") ? ' class="open"' : ""; ?>><a href="javascript:"><span class="menu-link-icon fa fa-briefcase"></span> <span class="menu-link-title"><?php print $this->lang->line('operation')?></span></a>
         <ul>
         <?php if (Site_Controller::check_permissions(15)) {  ?>
             <li<?php print ((substr(Site_Controller::$method, 0, 12) == "shift_report") ? ' class="open"' : ""); ?>><a href="<?php print base_url(); ?>adminpanel/operation/shift_report"><span class="menu-link-icon fa fa-angle-right"></span>&nbsp;<?php print $this->lang->line('shift_report')?></a></li>

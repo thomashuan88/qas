@@ -7,7 +7,7 @@
 <div class="row">
     <div class="col-xs-2">
         <button id="js-search" type="button" class="btn btn-default" data-toggle="collapse" data-target="#search_wrapper">
-            <span id="js-search-text"><i class="fa fa-expand pd-r-5"></i> expand</span>&nbsp;<?php print $this->lang->line('search'); ?>&nbsp;<i class="fa fa-search pd-l-5"></i>
+            <span id="js-search-text"><i class="fa fa-expand pd-r-5"></i> <?php print $this->lang->line('expand');?></span>&nbsp;<?php print $this->lang->line('search'); ?>&nbsp;<i class="fa fa-search pd-l-5"></i>
         </button>
     </div>
     <?php if ($add) { ?>
@@ -22,7 +22,7 @@
 </div>
 
 <form name="time_sheet_form" id="time_sheet_form" onsubmit="return searchData();">
-    <div id="search_wrapper" class="collapse in">
+    <div id="search_wrapper" class="collapse <?php print Settings_model::$db_config['search_section']; ?>">
         <div class="pd-15 bg-primary mg-t-15 mg-b-10">
             <h2 class="text-uppercase mg-t-0">
                 <?php print $this->lang->line('search_time_sheet'); ?>
@@ -117,14 +117,13 @@
             type: "post",
             dataType: "json",
             success: function (data) {
-                console.log(data);
                 bootbox.dialog({
                     message: '<div class="panel-body table-responsive"><table class="table"><tr><td><label>' +
                     '<?php print $this->lang->line('id'); ?>' + '</label></td><td><span class="info">' + data['time_sheet_id'] + '</span></td></tr><tr><td style="white-space: nowrap;"><label>' +
                     '<?php print $this->lang->line('shift'); ?>' + '</label></td><td><span class="info">' + data['shift'] + '</span></td></tr><tr><td style="white-space: nowrap;"><label>' +
                     '<?php print $this->lang->line('product'); ?>' + '</label></td><td><span class="info">' + data['product'] + '</span></td></tr><tr><td style="white-space: nowrap;"><label>' +
-                    '<?php print $this->lang->line('time_start'); ?>' + '</label></td><td><span class="info">' + data['time_start'] + '</span></td></tr><tr><td style="white-space: nowrap;"><label>' +
-                    '<?php print $this->lang->line('time_end'); ?>' + '</label></td><td><span class="info">' + data['time_end'] + '</span></td></tr><tr><td style="white-space: nowrap;"><label>' +
+                    '<?php print $this->lang->line('start_time'); ?>' + '</label></td><td><span class="info">' + data['time_start'] + '</span></td></tr><tr><td style="white-space: nowrap;"><label>' +
+                    '<?php print $this->lang->line('end_time'); ?>' + '</label></td><td><span class="info">' + data['time_end'] + '</span></td></tr><tr><td style="white-space: nowrap;"><label>' +
                     '<?php print $this->lang->line('remark_title'); ?>' + '</label></td><td><span class="info">' + data['title'] + '</span></td></tr><tr><td style="white-space: nowrap;"><label>' +
                     '<?php print $this->lang->line('remark'); ?>' + '</label></td><td><span class="info">' + data['remarks'] + '</span></td></tr><tr><td style="white-space: nowrap;"><label>' +
                     '<?php print $this->lang->line('submit_by'); ?>' + '</label></td><td><span class="info">' + data['created_by'] + '</span></td></tr><tr><td style="white-space: nowrap;"><label>' +
@@ -173,7 +172,7 @@
             $('#no_result').css('display', 'none');
         } else {
             $('#time_sheet_table').css('display', 'none');
-            $('#no_result').css({display: 'block', color: '#FF0000'});
+            $('#no_result').css('display', 'block');
         }
 
         $.each(data, function (key, value) {

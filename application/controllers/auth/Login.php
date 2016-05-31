@@ -33,7 +33,7 @@ class Login extends Auth_Controller {
 
         $this->template->set_js('js', base_url() .'assets/js/vendor/parsley.min.js');
 
-        $this->quick_page_setup(Settings_model::$db_config['active_theme'], 'main', 'Login', 'auth/login', 'header', 'footer', '', $data);
+        $this->quick_page_setup(Settings_model::$db_config['active_theme'], 'main', $this->lang->line('login'), 'auth/login', 'header', 'footer', '', $data);
     }
 
     /**
@@ -121,7 +121,7 @@ class Login extends Auth_Controller {
 
         if (isset($time_diff) && $time_diff > Settings_model::$db_config['password_link_expires']) {
 
-            $this->session->set_flashdata('error', '<p>'. $this->lang->line('renew_password_link_expired') .'</p>');  //dun have language
+            $this->session->set_flashdata('error', '<p>'. $this->lang->line('reset_password_link_expired') .'</p>');  
             redirect('auth/login');
             exit();
 

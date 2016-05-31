@@ -12,6 +12,7 @@
 	<link href="<?php print base_url(); ?>assets/js/vendor/jquery-ui-1.11.4/jquery-ui.min.css" rel="stylesheet">
     <link href="<?php print base_url(); ?>assets/js/vendor/datetimepicker/jquery.datetimepicker.css" rel="stylesheet">
 
+
     <!-- Google web font -->
     <link href='http://fonts.googleapis.com/css?family=Lato:100,300,400,700,900,100italic,300italic,400italic,700italic,900italic' rel='stylesheet' type='text/css'>
 
@@ -23,7 +24,6 @@
     <script type="text/javascript">// solve conflict between bootstrap and jquery-ui
         var btn = $.fn.button.noConflict();
         $.fn.btn = btn;</script>
-
     <script src="<?php print base_url(); ?>assets/js/vendor/jquery.navgoco.js"></script>
     <script src="<?php print base_url(); ?>assets/js/vendor/jquery.slimscroll.min.js"></script>
     <script src="<?php print base_url(); ?>assets/js/vendor/bootbox.min.js"></script>
@@ -117,6 +117,7 @@
         var confirm_message = '<?php print $this->lang->line('confirm_message'); ?>';
         var delete_message = '<?php print $this->lang->line('delete_message'); ?>';
         var reset_message = '<?php print $this->lang->line('reset_message'); ?>';
+        var require_message = '<?php print $this->lang->line('require_message'); ?>';
     </script>
     <script src="<?php print base_url(); ?>assets/js/vendor/parsley.min.js"></script>
     <script src="<?php print base_url(); ?>assets/js/app.js"></script>

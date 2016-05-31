@@ -25,7 +25,7 @@ class Settings_model extends CI_Model {
             $this->db->select('login_enabled, register_enabled, install_enabled, members_per_page, admin_email, home_page, active_theme, adminpanel_theme,
             login_attempts, max_login_attempts, email_protocol, sendmail_path, smtp_host, smtp_port, smtp_user, smtp_pass, site_title, cookie_expires,
             password_link_expires, activation_link_expires, disable_all, site_disabled_text, remember_me_enabled, recaptchav2_enabled, recaptchav2_site_key,
-            recaptchav2_secret, oauth2_enabled,footer_title,system_role,predefined_email,logo,data_mask, search_section,site_language');
+            recaptchav2_secret, oauth2_enabled,footer_title,system_role,predefined_email,logo,data_mask, search_section,site_language,operator_leader_role');
             $this->db->from('settings');
             $this->db->limit(1);
             $query = $this->db->get();
@@ -66,6 +66,8 @@ class Settings_model extends CI_Model {
                 self::$db_config['data_mask'] = $row->data_mask;
                 self::$db_config['search_section'] = $row->search_section;
                 self::$db_config['site_language'] = $row->site_language;
+                self::$db_config['operator_leader_role'] = $row->operator_leader_role;
+
 
 
 
@@ -107,8 +109,7 @@ class Settings_model extends CI_Model {
             self::$db_config['data_mask'] = $data['data_mask'];
             self::$db_config['search_section'] = $data['search_section'];
             self::$db_config['site_language'] = $data['site_language'];
-
-
+            self::$db_config['operator_leader_role'] = $data['operator_leader_role'];
         }
     }
 

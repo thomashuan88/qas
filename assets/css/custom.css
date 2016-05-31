@@ -140,3 +140,11 @@ th {
 .table-hover > tbody > tr:hover {
   background-color: #eeeeee !important; 
 }
+
+.red-border {
+    border: solid red 2px;
+}
+
+#no_result {
+    color: #FF0000;
+}

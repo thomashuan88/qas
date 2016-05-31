@@ -90,7 +90,7 @@ class Monthly_Qa extends Admin_Controller {
 
         // force download
         header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment; filename="monthly_qa.xls"');
+        header('Content-Disposition: attachment; filename="monthly_qa-' . date("Y-m-d") . '.xls"');
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
     }
@@ -132,7 +132,7 @@ class Monthly_Qa extends Admin_Controller {
         $total_rows = $this->Performance_monthly_qa_model->count_not_current_upload();
 
         if ( $total_rows > 0 || $pendingNo > 0 ) {
-            $pendingBy = $this->Performance_daily_qa_model->get_pending_import_by();
+            $pendingBy = $this->Performance_monthly_qa_model->get_pending_import_by();
             echo json_encode( array( 'error' => true, 'message' => $this->lang->line('msg_import_clear_pending') . $pendingBy[0]['import_by'] ), true);
         
         } else { // upload file

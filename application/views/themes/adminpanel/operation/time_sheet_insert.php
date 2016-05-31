@@ -22,12 +22,12 @@
                 <?php print $shift_list; ?>
             </div>
             <div class="form-group contain-datepicker">
-                <label for="time_start"><?php print $this->lang->line('time_start'); ?></label>
+                <label for="time_start"><?php print $this->lang->line('start_time'); ?></label>
                 <label style="color:red; font-size:14px;">*</label>
                 <input type="text" class="form-control datetimepicker" id="time_start" name="time_start" value="<?php print $this->session->flashdata('time_start');?>" data-parsley-trigger="change keyup focusout" data-parsley-errors-messages-disabled required autocomplete="off"/>
             </div>
             <div class="form-group contain-datepicker">
-                <label for="time_end"><?php print $this->lang->line('time_end'); ?></label>
+                <label for="time_end"><?php print $this->lang->line('end_time'); ?></label>
                 <input type="text" class="form-control datetimepicker" id="time_end" name="time_end" value="<?php print $this->session->flashdata('time_end');?>" autocomplete="off"/>
             </div>
             <div class="form-group">

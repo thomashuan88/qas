@@ -1,6 +1,7 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Shift_reports_model extends CI_Model {
+class Shift_reports_model extends CI_Model
+{
 
     private $table = 'shift_reports';
     private $fields;
@@ -11,22 +12,22 @@ class Shift_reports_model extends CI_Model {
         parent::__construct();
         $this->fields = $this->db->list_fields($this->table);
         $this->user = $this->session->userdata('username');
-        $this->time = date('Y-m-d H:i:s',time());
+        $this->time = date('Y-m-d H:i:s', time());
     }
 
-    public function get_all_reports($order_by = "shift_reports_id", $sort_order = "DESC", $search_data, $limit = 0, $offset = 0, $users = array()) {
+    public function get_all_reports($order_by = "shift_reports_id", $sort_order = "DESC", $search_data, $limit = 0, $offset = 0, $users = array(), $type = 'reports') {
         if (!in_array($order_by, $this->fields)) return array();
-        $this->search_query($order_by, $sort_order, $search_data, $users);
+        $this->search_query($order_by, $sort_order, $search_data, $users, $type);
         $this->db->limit($limit, $offset);
         $query = $this->db->get();
-        $query->total_rows = $this->count_all_search_reports($order_by, $sort_order, $search_data, $users);
+        $query->total_rows = $this->count_all_search_reports($order_by, $sort_order, $search_data, $users, $type);
         if ($query->num_rows() > 0) {
             return $query;
         }
         return false;
     }
 
-    private function search_query($order_by, $sort_order, $search_data, $users) {
+    private function search_query($order_by, $sort_order, $search_data, $users, $type) {
         if (!empty($search_data)) {
             $data = array(
                 'shift_reports_id' => $search_data['id'] ? $search_data['id'] : "",
@@ -57,10 +58,19 @@ class Shift_reports_model extends CI_Model {
         if (!empty($users)) {
             $this->db->where_in('created_by', $users);
         }
-        if (!empty($search_data['status']) && $search_data['status'] == "all") {
-            $this->db->where_in('status', array('done', 'follow-up'));
-        } else {
-            $cond['status'] = !empty($search_data['status']) ? $search_data['status'] : 'follow-up';
+
+        if ($type == 'reports') { //shift reports
+            if (!empty($search_data['status']) && $search_data['status'] == "all") {
+                $this->db->where_in('status', array('done', 'follow-up'));
+            } else {
+                $cond['status'] = !empty($search_data['status']) ? $search_data['status'] : 'follow-up';
+            }
+        } else { //information update
+            if (!empty($search_data['status']) && $search_data['status'] == "all") {
+                $this->db->where_in('status', array('updated', 'update'));
+            } else {
+                $cond['status'] = !empty($search_data['status']) ? $search_data['status'] : 'update';
+            }
         }
 
         $this->db->where($cond);
@@ -72,14 +82,19 @@ class Shift_reports_model extends CI_Model {
         $this->db->order_by($order_by, $sort_order);
     }
 
-    private function count_all_search_reports($order_by, $sort_order, $search_data, $users) {
-        $this->search_query($order_by, $sort_order, $search_data, $users);
+    private function count_all_search_reports($order_by, $sort_order, $search_data, $users, $type) {
+        $this->search_query($order_by, $sort_order, $search_data, $users, $type);
         return $this->db->count_all_results();
     }
 
-    public function get_one_report($key) {
+    public function get_one_report($key, $status) {
         $this->db->select($this->fields);
         $this->db->from($this->table);
+        if ($status) {
+            $this->db->where_in('status', array('done', 'follow-up'));
+        } else {
+            $this->db->where_in('status', array('updated', 'update'));
+        }
         $this->db->where('shift_reports_id', $key);
         $query = $this->db->get();
         if ($query->num_rows() > 0) {
@@ -94,7 +109,7 @@ class Shift_reports_model extends CI_Model {
             'player_name' => $data['player_name'],
             'shift' => $data['shift'],
             'finish' => $data['finish'],
-            'follow_up' => $data['follow_up'],
+            'follow_up' => !empty($data['follow_up']) ? $data['follow_up'] : "N/A",
             'status' => $data['status'],
             'remarks' => $data['remarks'],
             'category_id' => $data['category_id'],
@@ -116,7 +131,7 @@ class Shift_reports_model extends CI_Model {
                 'product' => $data['product'],
                 'player_name' => $data['player_name'],
                 'shift' => $data['shift'],
-                'follow_up' => $data['follow_up'],
+                'follow_up' => !empty($data['follow_up']) ? $data['follow_up'] : "N/A",
                 'status' => $data['status'],
                 'remarks' => $data['remarks'],
                 'category_id' => $data['category_id'],
@@ -151,13 +166,11 @@ class Shift_reports_model extends CI_Model {
         return false;
     }
 
-    private function is_query_working(){
-        if($this->db->affected_rows() > 0){
+    private function is_query_working() {
+        if ($this->db->affected_rows() > 0) {
             return true;
         } else {
             return false;
         }
     }
-
-
 }

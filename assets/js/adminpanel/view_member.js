@@ -2,61 +2,56 @@
 var target ="";
 $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
   target = $(e.target).attr("href") // activated tab
-  <li class="active"><a href="#user_info" data-toggle="tab"><?php print $this->lang->line('user_information')?></a></li>
-  <li><a href="#daily_qa" data-toggle="tab"><?php print $this->lang->line('daily_qa')?></a></li>
-  <li ><a href="#monthly_qa" data-toggle="tab"><?php print $this->lang->line('monthly_qa')?></a></li>
-  <li ><a href="#ops_monthly" data-toggle="tab"><?php print $this->lang->line('ops_monthly')?></a></li>
-  <li ><a href="#login_logout" data-toggle="tab"><?php print $this->lang->line('login')?>/<?php print $this->lang->line('logout')?></a></li>
-  <li ><a href="#operator" data-toggle="tab"><?php print $this->lang->line('operator_utilization')?></a></li>
-  <li ><a href="#qa_evaluation" data-toggle="tab"><?php print $this->lang->line('qa_evaluation')?></a></li>
-  <li ><a href="#remarks" data-toggle="tab"><?php print $this->lang->line('remarks')?></a></li>
 
-  switch(target) {
-  case '#daily_qa':
-      paging = daily_qa_paging;
-      getNewData();
-      setHeaderIcon();
-      break;
+    switch(target) {
+        case '#daily_qa':
+          paging = daily_qa_paging;
+          getNewData();
+          setHeaderIcon();
+          break;
 
-  case '#monthly_qa':
-     paging = monthly_qa_paging;
-     getNewData();
-     setHeaderIcon();
-      break;
-  case '#ops_monthly':
-      paging = ops_monthly_paging;
-      getNewData();
-      setHeaderIcon();
-      break;
+        case '#monthly_qa':
+         paging = monthly_qa_paging;
+         getNewData();
+         setHeaderIcon();
+          break;
 
-  case '#login_logout':
-     paging = login_logout_paging;
-     getNewData();
-     setHeaderIcon();
-      break;
-  case '#operator':
-      paging = operator_paging;
-      getNewData();
-      setHeaderIcon();
-      break;
+        case '#ops_monthly':
+          paging = ops_monthly_paging;
+          getNewData();
+          setHeaderIcon();
+          break;
 
-  case '#qa_evaluation':
-     paging = qa_evaluation_paging;
-     getNewData();
-     setHeaderIcon();
-      break;
-  case '#remarks':
-     paging = remarks_paging;
-     getNewData();
-     setHeaderIcon();
-      break;
-  default:
-}
+        case '#login_logout':
+         paging = log_in_out_paging;
+         getNewData();
+         setHeaderIcon();
+         break;
+
+        case '#operator':
+          paging = operator_utilization_paging;
+          getNewData();
+          setHeaderIcon();
+          break;
+
+        case '#qa_evaluation':
+        //  paging = qa_evaluation_paging;
+        //  getNewData();
+        //  setHeaderIcon();
+         break;
+
+        case '#remarks':
+         paging = remarks_paging;
+         getNewData();
+         setHeaderIcon();
+         break;
+
+        default:
+        // do nothing
+    }
 });
 
-
 var drawTable = function (data) {
-    alert(target);
 
     switch(target) {
         case '#daily_qa':
@@ -72,11 +67,11 @@ var drawTable = function (data) {
             break;
 
         case '#login_logout':
-            login_logout_drawTable(data);
+            log_in_out_drawTable(data);
             break;
 
         case '#operator':
-            operator_drawTable(data);
+            operator_utilization_drawTable(data);
             break;
 
         case '#qa_evaluation':
@@ -86,8 +81,51 @@ var drawTable = function (data) {
         case '#remarks':
             remarks_drawTable(data);
             break;
-            
+
         default:
+        //do nothing
   }
 
+}
+
+var drawPager = function (data) {
+    $('.total-rows').html(data.total_rows);
+
+    var pagerHTML = '';
+    var totalPage = Math.ceil( data.total_rows / data.per_page );
+    var curPage = data.offset / data.per_page + 1;
+    var maxDisplayPg = 3;
+
+    if (totalPage > 1) {
+
+        pagerHTML += '<div><ul class="pagination">';
+        if ( curPage > 1 + maxDisplayPg) {
+            pagerHTML += '<li><a href="javascript:void(0)" onclick="chgPage(0)">‹ First</a></li>';
+        }
+        if ( curPage > 1 ) {
+            pagerHTML += '<li><a href="javascript:void(0)" onclick="chgPage(' + (curPage-2) * data.per_page  + ')"><</a></li>';
+        }
+
+        for (var i = curPage - maxDisplayPg; i <= curPage + maxDisplayPg; i++) {
+            var pgOffset = (i-1) * data.per_page;
+            if (i > 0 && i <= totalPage) {
+                if (i == curPage) {
+                    pagerHTML += '<li class="active"><a href="javascript:void(0)" ><strong>' + i + '</strong></a></li>';
+                } else {
+                    pagerHTML += '<li><a href="javascript:void(0)" onclick="chgPage(' + pgOffset + ')">' + i + '</a></li>';
+                }
+            }
+        }
+
+        if ( curPage < totalPage) {
+            pagerHTML += '<li><a href="javascript:void(0)" onclick="chgPage(' + curPage * data.per_page + ')">></a></li>';
+        }
+        if ( curPage < totalPage - maxDisplayPg +1) {
+            pagerHTML += '<li><a href="javascript:void(0)" onclick="chgPage(' + (totalPage-1) * data.per_page + ')">Last ›</a></li>';
+        }
+
+        pagerHTML += '</ul></div>';
+    }
+
+    $('.page_no').html(pagerHTML);
 }

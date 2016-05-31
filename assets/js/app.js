@@ -310,7 +310,7 @@ var waitForFinalEvent = (function() {
                         }
                     });
                 }else{
-                    bootbox.alert("Please Complete required fields before submit");
+                    bootbox.alert(require_message);
                     $(this).button("reset");
                 }
             });
@@ -381,6 +381,7 @@ var waitForFinalEvent = (function() {
         if (shift_report_follow_up_edit_form.length) {
             parsleyFactory( shift_report_follow_up_edit_form, $("#shift_report_follow_up_edit_submit") );
         }
+
         // Parsley information update insert form
         var information_update_insert_form = $("#information_update_insert_form");
         if (information_update_insert_form.length) {
@@ -388,21 +389,21 @@ var waitForFinalEvent = (function() {
         }
 
         // Parsley information update edit form
-        var information_update_follow_up_insert_form = $("#information_update_follow_up_insert_form");
-        if (information_update_follow_up_insert_form.length) {
-            parsleyFactory( information_update_follow_up_insert_form, $("#information_update_follow_up_insert_submit") );
-        }
-
-        // Parsley information update follow up insert form
         var information_update_edit_form = $("#information_update_edit_form");
         if (information_update_edit_form.length) {
-            parsleyFactory( information_update_edit_form, $("#information_update_edit_submit") );
+            parsleyFactory( information_update_edit_form, $("#information_update_insert_submit") );
         }
 
-        // Parsley information update follow up edit form
-        var information_update_follow_up_edit_form = $("#information_update_follow_up_edit_form");
-        if (information_update_follow_up_edit_form.length) {
-            parsleyFactory( information_update_follow_up_edit_form, $("#shift_report_follow_up_edit_submit") );
+        // Parsley information update details insert form
+        var information_update_details_insert_form = $("#information_update_details_insert_form");
+        if (information_update_details_insert_form.length) {
+            parsleyFactory( information_update_details_insert_form, $("#information_update_details_insert_submit") );
+        }
+
+        // Parsley information update details edit form
+        var information_update_details_edit_form = $("#information_update_details_edit_form");
+        if (information_update_details_edit_form.length) {
+            parsleyFactory( information_update_details_edit_form, $("#information_update_details_edit_submit") );
         }
 
         // Parsley time sheet insert form
@@ -477,18 +478,20 @@ var waitForFinalEvent = (function() {
             parsleyFactory( change_password_form, $("#change_password_submit") );
         }
 
-        //Parsley system setting form
-        var system_setting_form = $("#system_setting_form");
-        if (system_setting_form.length) {
-            parsleyFactory( system_setting_form, $("#system_setting_submit") );
+        //Parsley general setting form
+        var general_setting_form = $("#general_setting_form");
+        if (general_setting_form.length) {
+            parsleyFactory( general_setting_form, $("#general_setting_submit") );
         }
 
-        // //Parsely reset password form
-        // var reset_password_form = $("#reset_password_form");
-        // if (reset_password_form.length) {
-        //     parsleyFactory( reset_password_form, $("#reset_password_submit") );
-        // }
+        //Parsley mail setting form
+        var mail_setting_form = $("#mail_setting_form");
+        if (mail_setting_form.length) {
+            parsleyFactory( mail_setting_form, $("#mail_setting_submit") );
+        }
 
+
+       
 
 
         var $add_role_form = $("#add_role_form");
@@ -601,4 +604,19 @@ $(window).load(function(e){
         history.pushState('', document.title, window.location.pathname); // nice and clean
         e.preventDefault(); // no page reload
     }
+});
+
+
+
+//Parsley validation on upload file size
+window.Parsley.addValidator('maxFileSize', {
+  validateString: function(_value, maxSize, parsleyInstance) {
+    if (!window.FormData) {
+      alert('You are making all developpers in the world cringe. Upgrade your browser!');
+      return true;
+    }
+    var files = parsleyInstance.$element[0].files;
+    return files.length != 1  || files[0].size <= maxSize * 1024;
+  },
+  requirementType: 'integer',
 });

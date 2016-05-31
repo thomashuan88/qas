@@ -24,10 +24,18 @@ class Settings extends Admin_Controller {
         $content_data['permission'] = array();
         ($this->permission->add == 'yes') ?  $content_data['permission']['add'] = TRUE : '';
         ($this->permission->edit == 'yes') ?  $content_data['permission']['edit'] = TRUE : '';
-   
-     
+
         $this->load->model('adminpanel/system_settings_model');
         $this->load->model('adminpanel/roles_model');
+        $this->load->model('adminpanel/users_model');
+
+
+        $current_user = $this->users_model->get_member_info($this->session->userdata('username'));
+
+        $content_data['permission']['general_setting']['disable_input'] = ($current_user->role == "Administrator")?' ' : 'disabled';
+
+
+        $content_data['permission']['mail_setting']['disable_input'] = ($current_user->role == "Administrator" )?' ' : 'disabled';
 
         $content_data['shift'] = $this->system_settings_model->get_shift();
         $content_data['product'] = $this->system_settings_model->get_product();
@@ -52,7 +60,7 @@ class Settings extends Admin_Controller {
     {
 
         $this->form_validation->set_error_delimiters('<p>', '</p>');
-        $this->form_validation->set_rules('product','product type','trim|required|is_db_cell_available[system_setting.value]');
+        $this->form_validation->set_rules('product',$this->lang->line('product_type'),'trim|required|is_db_cell_available[system_setting.value]');
 
         if (!$this->form_validation->run()) {
             $this->session->set_flashdata('error', validation_errors());
@@ -97,8 +105,8 @@ class Settings extends Admin_Controller {
             $post_data = $this->input->post();
             if (!empty($post_data)) {
                 $this->form_validation->set_error_delimiters('<p>', '</p>');
-                $this->form_validation->set_rules('shift','working shift','trim|required');
-                $this->form_validation->set_rules('hour','working hour','trim|required|is_db_cell_available[system_setting.value]|is_valid_time');
+                $this->form_validation->set_rules('shift',$this->lang->line('working_shift'),'trim|required');
+                $this->form_validation->set_rules('hour',$this->lang->line('working_hour'),'trim|required|is_db_cell_available[system_setting.value]|is_valid_time');
 
                 if (!$this->form_validation->run()) {
                         $this->session->set_flashdata('error', validation_errors());
@@ -120,7 +128,7 @@ class Settings extends Admin_Controller {
     } else {
             $this->session->set_flashdata('error', $this->lang->line('invalid_data'));
     }
-    redirect('/adminpanel/settings/');
+        redirect('/adminpanel/settings/'.'?tab=shift');
    }
 
    public function edit_product($key)
@@ -137,7 +145,7 @@ class Settings extends Admin_Controller {
 
             if (!empty($post_data)) {
                 $this->form_validation->set_error_delimiters('<p>', '</p>');
-                $this->form_validation->set_rules('product','product type','trim|required|is_db_cell_available[system_setting.value]');
+                $this->form_validation->set_rules('product',$this->lang->line('product_type'),'trim|required|is_db_cell_available[system_setting.value]');
 
                 if (!$this->form_validation->run()) {
                         $this->session->set_flashdata('error', validation_errors());
@@ -165,7 +173,7 @@ class Settings extends Admin_Controller {
 
    }
 
-   public function save_system_settings(){
+   public function save_general_setting(){
 
     if($this->permission->edit != 'yes'){
             redirect("/private/no_access");
@@ -176,31 +184,35 @@ class Settings extends Admin_Controller {
     $this->form_validation->set_rules('site_language', $this->lang->line('site_language'), 'trim|required');
     $this->form_validation->set_rules('system_role', $this->lang->line('system_role'), 'trim|required');
     $this->form_validation->set_rules('predefined_email', $this->lang->line('predefined_email'), 'trim|required');
-    $this->form_validation->set_rules('userfile', $this->lang->line('logo'));
+    $this->form_validation->set_rules('userfile', $this->lang->line('logo'),'');
     $this->form_validation->set_rules('footer_title', $this->lang->line('footer_title'), 'trim|required');
     $this->form_validation->set_rules('data_mask', $this->lang->line('confidential_data_masking'), 'trim|required');
     $this->form_validation->set_rules('search_section', $this->lang->line('search_section'));
+    $this->form_validation->set_rules('operator_leader_role', $this->lang->line('operator_leader_role'));
+
 
     if (!$this->form_validation->run()) {
             $this->session->set_flashdata('error', validation_errors());
             redirect('/adminpanel/settings/'.'?tab=system');
             exit();
     }
- 
+    
     $config['upload_path'] = './assets/img';
-    $config['allowed_types'] = 'gif|jpg|png';
-    $config['max_size'] = '2000';
+    $config['allowed_types'] = 'gif|jpg|png|jpeg';
+    $config['max_size'] = '0';
     $config['max_width']  = '3000';
     $config['max_height']  = '2000';
+    $config['overwrite']  = TRUE;
+    $config['file_name'] = 'Logo';
     $this->load->library('upload', $config);
     $this->upload->do_upload('userfile');
     $data = $this->upload->data(); 
-
     $config['image_library'] = 'gd2';
     $config['source_image'] = $data['full_path'];
     $config['maintain_ratio'] = TRUE;
     $config['width'] = '50';
     $config['height'] = '50';
+
 
     $this->load->library('image_lib', $config); 
     $this->image_lib->resize();
@@ -212,11 +224,14 @@ class Settings extends Admin_Controller {
           'predefined_email' => $this->input->post('predefined_email'),
           'footer_title' => $this->input->post('footer_title'),
           'data_mask' =>  $this->input->post('data_mask'),
-          'search_section' =>  $this->input->post('search_section')
+          'search_section' =>  $this->input->post('search_section'),
+          'operator_leader_role' =>  $this->input->post('operator_leader_role'),
       );
+
     if(!empty($_FILES) && $_FILES['userfile']['name'] != '')
     {
-      $data['logo'] = $_FILES['userfile']['name'];
+      $extension = end((explode(".", $_FILES["userfile"]["name"])));
+      $data['logo'] = 'Logo.'.$extension;
     }
 
     $this->load->model('system_settings_model');
@@ -229,7 +244,50 @@ class Settings extends Admin_Controller {
       $this->cache->delete('settings');
 
     }
-    redirect('/adminpanel/settings/'.'?tab=system');
+    redirect('/adminpanel/settings/');
+   }
+
+   public function save_mail_setting(){
+
+    if($this->permission->edit != 'yes'){
+            redirect("/private/no_access");
+      };
+
+    $this->form_validation->set_error_delimiters('<p>', '</p>');
+    $this->form_validation->set_rules('admin_email', $this->lang->line('admin_email'), 'trim|required');
+    $this->form_validation->set_rules('smtp_user', $this->lang->line('smtp_user'), 'trim|required');
+    $this->form_validation->set_rules('send_mail_path', $this->lang->line('send_mail_path'), 'trim|required');
+    $this->form_validation->set_rules('smtp_password', $this->lang->line('smtp_password'), 'trim|required');
+    $this->form_validation->set_rules('email_protocol', $this->lang->line('email_protocol'), 'trim|required');
+    $this->form_validation->set_rules('smtp_host', $this->lang->line('smtp_host'), 'trim|required');
+    $this->form_validation->set_rules('smtp_port', $this->lang->line('smtp_port'), 'trim|required');
+
+    if (!$this->form_validation->run()) {
+            $this->session->set_flashdata('error', validation_errors());
+            redirect('/adminpanel/settings/'.'?tab=mail_setting');
+            exit();
+    }
+
+    $data = array(
+          'admin_email' => $this->input->post('admin_email'),
+          'smtp_user' => $this->input->post('smtp_user'),
+          'sendmail_path' => $this->input->post('send_mail_path'),
+          'smtp_pass' => $this->input->post('smtp_password'),
+          'email_protocol' => $this->input->post('email_protocol'),
+          'smtp_host' =>  $this->input->post('smtp_host'),
+          'smtp_port' =>  $this->input->post('smtp_port')
+      );
+
+    $this->load->model('system_settings_model');
+
+    if ($this->system_settings_model->save_system_settings($data)) {
+
+      $this->session->set_flashdata('success', '<p>'. $this->lang->line('settings_update') .'</p>');
+      $this->load->library('cache');
+      $this->cache->delete('settings');
+
+    }
+    redirect('/adminpanel/settings/'.'?tab=mail_setting');
    }
 
   public function live_person_settings_add()
@@ -250,12 +308,12 @@ class Settings extends Admin_Controller {
       };
 
     $this->form_validation->set_error_delimiters('<p>', '</p>');
-    $this->form_validation->set_rules('product','Product Type','trim|required|is_product_type_exists');
-    $this->form_validation->set_rules('account_id','Account ID','trim|required|is_account_id_exists');
-    $this->form_validation->set_rules('consumer_key','Consumer Key','trim|required');
-    $this->form_validation->set_rules('consumer_secret','Consumer Secret','trim|required');
-    $this->form_validation->set_rules('access_token','Access Token','trim|required');
-    $this->form_validation->set_rules('access_token_secret','Access Token Secret','trim|required');
+    $this->form_validation->set_rules('product',$this->lang->line('product_type'),'trim|required|is_product_type_exists');
+    $this->form_validation->set_rules('account_id',$this->lang->line('account_id'),'trim|required|is_account_id_exists');
+    $this->form_validation->set_rules('consumer_key',$this->lang->line('consumer_key'),'trim');
+    $this->form_validation->set_rules('consumer_secret',$this->lang->line('consumer_secret'),'trim');
+    $this->form_validation->set_rules('access_token',$this->lang->line('access_token'),'trim');
+    $this->form_validation->set_rules('access_token_secret',$this->lang->line('access_token_secret'),'trim');
 
     if (!$this->form_validation->run()) {
             $this->session->set_flashdata('error', validation_errors());
@@ -283,11 +341,13 @@ class Settings extends Admin_Controller {
 
 
 
-    public function edit_live_person($product){
+    public function edit_live_person($product_type){
 
       if($this->permission->edit != 'yes'){
             redirect("/private/no_access");
       };
+      
+      $product = urldecode($product_type);
 
       if (!empty($product)) {
 
@@ -304,12 +364,12 @@ class Settings extends Admin_Controller {
             $post_data = $this->input->post();
             if (!empty($post_data)) {
               $this->form_validation->set_error_delimiters('<p>', '</p>');
-              $this->form_validation->set_rules('product','Product Type','trim|required');
-              $this->form_validation->set_rules('account_id','Account ID','trim|required');
-              $this->form_validation->set_rules('consumer_key','Consumer Key','trim|required');
-              $this->form_validation->set_rules('consumer_secret','Consumer Secret','trim|required');
-              $this->form_validation->set_rules('access_token','Access Token','trim|required');
-              $this->form_validation->set_rules('access_token_secret','Access Token Secret','trim|required');
+              $this->form_validation->set_rules('product',$this->lang->line('product_type'),'trim|required');
+              $this->form_validation->set_rules('account_id',$this->lang->line('account_id'),'trim|required');
+              $this->form_validation->set_rules('consumer_key',$this->lang->line('consumer_key'),'trim');
+              $this->form_validation->set_rules('consumer_secret',$this->lang->line('consumer_secret'),'trim');
+              $this->form_validation->set_rules('access_token',$this->lang->line('access_token'),'trim');
+              $this->form_validation->set_rules('access_token_secret',$this->lang->line('access_token_secret'),'trim');
 
               if (!$this->form_validation->run()) {
                       $this->session->set_flashdata('error', validation_errors());

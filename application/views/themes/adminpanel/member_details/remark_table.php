@@ -5,7 +5,7 @@
         <div class="row">
             <div class="col-xs-7">
                 <h4 class="text-uppercase f900">
-                    <?php print $this->lang->line('total_record'); ?> : <span id="total-rows"></span>
+                    <?php print $this->lang->line('total_record'); ?> : <span class="total-rows" id="total-rows"></span>
                 </h4>
             </div>
         </div>
@@ -20,68 +20,47 @@
                     <th style="width : 15%;"><a href="javascript:void(0)" onclick="chgOrder('no')"><i dataname="no" class="table-th"></i><?php print $this->lang->line('submit_time'); ?></a></th>
                 </tr>
                 </thead>
-                <tbody id="table-data">
+                <tbody id="remarks-table-data">
 
                 </tbody>
             </table>
         </div>
         <input type="hidden" name="mass_action" id="mass_action" value="">
 
-        <div id="pager" class="col-xs-12 pull-right">
+        <div id="pager" class="page_no col-xs-12 pull-right">
         </div>
-        <p id="no_result" style="">No results found.</p>
+        <p id="remarks_no_result" style="">No results found.</p>
     </div>
 </div>
 
 
 <script type="text/javascript">
 
-// $(function(){
-//
-//     getNewData();
-//     setHeaderIcon();
-// });
 
-
-var paging = {
+var remarks_paging = {
     offset : 0,
-    order_by : 'id',
+    order_by : 'create_time',
     sort_order : 'desc',
     search_data : {'username' : '<?php print $member->username; ?>'},
     ajaxUrl: "<?php print base_url('adminpanel/member_detail/get_remarks/'.$member->username); ?>"
 }
 
-// var searchData = function() {
-//     var new_importDate = $('#import_date').val();
-//     var new_username = $('#username').val();
-//
-//     paging.search_data = {
-//         import_date : new_importDate,
-//         username : new_username,
-//     };
-//
-//     getNewData();
-//
-//     return false;
-// }
 
-
-var remark_drawTable = function (data) {
-    alert('inside remark');
+var remarks_drawTable = function (data) {
     var html ='';
 
     if (data.length != 0) {
         $('#remarks_table').css('display', 'block');
-        $('#no_result').css('display', 'none');
+        $('#remarks_no_result').css('display', 'none');
     } else {
         $('#remarks_table').css('display', 'none');
-        $('#no_result').css('display', 'block');
+        $('#remarks_no_result').css('display', 'block');
     }
     var count = 1;
     $.each( data, function( key, value ) {
 
-        var date = new Date( Date.parse( value['create_time']) );
-        var dateYMD = new Date(date).toISOString().slice(0, 10).replace(/-/g, '/');
+        var date = new Date(value['create_time']) ;
+        var dateYMD = date.getFullYear() + '/' + (date.getMonth() + 1) + '/' + date.getDate();
         var dateHSi = (date.getHours() % 12) + ':' + date.getMinutes() + ' ' + ( ( date.getHours() >= 12 ) ? 'PM' : 'AM' );
 
         html +='<tr data_id="' + value['id'] + '">';
@@ -94,7 +73,7 @@ var remark_drawTable = function (data) {
 
     });
 
-    $('#table-data').html(html);
+    $('#remarks-table-data').html(html);
 }
 
 </script>

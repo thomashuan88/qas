@@ -10,8 +10,6 @@ class Roster_management extends Admin_Controller {
             redirect("/private/no_access");
         }
 
-        $this->load->helper('form');
-        $this->load->library('form_validation');
         $this->load->model('adminpanel/roster_management_model');
         $this->load->model('adminpanel/users_model');
         $this->load->model('adminpanel/system_settings_model');
@@ -21,12 +19,28 @@ class Roster_management extends Admin_Controller {
         $content_data = array();
         $action_result = self::check_action(21);
         ($action_result->add == 'yes') ?  $content_data['scheduler'] = TRUE : $content_data['scheduler'] = FALSE;
-        //$postData = $this->input->post();
-        //(isset($postData['schedule_month'])) ? $search_month = $postData['schedule_month'] : $search_month = "";
-        //$result = $this->select_shift($search_month);
-        //$result = array();
         $content_data['dow_arr'] = $this->lang->line('day_of_week_short');
-        //(empty($result)) ? $content_data['data'] = '' : $content_data['data'] = $result;
+
+        //select from system setting table
+        //time and shifts
+        $result_shift_raw = $this->system_settings_model->get_shift();
+        $result_shift = $result_shift_raw->result('array');
+        if(!empty($result_shift)){
+            foreach($result_shift AS $key=>$val){
+                $content_data['shift'][$val['key']] = $val['value'];
+            }
+        }else{
+            $content_data['shift'] = array('Morning'=>'07:00', 'Afternoon'=>'14:00', 'Night'=>'22:30', 'Normal'=>'11:00'); 
+        }
+
+        //select users
+        $alluserdata = $this->users_model->get_all_member();
+        $pairdata = array();
+        foreach($alluserdata AS $k=>$v){
+            $pairdata[$v['role']][] = $v['username'];
+        }
+        //log_message('error', print_r($pairdata,true));
+        $content_data['role'] = $pairdata;
 
         $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel', $this->lang->line('roster'), 'roster_page', 'header', 'footer', '', $content_data);
     }
@@ -62,7 +76,7 @@ class Roster_management extends Admin_Controller {
                 $content_data['table_structure']['shift'][$val['key']] = $val['value'];
             }
         }else{
-            $content_data['table_structure']['shift'] = array('Morning'=>'07:00', 'Afternoon'=>'14:00','Night'=>'22:30','Normal'=>'11:00'); 
+            $content_data['table_structure']['shift'] = array('Morning'=>'07:00', 'Afternoon'=>'14:00', 'Night'=>'22:30', 'Normal'=>'11:00'); 
         }
 
 

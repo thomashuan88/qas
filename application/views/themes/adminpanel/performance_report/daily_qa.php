@@ -12,7 +12,7 @@
         <button type="button" name="delete_import" id="delete_import" class="btn btn-danger btn-md" style="display:none;" ><i class="fa fa-ban"></i> &nbsp; <?php print $this->lang->line('delete_import'); ?></button>
         <?php endif; ?>
         <button id="js-search" type="button" class="btn btn-default" data-toggle="collapse" data-target="#search_wrapper">
-            <span id="js-search-text"><i class="fa fa-compress pd-r-6"></i> <?php print $this->lang->line('collapse'); ?></span> <i class="fa fa-search pd-l-5"></i>
+            <span id="js-search-text"><i class="fa fa-expand pd-r-5"></i> <?php print $this->lang->line('expand'); ?></span> <?php print $this->lang->line('search'); ?> <i class="fa fa-search pd-l-5"></i>
         </button>
     </div>
     <div class="col-md-8" style="text-align: right;">
@@ -69,7 +69,7 @@
         <div class="row">
             <div class="col-xs-7">
                 <h4 class="text-uppercase f900">
-                    <?php print $this->lang->line('total_record'); ?> : <span id="total-rows"></span>
+                    <?php print $this->lang->line('total_record'); ?> : <span id="total-rows"></span><span id="pending_confirm_status"></span>
                 </h4>
             </div>
         </div>
@@ -94,7 +94,7 @@
                 </tr>
                 </thead>
                 <tbody id="table-data">
-                
+
                 </tbody>
             </table>
         </div>
@@ -102,7 +102,7 @@
 
         <div id="pager" class="col-xs-12 pull-right">
         </div>
-        <p id="no_result" style="">No results found.</p>
+        <p id="no_result" style=""><?php print $this->lang->line('no_result'); ?></p>
     </div>
 </div>
 
@@ -148,7 +148,7 @@ var paging = {
     ajaxUrl: '<?php print base_url('adminpanel/daily_qa/get_report'); ?>'
 }
 
-// import file 
+// import file
 jQuery(document).ready(function($){
     var errMsg = '<?php echo $this->lang->line('msg_success_import'); ?>';
     var err = 0;
@@ -238,14 +238,14 @@ $("#pending").click(function() {
 
     $("#search_container").removeClass("collapse in");
     $("#search_container").addClass("collapse");
-    
+
     $("#confirmed").css("display", "");
     $("#pending").css("display", "none");
     $("#confirm_import").css("display", "");
     $("#delete_import").css("display", "");
 
     $("#export_btn").css("display", "none");
-        
+
     paging = {
         offset : 0,
         order_by : 'import_date',
@@ -265,7 +265,7 @@ $("#confirmed").click(function() {
     $("#search_container").removeClass("collapse");
     $("#search_container").addClass("collapse in");
     $("#search_container").attr("aria-expanded", true);
-    
+
     $("#pending").css("display", "");
     $("#confirmed").css("display", "none");
     $("#confirm_import").css("display", "none");
@@ -294,7 +294,7 @@ $('#confirm_import').click(function() {
 })
 
 var confirmImport = function () {
-    var requestData = { import_by: paging.search_data.import_by };
+    var requestData = { import_by: '<?php print $this->session->userdata('username'); ?>' };
 
     $.ajax({
         url: '<?php print base_url('adminpanel/daily_qa/confirm_pending'); ?>',
@@ -380,6 +380,13 @@ var deleteData = function(data_id) {
 }
 
 var drawTable = function (data) {
+
+    if ( paging.ajaxUrl == '<?php print base_url('adminpanel/daily_qa/get_report'); ?>' ) {
+        $("#pending_confirm_status").html(" (<?php print $this->lang->line('confirmed'); ?>)");
+    } else {
+        $("#pending_confirm_status").html(" (<?php print $this->lang->line('pending'); ?>)");
+    }
+
     var html = '';
     if (data.length != 0) {
         $('#dailyqa_table').css('display', 'block');
@@ -414,7 +421,7 @@ var drawTable = function (data) {
         if ( permission.delete ) {
             html +='<td style="white-space: nowrap;"><a href="#" onclick="deleteData(' + value['daily_qa_id'] + ')" class="btn btn-danger btn-circle" title="<?php print $this->lang->line('delete')?>" data-toggle="tooltip" data-placement="top" data-original-title="" data-method="DELETE"><i class="fa fa-trash"></i></a></td>';
         }
-        
+
         html +='</tr>';
     });
 

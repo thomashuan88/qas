@@ -100,7 +100,7 @@ class Daily_Qa extends Admin_Controller {
 
         // force download
         header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment; filename="daily_qa.xls"');
+        header('Content-Disposition: attachment; filename="daily_qa-' . date("Y-m-d") . '.xls"');
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
     }

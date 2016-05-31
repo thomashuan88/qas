@@ -7,7 +7,7 @@
 <div class="row">
     <div class="col-xs-2">
         <button id="js-search" type="button" class="btn btn-default" data-toggle="collapse" data-target="#search_wrapper">
-            <span id="js-search-text"><i class="fa fa-expand pd-r-5"></i> expand</span>&nbsp;<?php print $this->lang->line('search'); ?>&nbsp;<i class="fa fa-search pd-l-5"></i>
+            <span id="js-search-text"><i class="fa fa-expand pd-r-5"></i> <?php print $this->lang->line('expand');?></span>&nbsp;<?php print $this->lang->line('search'); ?>&nbsp;<i class="fa fa-search pd-l-5"></i>
         </button>
     </div>
     <?php if ($add) { ?>
@@ -65,8 +65,8 @@
                         <label for="status"><?php print $this->lang->line('status'); ?></label>
                         <select name="status" id="status" class="form-control">
                             <option value="all"><?php print $this->lang->line('all'); ?></option>
-                            <option value="follow-up" selected><?php print $this->lang->line('follow-up'); ?></option>
-                            <option value="done"><?php print $this->lang->line('done'); ?></option>
+                            <option value="update" selected><?php print $this->lang->line('update'); ?></option>
+                            <option value="updated"><?php print $this->lang->line('done'); ?></option>
                         </select>
                     </div>
                 </div>
@@ -111,6 +111,7 @@
                     <th><a href="javascript:void(0)" onclick="chgOrder('remarks')"><i dataname="remarks" class="table-th"></i> <?php print $this->lang->line('remark'); ?></a></th>
                     <th><a href="javascript:void(0)" onclick="chgOrder('status')"><i dataname="status" class="table-th"></i> <?php print $this->lang->line('status'); ?></a></th>
                     <th><a href="javascript:void(0)" onclick="chgOrder('finish')"><i dataname="finish" class="table-th"></i> <?php print $this->lang->line('finish_time'); ?></a></th>
+                    <th><a href="javascript:void(0)" onclick="chgOrder('created_by')"><i dataname="created_by" class="table-th"></i> <?php print $this->lang->line('submit_by'); ?></a></th>
                     <th><a href="javascript:void(0)" onclick="chgOrder('created_time')"><i dataname="created_time" class="table-th"></i> <?php print $this->lang->line('submit_time'); ?></a></th>
                     <th><a href="javascript:void(0)"><?php print $this->lang->line('action'); ?></a></th>
                 </tr>
@@ -156,7 +157,7 @@
         bootbox.confirm(delete_message, function (confirmed) {
             if (confirmed) {
                 $.ajax({
-                    url: "/adminpanel/operation/shift_report_delete/" + id,
+                    url: "/adminpanel/operation/information_update_delete/" + id,
                     type: "post",
                     success: function (data) {
                         getNewData();
@@ -189,9 +190,10 @@
             html += '<td>' + value['remarks'] + '</td>';
             html += '<td>' + value['status'] + '</td>';
             html += '<td>' + value['finish'] + '</td>';
+            html += '<td>' + value['created_by'] + '</td>';
             html += '<td>' + value['created_time'] + '</td>';
             html += '<td style="white-space: nowrap;">';
-            html += '<a href="<?php print base_url('adminpanel/operation/information_update_follow_up')?>/' + value['shift_reports_id'] + '" class="btn btn-success btn-circle" title="<?php print $this->lang->line('details')?>" data-toggle="tooltip" data-placement="top" data-original-title="View"><i class="fa fa-eye"></i></a>';
+            html += '<a href="<?php print base_url('adminpanel/operation/information_update_details')?>/' + value['shift_reports_id'] + '" class="btn btn-success btn-circle" title="<?php print $this->lang->line('details')?>" data-toggle="tooltip" data-placement="top" data-original-title="View"><i class="fa fa-eye"></i></a>';
             if (paging.permission['edit']) {
                 html += '<a href="<?php print base_url('adminpanel/operation/information_update_edit')?>/' + value['shift_reports_id'] + '" class="btn btn-primary btn-circle edit" title="<?php print $this->lang->line('edit')?>" data-toggle="tooltip" data-placement="top" data-original-title="Edit"><i class="fa fa-pencil-square"></i></a>';
             }

@@ -59,10 +59,10 @@ class Follow_up_model extends CI_Model {
         return false;
     }
 
-    public function get_follow_up_records($key) {
+    public function get_follow_up_records($key, $status) {
         $cond = array(
             'shift_reports_id' => $key,
-            'status' => 'follow-up'
+            'status' => $status ? 'follow-up' : 'inform'
         );
         $this->db->select($this->fields);
         $this->db->from($this->table);
@@ -77,7 +77,7 @@ class Follow_up_model extends CI_Model {
     public function insert_follow_up($data) {
         $new_data = array(
             'shift_reports_id' => $data['id'],
-            'follow_up' => $data['follow_up'],
+            'follow_up' => !empty($data['follow_up']) ? $data['follow_up'] : "N/A",
             'status' => $data['status'],
             'remarks' => $data['remarks'],
             'created_by' => $this->user,
@@ -92,7 +92,7 @@ class Follow_up_model extends CI_Model {
     public function edit_follow_up($data) {
         if ($this->is_exist($data['id'])) {
             $new_data = array(
-                'follow_up' => $data['follow_up'],
+                'follow_up' => !empty($data['follow_up']) ? $data['follow_up'] : "N/A",
                 'status' => $data['status'],
                 'remarks' => $data['remarks'],
                 'last_updated_by' => $this->user,

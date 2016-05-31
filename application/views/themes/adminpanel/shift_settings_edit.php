@@ -19,7 +19,7 @@
 
       <div class="form-group">
         <label for="working hour"><?php print $this->lang->line('working_hour'); ?></label>
-          <input type="text" class="form-control timepicker" id="hour" name="hour" oninput="this.value = this.value.replace(/[^0-9:]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');" value="<?php print $shift->value?>" maxlength="5" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled required>
+          <input type="text" class="form-control timepicker" id="hour" name="hour" oninput="this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');" value="<?php print $shift->value?>" maxlength="5" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled required>
       </div>
       
       <div class="form-group">

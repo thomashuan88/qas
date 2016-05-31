@@ -3,20 +3,20 @@
 <?php $this->load->view('themes/' . Settings_model::$db_config['adminpanel_theme'] . '/partials/content_head.php'); ?>
 
 <?php $this->load->view('generic/flash_error'); ?>
-<?php if ($add) { ?>
     <div class="col-xs-12" style="text-align: right; margin-bottom: 20px;">
+<?php if ($add) { ?>
         <a href="<?php print base_url() . "adminpanel/operation/shift_report_follow_up_insert/" . $report->shift_reports_id; ?>">
             <button type="button" class="btn btn-primary">
                 <span><i class="fa fa-plus pd-r-5"></i>&nbsp;<?php echo $this->lang->line('add_new'); ?></span>
             </button>
-        </a>
+        </a>       
+<?php } ?>
         <a href="<?php print base_url('adminpanel/operation/shift_report') . "?type=session"; ?>">
             <button type="button" class="btn btn-primary">
                 <span><i class="fa fa-reply pd-r-5"></i>&nbsp;<?php echo $this->lang->line('back'); ?></span>
             </button>
         </a>
     </div>
-<?php } ?>
 <div class="col-md-12">
     <div class="panel panel-default">
         <div class="panel-body table-responsive">
@@ -127,7 +127,7 @@
             $('#no_result').css('display', 'none');
         } else {
             $('#shift_report_follow_up_table').css('display', 'none');
-            $('#no_result').css({display: 'block', color: '#FF0000'});
+            $('#no_result').css('display', 'block');
         }
 
         $.each(data, function (key, value) {

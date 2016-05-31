@@ -42,11 +42,11 @@
                                     <?php print form_open('adminpanel/edit_member_detail/save_details', array('id' => 'save_details_form', 'class' =>'form-confirm')) ."\r\n"; ?>
                                     <div class="col-sm-10">
                                         <div class="row">
-                                            <input type="hidden" name="user_id" id="user_id" value="<?php print $member->user_id; ?>" <?php echo $permission['user_details']['disable_input'];?>>
+                                            <input type="hidden" name="user_id" id="user_id" value="<?php print $member->user_id; ?>"  readonly>
                                             <div class="col-sm-6">
                                                 <div class="col-sm-12 form-group">
                                                     <label for="username"><?php print $this->lang->line('username'); ?></label>
-                                                    <input type="text" name="username" id="username" value="<?php print $member->username; ?>" class="form-control" <?php echo $permission['user_details']['disable_input'];?>>
+                                                    <input type="text" name="username" id="username" value="<?php print $member->username; ?>" class="form-control" <?php echo $permission['user_details']['disable_input'];?> readonly>
                                                 </div>
                                                 <div class="col-sm-12 form-group">
                                                     <label for="real_name"><?php print $this->lang->line('full_name'); ?></label>
@@ -237,16 +237,16 @@
                                             </div>
                                             <div class="col-sm-12 form-group">
                                                 <label for="old password"><?php print $this->lang->line('old_password'); ?></label>
-                                                <input type="password" name="old_password" id="old_password" maxlength="20" class="form-control" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled required <?php echo $permission['user_password']['disable_input'];?>>
+                                                <input type="password" name="old_password" id="old_password" maxlength="20" minlength="8"class="form-control" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled required <?php echo $permission['user_password']['disable_input'];?>>
                                             </div>
                                             <div class="col-sm-12 form-group">
                                                 <label for="new password"><?php print $this->lang->line('new_password'); ?></label>
-                                                <input type="password" name="new_password" id="new_password" maxlength="20" class="form-control" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled required <?php echo $permission['user_password']['disable_input'];?>>
-                                                <label style="color:#9C9696; font-size:12px;">Min 8 characters, contain uppercase, alphanumeric and symbol("@#$%^&+=.-_*). eg. qw#e3r </label>
+                                                <input type="password" name="new_password" id="new_password" maxlength="20" minlength="8" class="form-control" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled required <?php echo $permission['user_password']['disable_input'];?>>
+                                                <label style="color:#9C9696; font-size:12px;"><?php print $this->lang->line("new_password_label"); ?></label>
                                             </div>
                                              <div class="col-sm-12 form-group">
                                                 <label for="confirm password"><?php print $this->lang->line('confirm_password'); ?></label>
-                                                <input type="password" name="confirm_password" id="confirm_password" maxlength="20" class="form-control" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled required <?php echo $permission['user_password']['disable_input'];?>>
+                                                <input type="password" name="confirm_password" id="confirm_password" maxlength="20" minlength="8" class="form-control" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled required <?php echo $permission['user_password']['disable_input'];?>>
                                             </div>
                                             <div class="col-sm-12 form-group">
                                                 <label for="password hint"><?php print $this->lang->line('password_hint'); ?></label>
@@ -256,6 +256,7 @@
                                                 <button type="submit" class="btn btn-success js-btn-loading" <?php echo $permission['user_password']['disable_input'];?>><i class="fa fa-floppy-o"> </i> <?php print $this->lang->line('save'); ?></button>
                                             </div>
                                             <input type="hidden" name="user_id" id="user_id" value="<?php print $member->user_id; ?>">
+                                            <input type="hidden" name="username" id="username" value="<?php print $member->username; ?>">
                                             <?php print form_close() ."\r\n"; ?>
 
                                             <?php print form_open('adminpanel/reset_password/send_password', array('id' =>'reset_password_form', 'class' => 'form-confirm')) ."\r\n"; ?>
@@ -281,10 +282,6 @@
                 </div>
             </div>
         </div>
-
-			<!-- tabs -->
-
-			<!-- /tabs -->
 		</div>
 	</div>
 </div>

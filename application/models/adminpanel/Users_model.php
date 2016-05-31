@@ -16,10 +16,11 @@ class Users_model extends CI_Model {
             !empty($search_data['real_name']) ? $data['real_name'] = $search_data['real_name'] : "";
             !empty($search_data['leader']) ? $data['leader'] = $search_data['leader'] : "";
             !empty($search_data['email']) ? $data['email'] = $search_data['email'] : "";
+            (!empty($search_data['role']) && $search_data['role']!== "" ) ? $data['role'] = $search_data['role'] : "";
         }
 
         // status searched
-        if (isset($search_data['status'])) {
+        if (isset($search_data['status']) && !empty($search_data['status'])) {
             !empty($search_data['status']) ? $status['data'] = $search_data['status'] : "";
         }
 
@@ -36,10 +37,7 @@ class Users_model extends CI_Model {
                 $this->db->where('status', $status['data']);
             }
         }
-        // foreach($data as $key => $value) {
-        //     $where_statement = $key.' LIKE "%'.$value.'%"';
-        //     $this->db->where($where_statement,null, false);
-        // }
+
         if(!empty($data)) {
             $this->db->group_start();
             $this->db->like($data);
@@ -88,6 +86,7 @@ class Users_model extends CI_Model {
     }
 
     public function get_member_info($username) {
+
         $this->db->select('user_id, last_login, username, email, real_name, nickname, dob, role,
         windows_id, tb_lp_id, tb_lp_name, sy_lp_id, sy_lp_name, tb_bo,
         gd_bo, keno_bo, cyber_roam, rtx, emergency_contact, emergency_name, relationship,
@@ -187,7 +186,6 @@ class Users_model extends CI_Model {
     }
 
     public function save($data) {
-        log_message("error", print_r($data, true));
 
         $this->db->where('username', $data['username'])
                  ->set('last_updated_by', $this->session->userdata('username'))
@@ -223,17 +221,36 @@ class Users_model extends CI_Model {
     }
 
     public function toggle_active($username, $active) {
-        $data = array('status' => ($active=="active" ? "inactive" : "active"));
+        $data = array('status' => ($active=="Active" ? "Inactive" : "Active"));
         $this->db->where('username', $username);
         $this->db->update('users', $data);
         if($this->db->affected_rows() == 1) {
+
             return true;
         }
+
         return false;
     }
 
     public function find_downline($username){
          $query = $this->db->query("select t1.username AS root, t2.username as HOD, t3.username as supervisor, t4.username as leader, t5.username as senior, t6.username as cs, t7.username as extra FROM users AS t1 LEFT JOIN users AS t2 ON t2.leader = t1.username LEFT JOIN users AS t3 ON t3.leader = t2.username LEFT JOIN users AS t4 ON t4.leader = t3.username LEFT JOIN users AS t5 ON t5.leader = t4.username LEFT JOIN users AS t6 ON t6.leader = t5.username LEFT JOIN users AS t7 ON t7.leader = t6.username WHERE t1.username = '".$username."'");
        return $query->result('array');
+    }
+
+    public function getDirectDownline($leader) {
+        $this->db->select('username');
+        $this->db->from('users');
+        $this->db->where('`status`','active');
+        $this->db->where('leader',$leader);
+
+        $q = $this->db->get();
+        if ($q->num_rows() > 0) {
+            return $q->result('array');
+        }
+        return false;
+    }
+
+    public function getleaders() {
+
     }
 }

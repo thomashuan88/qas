@@ -13,6 +13,8 @@ class Member_detail extends Admin_Controller {
         $this->load->model('adminpanel/member_detail_model');
         $this->load->model('adminpanel/users_model');
         $this->load->model('adminpanel/roles_model');
+        $this->load->model('adminpanel/Performance_ops_monthly_model');
+
 
 
         if (! self::check_permissions(2)) {
@@ -38,7 +40,9 @@ class Member_detail extends Admin_Controller {
         }
 
         // change default value "0" to ""
-        $member_data = $this->users_model->get_member_data($this->uri->segment(3));
+        $member_data = $this->users_model->get_member_data($this->uri->segment(3));        $member_data = $this->users_model->get_member_data($this->uri->segment(3));
+        $leave_data = $this->Performance_ops_monthly_model->get_sum( $member_data->username);
+
 
         if (!in_array($member_data->username, $this->my_permission->find_permission())) {
             redirect("/private/no_access");
@@ -48,7 +52,13 @@ class Member_detail extends Admin_Controller {
                 $value="";
             }
         }
+        if(Settings_model::$db_config['data_mask'] == 'Yes') {
+            (isset($member_data->phone) && $member_data->phone!=="")? $member_data->phone = substr($member_data->phone, 0, -4) . 'xxxx' : '';
+            (isset($member_data->emergency_contact)&& $member_data->emergency_contact!=="")? $member_data->emergency_contact =substr($member_data->emergency_contact, 0, -4) . 'xxxx' : '';
+        }
+
         $content_data['member'] = $member_data;
+        $content_data['leave'] = $leave_data;
 
         $this->load->model('system/rbac_model');
         $content_data['roles'] = $this->roles_model->get_role_name();

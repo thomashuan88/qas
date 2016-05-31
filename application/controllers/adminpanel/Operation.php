@@ -262,7 +262,7 @@ class Operation extends Admin_Controller {
         $content_data['permission']['delete'] = $this->check_page_action(15, 'delete');
         $content_data['total_rows'] = '0';
 
-        $content_data['reports'] = $this->shift_reports_model->get_all_reports($paging['order_by'], $paging['sort_order'], $paging['search_data'], $this->limit_per_page, $paging['offset'], $this->user_list);
+        $content_data['reports'] = $this->shift_reports_model->get_all_reports($paging['order_by'], $paging['sort_order'], $paging['search_data'], $this->limit_per_page, $paging['offset'], $this->user_list, 'reports');
         if (!empty($content_data['reports'])) {
             foreach ($content_data['reports']->result() as $value) {
                 if ($value->status == 'done') {
@@ -337,11 +337,11 @@ class Operation extends Admin_Controller {
         $this->check_permission(15);
         if (!$this->check_page_action(15, 'edit')) {
             $this->session->set_flashdata('error', $this->lang->line('no_access_edit_record'));
-            redirect('/adminpanel/operation/time_sheet');
+            redirect('/adminpanel/operation/shift_report?type=session');
         }
         if (!empty($key)) {
             $content_data = array();
-            $content_data['report'] = $this->shift_reports_model->get_one_report($key);
+            $content_data['report'] = $this->shift_reports_model->get_one_report($key, true);
             if (!empty($content_data['report'])) {
                 if ($this->user_permission($content_data['report']->created_by)) {
                     $content_data['product_list'] = $this->get_product_list($content_data['report']->product);
@@ -370,11 +370,11 @@ class Operation extends Admin_Controller {
                             redirect('/adminpanel/operation/shift_report_edit/' . $key);
                         }
 
-                        $follow_report = $this->follow_up_model->get_follow_up_records($key);
-                        if($follow_report && $post_data['status'] == 'done') {
-                            $this->session->set_flashdata('error', $this->lang->line('exist_follow_up_record'));
-                            redirect('/adminpanel/operation/shift_report?type=session');
-                        }
+//                        $follow_report = $this->follow_up_model->get_follow_up_records($key, true);
+//                        if($follow_report && $post_data['status'] == 'done') {
+//                            $this->session->set_flashdata('error', $this->lang->line('exist_follow_up_record'));
+//                            redirect('/adminpanel/operation/shift_report_edit/' . $key);
+//                        }
 
                         $post_data['id'] = $key;
                         $post_data['category_content'] = $this->category_group_model->get_one_category_group($post_data['category_id'])->content;
@@ -408,7 +408,7 @@ class Operation extends Admin_Controller {
         }
 
         if (!empty($key)) {
-            $report = $this->shift_reports_model->get_one_report($key);
+            $report = $this->shift_reports_model->get_one_report($key, true);
             if (!empty($report)) {
                 if ($this->user_permission($report->created_by)) {
                     $res = $this->shift_reports_model->delete_report($key);
@@ -437,7 +437,7 @@ class Operation extends Admin_Controller {
         $this->check_permission(15);
         $content_data['add'] = $this->check_page_action(15, 'add');
         if (!empty($key)) {
-            $content_data['report'] = $this->shift_reports_model->get_one_report($key);
+            $content_data['report'] = $this->shift_reports_model->get_one_report($key, true);
             if (!empty($content_data['report'])) {
                 $content_data['report']->status = $this->lang->line($content_data['report']->status);
                 $content_data['report']->finish = $this->change_date_format($content_data['report']->finish, false);
@@ -479,7 +479,7 @@ class Operation extends Admin_Controller {
             redirect('/adminpanel/operation/shift_report');
         }
 
-        $report = $this->shift_reports_model->get_one_report($key);
+        $report = $this->shift_reports_model->get_one_report($key, true);
         if (!empty($report)) {
             $content_data['table_data'] = array();
             $content_data['permission']['edit'] = $this->check_page_action(15, 'edit');
@@ -511,13 +511,13 @@ class Operation extends Admin_Controller {
         $this->check_permission(15);
         if (!$this->check_page_action(15, 'add')) {
             $this->session->set_flashdata('error', $this->lang->line('no_access_add_record'));
-            redirect('/adminpanel/operation/shift_report_follow_up');
+            redirect('/adminpanel/operation/shift_report_follow_up/' . $key);
         }
 
         if (!empty($key)) {
             $content_data = array();
             $content_data['key'] = $key;
-            $report = $this->shift_reports_model->get_one_report($key);
+            $report = $this->shift_reports_model->get_one_report($key, true);
             if (!empty($report)) {
                 $post_data = $this->trim_data($this->input->post());
                 if (!empty($post_data)) {
@@ -552,9 +552,9 @@ class Operation extends Admin_Controller {
 
     public function shift_report_follow_up_edit($key, $id) {
         $this->check_permission(15);
-        if (!$this->check_page_action(15, 'add')) {
+        if (!$this->check_page_action(15, 'edit')) {
             $this->session->set_flashdata('error', $this->lang->line('no_access_add_record'));
-            redirect('/adminpanel/operation/shift_report_follow_up');
+            redirect('/adminpanel/operation/shift_report_follow_up/' . $key . '?type=session');
         }
 
         if (!empty($key)) {
@@ -637,13 +637,13 @@ class Operation extends Admin_Controller {
     }
 
     public function get_information_update($type = "") {
-        $paging = $this->session->userdata('search_shift_report');
+        $paging = $this->session->userdata('search_information_update');
 
         if ($type == 'session' && !empty($paging)) {
             if ($this->input->post()) {
                 $post_data = json_decode($this->input->post('data'), true);
                 if (!empty($post_data['search_data'])) {
-                    $this->session->set_userdata(array('search_shift_report' => $post_data));
+                    $this->session->set_userdata(array('search_information_update' => $post_data));
                     $paging = $post_data;
                 }
             }
@@ -651,16 +651,16 @@ class Operation extends Admin_Controller {
             if ($this->input->post()) {
                 $post_data = json_decode($this->input->post('data'), true);
                 if (!empty($post_data['search_data'])) {
-                    $this->session->set_userdata(array('search_shift_report' => $post_data));
+                    $this->session->set_userdata(array('search_information_update' => $post_data));
                 } else {
-                    $this->session->unset_userdata('search_shift_report');
+                    $this->session->unset_userdata('search_information_update');
                 }
                 $paging = $post_data;
             }
         }
 
         if (!is_numeric($paging['offset'])) {
-            redirect('/adminpanel/operation/time_sheet');
+            redirect('/adminpanel/operation/information_update');
         }
 
         $this->session->set_flashdata($paging['search_data']);
@@ -669,13 +669,13 @@ class Operation extends Admin_Controller {
         $content_data['permission']['delete'] = $this->check_page_action(16, 'delete');
         $content_data['total_rows'] = '0';
 
-        $content_data['reports'] = $this->shift_reports_model->get_all_reports($paging['order_by'], $paging['sort_order'], $paging['search_data'], $this->limit_per_page, $paging['offset'], $this->user_list);
+        $content_data['reports'] = $this->shift_reports_model->get_all_reports($paging['order_by'], $paging['sort_order'], $paging['search_data'], $this->limit_per_page, $paging['offset'], $this->user_list, 'update');
         if (!empty($content_data['reports'])) {
             foreach ($content_data['reports']->result() as $value) {
-                if ($value->status == 'done') {
-                    $value->status = '<label class = "label label-info">' . $this->lang->line($value->status) . '</label>';
+                if ($value->status == 'updated') {
+                    $value->status = '<label class = "label label-info">' . $this->lang->line('done') . '</label>';
                 } else {
-                    $value->status = '<label class = "label label-danger">' . $this->lang->line($value->status) . '</label>';
+                    $value->status = '<label class = "label label-pending">' . $this->lang->line($value->status) . '</label>';
                 }
                 $value->remarks = (mb_strlen($value->remarks) > 15) ? mb_substr($value->remarks, 0, 15) . "..." : $value->remarks;
                 $value->finish = $this->change_date_format($value->finish);
@@ -690,67 +690,404 @@ class Operation extends Admin_Controller {
 
         echo json_encode($content_data, true);
     }
+
+    public function information_update_insert() {
+        $this->check_permission(16);
+        if (!$this->check_page_action(16, 'add')) {
+            $this->session->set_flashdata('error', $this->lang->line('no_access_add_record'));
+            redirect('/adminpanel/operation/information_update');
+        }
+
+        $content_data = array();
+        $content_data['product_list'] = $this->get_product_list();
+        $content_data['shift_list'] = $this->get_shift_list();
+        $content_data['category_list'] = $this->get_category_list();
+        $content_data['sub_category_list'] = $this->get_sub_category_list();
+        $post_data = $this->trim_data($this->input->post());
+        if (!empty($post_data)) {
+            $this->form_validation->set_error_delimiters('<p>', '</p>');
+            $this->form_validation->set_rules('finish', $this->lang->line('finish_time'), 'trim|required');
+            $this->form_validation->set_rules('player_name', $this->lang->line('player_name'), 'trim|required');
+            $this->form_validation->set_rules('shift', $this->lang->line('shift'), 'trim|required');
+            $this->form_validation->set_rules('product', $this->lang->line('product'), 'trim|required');
+            $this->form_validation->set_rules('status', $this->lang->line('status'), 'trim|required');
+            $this->form_validation->set_rules('category_id', $this->lang->line('category'), 'trim|required');
+            $this->form_validation->set_rules('sub_category_id', $this->lang->line('sub_category'), 'trim|required');
+            $this->form_validation->set_rules('remarks', $this->lang->line('remark'), 'trim|required');
+
+            if (!$this->form_validation->run()) {
+                $this->session->set_flashdata($post_data);
+                $this->session->set_flashdata('error', validation_errors());
+                redirect('/adminpanel/operation/information_update_insert');
+            }
+
+            if (!$this->check_category_list($post_data['category_id']) || !$this->check_sub_category_list($post_data['category_id'], $post_data['sub_category_id']) || !$this->check_product_list($post_data['product']) || !$this->check_shift_list($post_data['shift'])){
+                $this->session->set_flashdata('error', $this->lang->line('invalid_post_data'));
+                redirect('/adminpanel/operation/information_update_insert');
+            }
+            $post_data['category_content'] = $this->category_group_model->get_one_category_group($post_data['category_id'])->content;
+            $post_data['sub_category_content'] = $this->category_list_model->get_one_category_list($post_data['sub_category_id'])->content;
+            $res = $this->shift_reports_model->insert_report($post_data);
+            if ($res) {
+                $this->session->set_flashdata('success', $this->lang->line('insert_success'));
+            } else {
+                $this->session->set_flashdata('error', $this->lang->line('insert_failure'));
+            }
+            redirect('/adminpanel/operation/information_update');
+        }
+
+        $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel', $this->lang->line('information_update_insert'), 'operation/information_update_insert', 'header', 'footer', '', $content_data);
+    }
+
+    public function information_update_edit($key) {
+        $this->check_permission(16);
+        if (!$this->check_page_action(16, 'edit')) {
+            $this->session->set_flashdata('error', $this->lang->line('no_access_edit_record'));
+            redirect('/adminpanel/operation/information_update?type=session');
+        }
+        if (!empty($key)) {
+            $content_data = array();
+            $content_data['report'] = $this->shift_reports_model->get_one_report($key, false);
+            if (!empty($content_data['report'])) {
+                if ($this->user_permission($content_data['report']->created_by)) {
+                    $content_data['product_list'] = $this->get_product_list($content_data['report']->product);
+                    $content_data['shift_list'] = $this->get_shift_list($content_data['report']->shift);
+                    $content_data['category_list'] = $this->get_category_list($content_data['report']->category_id);
+                    $content_data['sub_category_list'] = $this->get_sub_category_list($content_data['report']->category_id, $content_data['report']->sub_category_id);
+                    $post_data = $this->trim_data($this->input->post());
+                    if (!empty($post_data)) {
+                        $this->form_validation->set_error_delimiters('<p>', '</p>');
+                        $this->form_validation->set_rules('player_name', $this->lang->line('player_name'), 'trim|required');
+                        $this->form_validation->set_rules('shift', $this->lang->line('shift'), 'trim|required');
+                        $this->form_validation->set_rules('product', $this->lang->line('product'), 'trim|required');
+                        $this->form_validation->set_rules('status', $this->lang->line('status'), 'trim|required');
+                        $this->form_validation->set_rules('category_id', $this->lang->line('category'), 'trim|required');
+                        $this->form_validation->set_rules('sub_category_id', $this->lang->line('sub_category'), 'trim|required');
+                        $this->form_validation->set_rules('remarks', $this->lang->line('remark'), 'trim|required');
+
+                        if (!$this->form_validation->run()) {
+                            $this->session->set_flashdata('error', validation_errors());
+                            redirect('/adminpanel/operation/information_update_edit/' . $key);
+                        }
+
+                        if (!$this->check_category_list($post_data['category_id']) || !$this->check_sub_category_list($post_data['category_id'], $post_data['sub_category_id']) || !$this->check_product_list($post_data['product']) || !$this->check_shift_list($post_data['shift'])){
+                            $this->session->set_flashdata('error', $this->lang->line('invalid_post_data'));
+                            redirect('/adminpanel/operation/information_update_edit/' . $key);
+                        }
+
+//                        $follow_report = $this->follow_up_model->get_follow_up_records($key, false);
+//                        if($follow_report && $post_data['status'] == 'updated') {
+//                            $this->session->set_flashdata('error', $this->lang->line('exist_follow_up_record'));
+//                            redirect('/adminpanel/operation/information_update_edit/' . $key);
+//                        }
+
+                        $post_data['id'] = $key;
+                        $post_data['category_content'] = $this->category_group_model->get_one_category_group($post_data['category_id'])->content;
+                        $post_data['sub_category_content'] = $this->category_list_model->get_one_category_list($post_data['sub_category_id'])->content;
+                        $res = $this->shift_reports_model->edit_report($post_data);
+                        if ($res) {
+                            $this->session->set_flashdata('success', $this->lang->line('update_success'));
+                        } else {
+                            $this->session->set_flashdata('error', $this->lang->line('update_failure'));
+                        }
+                    } else {
+                        return $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel', $this->lang->line('information_update_edit'), 'operation/information_update_edit', 'header', 'footer', '', $content_data);
+                    }
+                }else{
+                    $this->session->set_flashdata('error', $this->lang->line('no_access_edit_record'));
+                }
+            } else {
+                $this->session->set_flashdata('error', $this->lang->line('no_result'));
+            }
+        } else {
+            $this->session->set_flashdata('error', $this->lang->line('invalid_data'));
+        }
+        redirect('/adminpanel/operation/information_update?type=session');
+    }
+
+    public function information_update_delete($key) {
+        $this->check_permission(16);
+        if (!$this->check_page_action(16, 'delete')) {
+            echo $this->lang->line('no_access_delete_record');
+            exit();
+        }
+
+        if (!empty($key)) {
+            $report = $this->shift_reports_model->get_one_report($key, false);
+            if (!empty($report)) {
+                if ($this->user_permission($report->created_by)) {
+                    $res = $this->shift_reports_model->delete_report($key);
+                    if ($res) {
+                        $result = $this->follow_up_model->parent_batch_delete_follow_up($key);
+                        if ($result) {
+                            echo $this->lang->line('delete_success');
+                        } else {
+                            echo $this->lang->line('delete_failure');
+                        }
+                    } else {
+                        echo $this->lang->line('delete_failure');
+                    }
+                } else {
+                    echo $this->lang->line('no_access_delete_record');
+                }
+            } else {
+                echo $this->lang->line('no_result');
+            }
+        } else {
+            echo $this->lang->line('invalid_data');
+        }
+    }
+
+    public function information_update_details ($key) {
+        $this->check_permission(16);
+        $content_data['add'] = $this->check_page_action(16, 'add');
+        if (!empty($key)) {
+            $content_data['report'] = $this->shift_reports_model->get_one_report($key, false);
+            if (!empty($content_data['report'])) {
+                $content_data['report']->status = $this->lang->line($content_data['report']->status);
+                $content_data['report']->finish = $this->change_date_format($content_data['report']->finish, false);
+                $content_data['report']->created_time = $this->change_date_format($content_data['report']->created_time, false);
+                return $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel', $this->lang->line('information_update_details'), 'operation/information_update_details', 'header', 'footer', '', $content_data);
+            } else {
+                $this->session->set_flashdata('error', $this->lang->line('no_result'));
+            }
+        } else {
+            $this->session->set_flashdata('error', $this->lang->line('invalid_data'));
+        }
+        redirect('/adminpanel/operation/information_update');
+    }
+
+    public function get_information_update_details($key, $type = "") {
+        $paging = $this->session->userdata('search_information_update_details');
+
+        if ($type == 'session' && !empty($paging)) {
+            if ($this->input->post()) {
+                $post_data = json_decode($this->input->post('data'), true);
+                if (!empty($post_data['search_data'])) {
+                    $this->session->set_userdata(array('search_information_update_details' => $post_data));
+                    $paging = $post_data;
+                }
+            }
+        } else {
+            if ($this->input->post()) {
+                $post_data = json_decode($this->input->post('data'), true);
+                if (!empty($post_data['search_data'])) {
+                    $this->session->set_userdata(array('search_information_update_details' => $post_data));
+                } else {
+                    $this->session->unset_userdata('search_information_update_details');
+                }
+                $paging = $post_data;
+            }
+        }
+
+        if (!is_numeric($paging['offset'])) {
+            redirect('/adminpanel/operation/information_update');
+        }
+
+        $report = $this->shift_reports_model->get_one_report($key, false);
+        if (!empty($report)) {
+            $content_data['table_data'] = array();
+            $content_data['permission']['edit'] = $this->check_page_action(16, 'edit');
+            $content_data['permission']['delete'] = $this->check_page_action(16, 'delete');
+            $content_data['total_rows'] = '0';
+            $content_data['follow_up'] = $this->follow_up_model->get_all_follow_up_reports($paging['order_by'], $paging['sort_order'], $key, $this->limit_per_page, $paging['offset'], $this->user_list, false);
+            if (!empty($content_data['follow_up'])) {
+                foreach ($content_data['follow_up']->result() as $value) {
+                    if ($value->status == 'informed') {
+                        $value->status = '<label class = "label label-info">' . $this->lang->line('done') . '</label>';
+                    } else {
+                        $value->status = '<label class = "label label-pending">' . $this->lang->line('update') . '</label>';
+                    }
+                    $value->remarks = (mb_strlen($value->remarks) > 15) ? mb_substr($value->remarks, 0, 15) . "..." : $value->remarks;
+                    $value->created_time = $this->change_date_format($value->created_time);
+                }
+                $content_data['table_data'] = $content_data['follow_up']->result();
+                $content_data['total_rows'] = $content_data['follow_up']->total_rows;
+            }
+        }
+
+        $content_data['offset'] = $paging['offset'];
+        $content_data['per_page'] = $this->limit_per_page;
+
+        echo json_encode($content_data, true);
+    }
+
+    public function information_update_details_insert($key) {
+        $this->check_permission(16);
+        if (!$this->check_page_action(16, 'add')) {
+            $this->session->set_flashdata('error', $this->lang->line('no_access_add_record'));
+            redirect('/adminpanel/operation/information_update_details/' . $key);
+        }
+
+        if (!empty($key)) {
+            $content_data = array();
+            $content_data['key'] = $key;
+            $report = $this->shift_reports_model->get_one_report($key, false);
+            if (!empty($report)) {
+                $post_data = $this->trim_data($this->input->post());
+                if (!empty($post_data)) {
+                    $this->form_validation->set_error_delimiters('<p>', '</p>');
+                    $this->form_validation->set_rules('status', $this->lang->line('status'), 'trim|required');
+                    $this->form_validation->set_rules('remarks', $this->lang->line('remark'), 'trim|required');
+
+                    if (!$this->form_validation->run()) {
+                        $this->session->set_flashdata($post_data);
+                        $this->session->set_flashdata('error', validation_errors());
+                        redirect('/adminpanel/operation/information_update_details_insert/' . $key);
+                    }
+                    $post_data['id'] = $key;
+                    $res = $this->follow_up_model->insert_follow_up($post_data);
+                    if ($res) {
+                        $this->session->set_flashdata('success', $this->lang->line('insert_success'));
+                    } else {
+                        $this->session->set_flashdata('error', $this->lang->line('insert_failure'));
+                    }
+                } else {
+                    return $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel', $this->lang->line('information_update_details_insert'), 'operation/information_update_details_insert', 'header', 'footer', '', $content_data);
+                }
+            } else {
+                $this->session->set_flashdata('error', $this->lang->line('no_result'));
+            }
+        } else {
+            $this->session->set_flashdata('error', $this->lang->line('invalid_data'));
+        }
+        redirect('/adminpanel/operation/information_update_details/' . $key);
+    }
+
+    public function information_update_details_edit($key, $id) {
+        $this->check_permission(16);
+        if (!$this->check_page_action(16, 'edit')) {
+            $this->session->set_flashdata('error', $this->lang->line('no_access_add_record'));
+            redirect('/adminpanel/operation/information_update_details/' . $key . '?type=session');
+        }
+
+        if (!empty($key)) {
+            $content_data = array();
+            $content_data['key'] = $key;
+            $content_data['follow_up'] = $this->follow_up_model->get_one_follow_up($id);
+            if (!empty($content_data['follow_up'])) {
+                if ($this->user_permission($content_data['follow_up']->created_by)) {
+                    $post_data = $this->trim_data($this->input->post());
+                    if (!empty($post_data)) {
+                        $this->form_validation->set_error_delimiters('<p>', '</p>');
+                        $this->form_validation->set_rules('status', $this->lang->line('status'), 'trim|required');
+                        $this->form_validation->set_rules('remarks', $this->lang->line('remark'), 'trim|required');
+
+                        if (!$this->form_validation->run()) {
+                            $this->session->set_flashdata($post_data);
+                            $this->session->set_flashdata('error', validation_errors());
+                            redirect('/adminpanel/operation/information_update_details_edit/' . $key . '/' . $id);
+                        }
+                        $post_data['id'] = $id;
+                        $res = $this->follow_up_model->edit_follow_up($post_data);
+                        if ($res) {
+                            $this->session->set_flashdata('success', $this->lang->line('update_success'));
+                        } else {
+                            $this->session->set_flashdata('error', $this->lang->line('update_failure'));
+                        }
+                    } else {
+                        return $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel', $this->lang->line('information_update_details_edit'), 'operation/information_update_details_edit', 'header', 'footer', '', $content_data);
+                    }
+                } else {
+                    $this->session->set_flashdata('error', $this->lang->line('no_access_add_record'));
+                }
+            } else {
+                $this->session->set_flashdata('error', $this->lang->line('no_result'));
+            }
+        } else {
+            $this->session->set_flashdata('error', $this->lang->line('invalid_data'));
+        }
+        redirect('/adminpanel/operation/information_update_details/' . $key . '?type=session');
+    }
+
+    public function information_update_details_delete($key) {
+        $this->check_permission(16);
+        if (!$this->check_page_action(16, 'delete')) {
+            echo $this->lang->line('no_access_delete_record');
+            exit();
+        }
+
+        if (!empty($key)) {
+            $follow_up = $this->follow_up_model->get_one_follow_up($key);
+            if (!empty($follow_up)) {
+                if ($this->user_permission($follow_up->created_by)) {
+                    $res = $this->follow_up_model->delete_follow_up($key);
+                    if ($res) {
+                        echo $this->lang->line('delete_success');
+                    } else {
+                        echo $this->lang->line('delete_failure');
+                    }
+                } else {
+                    echo $this->lang->line('no_access_delete_record');
+                }
+            } else {
+                echo $this->lang->line('no_result');
+            }
+        } else {
+            echo $this->lang->line('invalid_data');
+        }
+    }
 //=============================================== End information update ===============================================
 
 //===================================================== Time sheet =====================================================
+    public function get_time_sheet($type = "") {
+        $paging = $this->session->userdata('search_time_sheet');
+
+        if ($type == 'session' && !empty($paging)) {
+            if ($this->input->post()) {
+                $post_data = json_decode($this->input->post('data'), true);
+                if (!empty($post_data['search_data'])) {
+                    $this->session->set_userdata(array('search_time_sheet' => $post_data));
+                    $paging = $post_data;
+                }
+            }
+        } else {
+            if ($this->input->post()) {
+                $post_data = json_decode($this->input->post('data'), true);
+                if (!empty($post_data['search_data'])) {
+                    $this->session->set_userdata(array('search_time_sheet' => $post_data));
+                } else {
+                    $this->session->unset_userdata('search_time_sheet');
+                }
+                $paging = $post_data;
+            }
+        }
+
+        if (!is_numeric($paging['offset'])) {
+            redirect('/adminpanel/operation/time_sheet');
+        }
+
+        $this->session->set_flashdata($paging['search_data']);
+        $content_data['table_data'] = array();
+        $content_data['permission']['edit'] = $this->check_page_action(17, 'edit');
+        $content_data['permission']['delete'] = $this->check_page_action(17, 'delete');
+        $content_data['total_rows'] = '0';
+
+        $content_data['time_sheet'] = $this->time_sheet_model->get_all_time_sheets($paging['order_by'], $paging['sort_order'], $paging['search_data'], $this->limit_per_page, $paging['offset'], $this->user_list);
+        if (!empty($content_data['time_sheet'])) {
+            foreach ($content_data['time_sheet']->result() as $value) {
+                $value->content = '<strong>' . $value->title . '</strong> - ' . ((mb_strlen($value->remarks) > 6) ? mb_substr($value->remarks, 0, 6) . "..." : $value->remarks);
+                if($value->time_end != 0){
+                    $value->duration = date_diff(date_create($value->time_start), date_create($value->time_end), true)->format('%dd %hh %im');
+                } else {
+                    $value->duration = $this->lang->line('pending');
+                }
+                $value->created_time = $this->change_date_format($value->created_time);
+            }
+            $content_data['table_data'] = $content_data['time_sheet']->result();
+            $content_data['total_rows'] = $content_data['time_sheet']->total_rows;
+        }
+
+        $content_data['offset'] = $paging['offset'];
+        $content_data['per_page'] = $this->limit_per_page;
+
+        echo json_encode($content_data, true);
+    }
+
     public function time_sheet() {
         $this->check_permission(17);
         $content_data['add'] = $this->check_page_action(17, 'add');
         $this->quick_page_setup(Settings_model::$db_config['adminpanel_theme'], 'adminpanel', $this->lang->line('time_sheet'), 'operation/time_sheet', 'header', 'footer', '', $content_data);
-    }
-
-    public function get_time_sheet($type = "") {
-            $paging = $this->session->userdata('search_time_sheet');
-
-            if ($type == 'session' && !empty($paging)) {
-                if ($this->input->post()) {
-                    $post_data = json_decode($this->input->post('data'), true);
-                    if (!empty($post_data['search_data'])) {
-                        $this->session->set_userdata(array('search_time_sheet' => $post_data));
-                        $paging = $post_data;
-                    }
-                }
-            } else {
-                if ($this->input->post()) {
-                    $post_data = json_decode($this->input->post('data'), true);
-                    if (!empty($post_data['search_data'])) {
-                        $this->session->set_userdata(array('search_time_sheet' => $post_data));
-                    } else {
-                        $this->session->unset_userdata('search_time_sheet');
-                    }
-                    $paging = $post_data;
-                }
-            }
-
-            if (!is_numeric($paging['offset'])) {
-                redirect('/adminpanel/operation/time_sheet');
-            }
-
-            $this->session->set_flashdata($paging['search_data']);
-            $content_data['table_data'] = array();
-            $content_data['permission']['edit'] = $this->check_page_action(17, 'edit');
-            $content_data['permission']['delete'] = $this->check_page_action(17, 'delete');
-            $content_data['total_rows'] = '0';
-
-            $content_data['time_sheet'] = $this->time_sheet_model->get_all_time_sheets($paging['order_by'], $paging['sort_order'], $paging['search_data'], $this->limit_per_page, $paging['offset'], $this->user_list);
-            if (!empty($content_data['time_sheet'])) {
-                foreach ($content_data['time_sheet']->result() as $value) {
-                    $value->content = '<strong>' . $value->title . '</strong> - ' . ((mb_strlen($value->remarks) > 6) ? mb_substr($value->remarks, 0, 6) . "..." : $value->remarks);
-                    if($value->time_end != 0){
-                        $value->duration = date_diff(date_create($value->time_start), date_create($value->time_end), true)->format('%dd %hh %im');
-                    } else {
-                        $value->duration = $this->lang->line('pending');
-                    }
-                    $value->created_time = $this->change_date_format($value->created_time);
-                }
-                $content_data['table_data'] = $content_data['time_sheet']->result();
-                $content_data['total_rows'] = $content_data['time_sheet']->total_rows;
-            }
-
-            $content_data['offset'] = $paging['offset'];
-            $content_data['per_page'] = $this->limit_per_page;
-
-        echo json_encode($content_data, true);
     }
 
     public function time_sheet_insert() {
@@ -805,7 +1142,7 @@ class Operation extends Admin_Controller {
         $this->check_permission(17);
         if (!$this->check_page_action(17, 'edit')) {
             $this->session->set_flashdata('error', $this->lang->line('no_access_edit_record'));
-            redirect('/adminpanel/operation/time_sheet');
+            redirect('/adminpanel/operation/time_sheet?type=session');
         }
 
         if (!empty($key)) {
@@ -998,7 +1335,7 @@ class Operation extends Admin_Controller {
         $this->check_permission(18);
         if (!$this->check_page_action(18, 'edit')) {
             $this->session->set_flashdata('error', $this->lang->line('no_access_edit_record'));
-            redirect('/adminpanel/operation/question_type');
+            redirect('/adminpanel/operation/question_type?type=session');
         }
 
         if (!empty($key)) {
@@ -1178,7 +1515,7 @@ class Operation extends Admin_Controller {
         $this->check_permission(19);
         if (!$this->check_page_action(19, 'edit')) {
             $this->session->set_flashdata('error', $this->lang->line('no_access_edit_record'));
-            redirect('/adminpanel/operation/question_content');
+            redirect('/adminpanel/operation/question_content?type=session');
         }
 
         if (!empty($key)) {

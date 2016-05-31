@@ -15,7 +15,7 @@ class Performance_log_in_out_model extends CI_Model {
         $this->db->insert_batch( $this->table, $records );
     }
     public function get_single_record($id) {
-        return $this->db->get_where($this->table, array('ops_monthly_id' => $id ) );
+        return $this->db->get_where($this->table, array('log_time_id' => $id ) );
     }
 
     public function get_records( $limit = 0, $offset = 0, $order_by = "import_date", $sort_order = "desc", $search_data = array() , $status = 1, $users = array() ) {
@@ -118,7 +118,7 @@ class Performance_log_in_out_model extends CI_Model {
     }
 
     public function delete_record($id) {
-        $this->db->where('ops_monthly_id', $id);
+        $this->db->where('log_time_id', $id);
         $this->db->delete($this->table);
     }
     

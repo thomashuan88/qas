@@ -10,8 +10,9 @@
     <header class="navbar header" role="menu">
         <div class="navbar-header">
             <a class="navbar-brand block" href="<?php print base_url(); ?>">
-            
+                <?php if(!empty(Settings_model::$db_config['logo'])) { ?>
                 <img src="<?php print base_url(); ?>assets/img/<?php print Settings_model::$db_config['logo']; ?>">
+                <?php } ?>
             </a>
 
         </div>
@@ -27,11 +28,6 @@
         <a href="<?php print base_url(); ?>logout" class="btn navbar-btn pull-right" data-toggle="tooltip" title=<?php print $this->lang->line('logout'); ?>>
             <i class="fa fa-power-off" style="color:#e16e41">&nbsp;&nbsp;</i><span style="color:#e16e41"><?php print $this->lang->line('logout'); ?></span>
         </a>
-        <a id="js-extramenu" href="javascript:" class="btn navbar-btn pull-right">
-            <i class="fa fa-sticky-note-o"></i>
-        </a>
-        
-
 
         <li class = "btn navbar-btn dropdown pull-right">
             <a href = "#" class = "dropdown-toggle" data-toggle = "dropdown" >

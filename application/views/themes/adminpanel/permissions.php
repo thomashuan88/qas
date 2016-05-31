@@ -27,7 +27,7 @@
                     <thead>
                         <tr >
                         <th rowspan="2" style="width: 60%;cursor:default; color:#333333;text-shadow: 0 1px 0 #FFFFFF;background-color: white;text-align: center;vertical-align: middle;"><?php print $this->lang->line('module_name')?></th>
-                        <th rowspan="2" style="width: 28%;cursor:default; color:#333333;text-shadow: 0 1px 0 #FFFFFF;background-color: white;text-align: center;vertical-align: middle;"><?php print $this->lang->line('action')?></th>
+                        <th rowspan="2" style="width: 28%;cursor:default; color:#333333;text-shadow: 0 1px 0 #FFFFFF;background-color: white;text-align: center;vertical-align: middle;white-space: nowrap;"><?php print $this->lang->line('action')?></th>
                         <th style="width: 30%;cursor:default; color:#333333;text-shadow: 0 1px 0 #FFFFFF;background-color: white;text-align: center;"><input type="checkbox" name="<?php print $role_id; ?>" class="check_full_access"/> <?php print $this->lang->line('full_access')?></th>
                         </tr>
                         <tr>
@@ -46,7 +46,7 @@
                         <?php }else{  ?>
                         <tr id ="<?php print $id; ?>" name="check_list" class="check_list">
                             <td><?php print $permission['description']; ?>  </td>
-                            <td style="text-align:center;">
+                            <td style="text-align:center;white-space: nowrap;">
                             <label class="checkbox inline">
                                 <?php print form_checkbox(array('name' => 'add[]', 'class' => 'check_action', 'value' => $id, 'id' => $role_id, 'checked' => ($permission['add'] == 'yes' ? true : false))); ?> <?php print $this->lang->line('add')?></label>
                             <label class="checkbox inline">

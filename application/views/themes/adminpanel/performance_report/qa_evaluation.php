@@ -1,4 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed'); ?>
+<link href="<?php print base_url(); ?>assets/js/vendor/plupload-2.1.9/js/jquery.ui.plupload/css/jquery.ui.plupload.css" rel="stylesheet">
+<script src="<?php print base_url(); ?>assets/js/vendor/plupload-2.1.9/js/plupload.full.min.js"></script>
+<script src="<?php print base_url(); ?>assets/js/vendor/plupload-2.1.9/js/jquery.ui.plupload/jquery.ui.plupload.min.js"></script>
 
 <?php $this->load->view('themes/'. Settings_model::$db_config['adminpanel_theme'] .'/partials/content_head.php'); ?>
 
@@ -58,6 +61,8 @@
         </form>
 
         </div>
+        
+        <div id="uploader" style="display: none;"></div>
 
         <div class="row margin-top-30">
 
@@ -96,13 +101,89 @@
             <?php print form_close() ."\r\n"; ?>
             <div id="pager" class="col-xs-12 pull-right">
             </div>
-            <p id="no_result" style="">No results found.</p>
+            <p id="no_result" style=""><?php print $this->lang->line('no_result'); ?></p>
             </div>
         </div>    
 </div>
 
+<style type="text/css">
+    /*uploader*/
+    .plupload_header_content{
+        padding-left : 15px;
+        height: auto;
+    }
+    .plupload_wrapper {
+        padding: 15px 0 25px 0;
+    }
+    .plupload_logo {
+        display: hidden;
+        width: 0;
+        height: 0;
+        background: none;
+    }
+    .plupload_header_title {
+        padding: 10px 0 10px 0;
+    }
+    .plupload_header_text {
+        display: hidden;
+        visibility: hidden;
+    }
+    .plupload_view_switch {
+        bottom: 4px;
+    }
+    .plupload_message {
+        display: none;
+    }
 
+</style>
 <script>
+// import file 
+jQuery(document).ready(function($){
+    var errMsg = '<?php echo $this->lang->line('msg_success_import'); ?>';
+    var err = 0;
+
+    var uploader = $("#uploader").plupload({
+        // General settings
+        runtimes : 'html5,flash,silverlight,html4',
+        url : qas_app.baseurl + "adminpanel/qa_evaluation/import_chat",
+        multi_selection: true,
+        max_file_size : '500kb',
+        chunk_size: '1mb',
+        filters : [{title : "Text Files", extensions : "txt"}],
+        rename: true,
+        sortable: true,
+        dragdrop: true,
+        views: {
+            thumbs: true,
+            active: 'thumbs'
+        },
+        init : {
+            FileUploaded: function( upldr, file, object ) {
+                var response = JSON.parse(object.response);
+                if(response.error) {
+                    errMsg = response.message;
+                    err = 1;
+                }
+            },
+            Error: function( uploader, error ) {
+                bootbox.alert( "<?php echo $this->lang->line('msg_import_invalid_file_size1'); ?>" + error.file.name + " <?php echo $this->lang->line('msg_import_invalid_file_size1'); ?>" );
+                err = 1;
+            },
+            UploadComplete: function( up, file, info ) { // upload callback
+                if (err == 0) {
+                    bootbox.confirm(errMsg, function(confirmed){
+                        qas_app.getNewData(qas_app.after_render_table);
+                    });
+                } else {
+                    bootbox.alert(errMsg);
+                }
+
+                up.splice();
+            },
+        },
+    });
+});
+
 $(document).ready(function($){
     var thisblock = $('#qa_evaluation_block');
     qas_app.table_delete_all_holder = [];
@@ -141,7 +222,7 @@ $(document).ready(function($){
             if (confirmed) {
                 $.post(qas_app.baseurl+'adminpanel/qa_evaluation/delete_all', {deleteall:qas_app.table_delete_all_holder}, function(data) {
                     if (data.status == 'success') {
-                        getNewData(qas_app.after_render_table);
+                        qas_app.getNewData(qas_app.after_render_table);
                     }
                 }, 'json');                
             }
@@ -167,6 +248,16 @@ $(document).ready(function($){
     });
 
     qas_app.getNewData(qas_app.after_render_table);
+
+    $('#qa_import_btn').click(function(){
+        var uploader = document.getElementById("uploader");
+        if(uploader.style.display == "block") {
+                uploader.style.display = "none";
+        }
+        else {
+            uploader.style.display = "block";
+        }
+    });
     
 });
 
@@ -258,7 +349,7 @@ qas_app.drawTable = function (data) {
         html +='<td>' + value['evaluate_mark'] + '%</td>';
         html +='<td>' + value['evaluate_by'] + '</td>';
 
-        html +='<td><a href="<?php print base_url(); ?>adminpanel/qa_evaluation/qa_detail/'+value['id']+'" class="btn btn-success btn-circle" title="" data-toggle="tooltip" data-placement="top" data-original-title="Details"><i class="fa fa-eye"></i></a>'
+        html +='<td style="white-space: nowrap;"><a href="<?php print base_url(); ?>adminpanel/qa_evaluation/qa_detail/'+value['id']+'" class="btn btn-success btn-circle" title="" data-toggle="tooltip" data-placement="top" data-original-title="Details"><i class="fa fa-eye"></i></a>'
         html +='<a href="javascript:void(0)" class="btn btn-primary btn-circle edit" row_id="'+value['id']+'" title="" data-toggle="tooltip" data-placement="top" data-original-title="Edit Status"><i class="fa fa-pencil-square"></i></a>'
         html +='<a href="javascript:void(0)" row_id="'+value['id']+'" class="btn btn-danger btn-circle delete" title="" data-toggle="tooltip" data-placement="top" data-original-title="Delete"><i class="fa fa-trash"></i></a></td>';
         html +='</tr>';

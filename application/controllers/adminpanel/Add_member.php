@@ -68,11 +68,10 @@ class Add_member extends Admin_Controller {
             if ($result = $this->roles_model->get_role_id($_POST['role']) ) {
                 $this->rbac_model->create_user_role(array('user_id' => $return_array['user_id'], 'role_id' => $result['0']['role_id']));
             }
-
             // Data to be Save
             $data = array();
             $fields = array('real_name', 'nickname', 'phone', 'emergency_contact', 'emergency_name', 'relationship', 'tb_lp_id', 'tb_lp_name', 'sy_lp_id', 'sy_lp_name', 'tb_bo', 'gd_bo', 'keno_bo', 'cyber_roam', 'rtx', 'windows_id');
-            $data['username'] = $this->input->post('username');
+            $data['username'] = $this->input->post('uname');
             foreach($fields as $field){
                 isset($_POST[$field])?$data[$field] = $this->input->post($field) : "";
             }
@@ -85,7 +84,7 @@ class Add_member extends Admin_Controller {
             $this->load->library('email', load_email_config(Settings_model::$db_config['email_protocol']));
             $this->email->from(Settings_model::$db_config['admin_email_address'], $_SERVER['HTTP_HOST']);
             // Settings_model::$db_config['admin_email_address']
-            $this->email->to('st.yong@eagleeye.xyz');
+            $this->email->to($this->input->post('email'));
             // $this->input->post('email')
             $this->email->subject($this->lang->line('membership_subject'));
             $message ="";
@@ -96,7 +95,7 @@ class Add_member extends Admin_Controller {
             $this->email->message($message);
             $this->email->send();
 
-            $this->session->set_flashdata('success', '<p>'. $this->lang->line('account_created') .'</p>');
+            $this->session->set_flashdata('success', '<p>'. $this->lang->line('account_created') .' '. $this->lang->line('activation_send') .' '.$this->input->post('email').'</p>');
         }else{
             $this->session->set_flashdata('error', '<p>'. $this->lang->line('unable_to_register') .'</p>');
         }

@@ -22,7 +22,7 @@ class Performance_monthly_qa_model extends CI_Model {
 
         $this->db->select( array( 'monthly_qa_id', 'month', 'username', 'typing_test', 'monthly_assessment', 'leader', 'import_by', 'import_date' ) );
         $this->db->from($this->table);
-        
+
         if ( $status == 0 ) {
             $this->db->where_in('import_by', $this->my_permission->find_permission());
         }
@@ -40,7 +40,7 @@ class Performance_monthly_qa_model extends CI_Model {
                 }
             }
         }
-        
+
         $this->db->order_by($order_by, $sort_order);
         $this->db->limit($limit, $offset);
         $this->db->where('status', $status);
@@ -122,7 +122,7 @@ class Performance_monthly_qa_model extends CI_Model {
         $this->db->where('monthly_qa_id', $id);
         $this->db->delete($this->table);
     }
-    
+
     public function delete_pending_records() {
         $this->db->where('status', 0);
         $this->db->delete($this->table);
@@ -133,8 +133,8 @@ class Performance_monthly_qa_model extends CI_Model {
                'status' => 1
             );
 
-        $this->db->where('import_by' , $update_by);
-        $this->db->update($this->table, $data); 
+        $this->db->update($this->table, $data);
     }
 
+    
 }

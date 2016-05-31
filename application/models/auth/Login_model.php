@@ -133,14 +133,13 @@ class Login_model extends CI_Model {
     public function get_session($username){
         $this->db->select('id');
         $this->db->from('ci_sessions');
-        $this->db->like('data',$username);
+        $this->db->where('data LIKE "%'.$username.'%"');
         $q = $this->db->get();
 
-        //if ($q->num_rows() == 1) {
-            // log_message("error",print_r($q,true));
+        // if ($q->num_rows() == 1) {
 
-            return $q->result();
-        //}
+        //     return $q->result();
+        // }
         // return false;
     }
 

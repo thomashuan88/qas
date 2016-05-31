@@ -7,7 +7,7 @@
 <div class="row">
     <div class="col-xs-2">
         <button id="js-search" type="button" class="btn btn-default" data-toggle="collapse" data-target="#search_wrapper">
-            <span id="js-search-text"><i class="fa fa-expand pd-r-5"></i> expand</span>&nbsp;<?php print $this->lang->line('search'); ?>&nbsp;<i class="fa fa-search pd-l-5"></i>
+            <span id="js-search-text"><i class="fa fa-expand pd-r-5"></i> <?php print $this->lang->line('expand');?></span>&nbsp;<?php print $this->lang->line('search'); ?>&nbsp;<i class="fa fa-search pd-l-5"></i>
         </button>
     </div>
     <?php if ($add) { ?>
@@ -22,7 +22,7 @@
 </div>
 
 <form name="question_type_form" id="question_type_form" onsubmit="return searchData();">
-    <div id="search_wrapper" class="collapse in">
+    <div id="search_wrapper" class="collapse <?php print Settings_model::$db_config['search_section']; ?>">
         <div class="pd-15 bg-primary mg-t-15 mg-b-10">
             <h2 class="text-uppercase mg-t-0">
                 <?php print $this->lang->line('search_question_type'); ?>

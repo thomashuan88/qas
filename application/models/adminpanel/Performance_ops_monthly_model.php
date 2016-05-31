@@ -22,7 +22,7 @@ class Performance_ops_monthly_model extends CI_Model {
 
         $this->db->select( array( 'ops_monthly_id', 'month', 'username', 'al', 'ml', 'el', 'ul', 'vw', 'fw', 'leader', 'import_by', 'import_date' ) );
         $this->db->from($this->table);
-        
+
         if ( $status == 0 ) {
             $this->db->where_in('import_by', $this->my_permission->find_permission());
         }
@@ -40,7 +40,7 @@ class Performance_ops_monthly_model extends CI_Model {
                 }
             }
         }
-        
+
         $this->db->order_by($order_by, $sort_order);
         $this->db->limit($limit, $offset);
         $this->db->where('status', $status);
@@ -121,7 +121,7 @@ class Performance_ops_monthly_model extends CI_Model {
         $this->db->where('ops_monthly_id', $id);
         $this->db->delete($this->table);
     }
-    
+
     public function delete_pending_records() {
         $this->db->where('status', 0);
         $this->db->delete($this->table);
@@ -132,7 +132,27 @@ class Performance_ops_monthly_model extends CI_Model {
                'status' => 1
             );
 
-        $this->db->update($this->table, $data); 
+        $this->db->update($this->table, $data);
+    }
+
+    public function get_sum($username){
+
+        $this->db->select_sum('al' , "total_al");
+        $this->db->select_sum('el' , "total_el");
+        $this->db->select_sum('ml' , "total_ml");
+        $this->db->select_sum('ul' , "total_ul");
+        $this->db->select_sum('vw' , "total_vw");
+        $this->db->select_sum('fw' , "total_fw");
+        $this->db->from($this->table);
+        $this->db->where('username', $username);
+        $this->db->where('status', 1);
+
+        $q = $this->db->get();
+        if( $q->num_rows() > 0 ) {
+            return $q->row();
+        }
+
+        return false;
     }
 
 }

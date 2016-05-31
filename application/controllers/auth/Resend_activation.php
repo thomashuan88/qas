@@ -31,7 +31,6 @@ class Resend_activation extends Auth_Controller {
         // form input validation
         $this->form_validation->set_error_delimiters('<p>', '</p>');
         $this->form_validation->set_rules('email', $this->lang->line('email_address'), 'trim|required|is_valid_email');
-
         if (!$this->form_validation->run()) {
             $this->session->set_flashdata('error', validation_errors());
             redirect('resend_activation');
@@ -45,6 +44,7 @@ class Resend_activation extends Auth_Controller {
             $this->session->set_flashdata('error', '<p>'.$this->lang->line('account_activated') .'</p>');
             redirect('resend_activation');
         }elseif (!empty($data['nonce'])) {
+
             $this->load->model('auth/resend_activation_model');
             $this->resend_activation_model->update_last_login($data['username']);
             $this->load->helper('send_email');
@@ -68,6 +68,8 @@ class Resend_activation extends Auth_Controller {
         $this->session->set_flashdata('email', $this->input->post('email'));
         redirect('resend_activation');
     }
+
+
 
 }
 

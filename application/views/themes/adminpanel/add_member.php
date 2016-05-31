@@ -25,7 +25,7 @@
 			<div class="pull-right">
 
 				<button type="submit" name="add_user_submit" id="add_user_submit" class="btn btn-default js-btn-loading pd-r-5" data-loading-text="Adding..."><i class="fa fa-user-plus pd-r-5"></i> <?php print $this->lang->line('save_user'); ?></button>
-                <button type="button" name="unlock" id="unlock" class="btn btn-default js-btn-loading" data-loading-text="Adding..." ><i class="fa fa-unlock pd-r-5"></i><span>Unlock</span></button>
+                <button type="button" name="unlock" id="unlock" class="btn btn-default js-btn-loading" data-loading-text="Adding..." ><i class="fa fa-unlock pd-r-5"></i><span><?php print $this->lang->line('unlock'); ?></span></button>
 
             </div>
 
@@ -59,7 +59,7 @@
                                             data-parsley-maxlength="20"
                                             data-parsley-errors-messages-disabled
                                             required>
-											<label style="color:#9C9696; font-size:12px;">min 6 characters. symbol allow(._-). no space</label>
+											<label style="color:#9C9696; font-size:12px;"><?php print $this->lang->line('username_label')?></label>
 										</div>
                                         <div class="form-group">
 											<label for="email"><?php print $this->lang->line('email_address'); ?></label>
@@ -72,7 +72,7 @@
                                              data-parsley-maxlength="255"
                                              data-parsley-errors-messages-disabled
                                              required>
-											<label style="color:#9C9696; font-size:12px;">eg. johnDoe@bexcel.com</label>
+											<label style="color:#9C9696; font-size:12px;"><?php print $this->lang->line('email_label'); ?></label>
 										</div>
 
 									</div>
@@ -94,9 +94,11 @@
 											<select class="form-control" id="role" name="role" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled required>
                                                 <option value="<?php print Settings_model::$db_config['system_role']; ?>"selected><?php print Settings_model::$db_config['system_role']; ?></option>
                                                 <option style="display:none;" value="<?php print $this->session->flashdata('role'); ?>"><?php print $this->session->flashdata('role'); ?></option>
-												<?php foreach($roles as $role) {?>
+												<?php foreach($roles as $role) {
+												if($role->role_name !== Settings_model::$db_config['system_role']){
+													?>
 												<option value="<?php print $role->role_name; ?>"><?php print $role->role_name; ?></option>
-												<?php } ?>
+												<?php }} ?>
 											</select>
 										</div>
 									</div>
@@ -222,6 +224,8 @@
 <script src="<?php print base_url(); ?>assets/js/adminpanel/add_member.js"></script>
 <script>
 var email ='<?php print Settings_model::$db_config["predefined_email"]; ?>';
+var lock = '<?php echo $this->lang->line('lock'); ?>';
+var unlock = '<?php echo $this->lang->line('unlock'); ?>';
 $(document).ready(function() {
 
     $("#credentials :input").change(function(){
@@ -247,7 +251,7 @@ $(document).ready(function() {
 
     $("#uname").change(function(){
     	var name = $("#uname").val();
-    	$("#email").val(name+email);
+    	$("#email").val(name+'@'+email);
     })
 
     $("#profile :input").prop("disabled", true);

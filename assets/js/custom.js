@@ -57,6 +57,7 @@ var getNewData = function(callback) {
         url: paging.ajaxUrl,
         data: {data:JSON.stringify( paging  ) },
         type: "post",
+
         success: function(data) {
             var jsonData = JSON.parse(data);
             paging.permission = jsonData.permission;

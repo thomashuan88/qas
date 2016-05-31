@@ -196,27 +196,29 @@
                                                <tbody>
                                                 <tr>
                                                    <td style="width : 35%">AL : </td>
-                                                   <td>11 days</td>
+                                                   <td><?php
+                                                           log_message('error', print_r($leave, true));
+                                                           print $leave->total_al;?></td>
                                                 </tr>
                                                 <tr>
                                                    <td>ML : </td>
-                                                   <td>12 days</td>
+                                                   <td><?php print $leave->total_ml;?></td>
                                                 </tr>
                                                 <tr>
                                                    <td>EL : </td>
-                                                   <td>14 days</td>
+                                                   <td><?php print $leave->total_el;?></td>
                                                 </tr>
                                                 <tr>
                                                    <td>UL : </td>
-                                                   <td>15 days</td>
+                                                   <td><?php print $leave->total_ul;?></td>
                                                 </tr>
                                                 <tr>
                                                    <td>VW : </td>
-                                                   <td>15 days</td>
+                                                   <td><?php print $leave->total_vw;?></td>
                                                 </tr>
                                                 <tr>
                                                    <td>FW : </td>
-                                                   <td>16 days</td>
+                                                   <td><?php print $leave->total_fw;?></td>
                                                 </tr>
                                                </tbody>
                                             </table>
@@ -227,12 +229,23 @@
 			            </div>
                         </div>
                         <div class="tab-pane fade" id="daily_qa">
-
+                            <?php $this->load->view('themes/adminpanel/member_details/daily_qa_table'); ?>
                         </div>
-                        <div class="tab-pane fade" id="monthly_qa">Default 3</div>
-                        <div class="tab-pane fade" id="login_logout">Default 4</div>
-                        <div class="tab-pane fade" id="operator">Default 5</div>
-                        <div class="tab-pane fade" id="qa_evaluation">Default 5</div>
+                        <div class="tab-pane fade" id="monthly_qa">
+                            <?php $this->load->view('themes/adminpanel/member_details/monthly_qa_table'); ?>
+                        </div>
+                        <div class="tab-pane fade" id="ops_monthly">
+                            <?php $this->load->view('themes/adminpanel/member_details/ops_monthly_table'); ?>
+                        </div>
+                        <div class="tab-pane fade" id="login_logout">
+                            <?php $this->load->view('themes/adminpanel/member_details/log_in_out_table'); ?>
+                        </div>
+                        <div class="tab-pane fade" id="operator">
+                            <?php $this->load->view('themes/adminpanel/member_details/operator_utilization_table'); ?>
+                        </div>
+                        <div class="tab-pane fade" id="qa_evaluation">
+                            <?php $this->load->view('themes/adminpanel/member_details/qa_evaluation_table'); ?>
+                        </div>
                         <div class="tab-pane fade" id="remarks">
                             <?php $this->load->view('themes/adminpanel/member_details/remark_table'); ?>
                         </div> <!-- end remark tab -->

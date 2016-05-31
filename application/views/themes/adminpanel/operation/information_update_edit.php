@@ -28,16 +28,11 @@
                     <div id="sub_category_id"><?php print $sub_category_list; ?></div>
                 </div>
                 <div class="form-group">
-                    <label for="player_name"><?php print $this->lang->line('player_name'); ?></label>
-                    <label style="color:red; font-size:14px;">*</label>
-                    <input type="text" class="form-control" id="player_name" name="player_name" value="<?php print $report->player_name?>" data-parsley-trigger="change keyup focusout" data-parsley-errors-messages-disabled required autocomplete="off"/>
-                </div>
-                <div class="form-group">
                     <label for="status"><?php print $this->lang->line('status'); ?></label>
                     <label style="color:red; font-size:14px;">*</label>
                     <select class="form-control" id="status" name="status" data-parsley-trigger="change focusout" data-parsley-errors-messages-disabled required>
-                        <option value="follow-up" <?php print ($report->status == 'follow-up') ? "selected" : ""; ?>><?php print $this->lang->line('follow-up');?></option>
-                        <option value="done" <?php print ($report->status == 'done') ? "selected" : ""; ?>><?php print $this->lang->line('done');?></option>
+                        <option value="update" <?php print ($report->status == 'update') ? "selected" : ""; ?>><?php print $this->lang->line('update');?></option>
+                        <option value="updated" <?php print ($report->status == 'updated') ? "selected" : ""; ?>><?php print $this->lang->line('done');?></option>
                     </select>
                 </div>
             </div>
@@ -45,11 +40,11 @@
     </div>
     <div class="col-md-6">
         <div class="panel panel-default">
-            <div class="panel-body" style="padding-bottom: 10px;">
+            <div class="panel-body" style="padding-bottom: 15px;">
                 <div class="form-group">
-                    <label for="follow_up"><?php print $this->lang->line('follow_up_by'); ?></label>
+                    <label for="player_name"><?php print $this->lang->line('player_name'); ?></label>
                     <label style="color:red; font-size:14px;">*</label>
-                    <input type="text" class="form-control" id="follow_up" name="follow_up" value="<?php print $report->follow_up?>" data-parsley-trigger="change keyup focusout" data-parsley-errors-messages-disabled required autocomplete="off"/>
+                    <input type="text" class="form-control" id="player_name" name="player_name" value="<?php print $report->player_name?>" data-parsley-trigger="change keyup focusout" data-parsley-errors-messages-disabled required autocomplete="off"/>
                 </div>
                 <div class="form-group">
                     <label for="shift"><?php print $this->lang->line('shift'); ?></label>
@@ -64,7 +59,7 @@
                 <div class="form-group">
                     <label for="remarks"><?php print $this->lang->line('remark'); ?></label>
                     <label style="color:red; font-size:14px;">*</label>
-                    <textarea class="form-control" id="remarks" name="remarks" rows="7" style="resize: vertical;" data-parsley-trigger="change keyup focusout" data-parsley-errors-messages-disabled required><?php print $report->remarks?></textarea>
+                    <textarea class="form-control" id="remarks" name="remarks" rows="3" style="resize: vertical;" data-parsley-trigger="change keyup focusout" data-parsley-errors-messages-disabled required><?php print $report->remarks?></textarea>
                 </div>
             </div>
         </div>

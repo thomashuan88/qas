@@ -26,22 +26,22 @@
         <div class="row">
           <div class="form-group col-md-6">
             <label for="Consumer Key"><?php print $this->lang->line('consumer_key'); ?></label>
-            <input type="text" class="form-control" id="consumer_key" name="consumer_key" value="<?php print $live_person[$product]["consumer_key"]; ?>" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled required>
+            <input type="text" class="form-control" id="consumer_key" name="consumer_key" value="<?php print $live_person[$product]["consumer_key"]; ?>" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled>
           </div>
           <div class="form-group col-md-6">
             <label for="Access Token"><?php print $this->lang->line('access_token'); ?></label>
-            <input type="text" class="form-control" id="access_token" name="access_token" value="<?php print $live_person[$product]["access_token"]; ?>" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled required>
+            <input type="text" class="form-control" id="access_token" name="access_token" value="<?php print $live_person[$product]["access_token"]; ?>" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled>
           </div>
         </div>
 
         <div class="row">
           <div class="form-group col-md-6">
             <label for="Consumer Secret"><?php print $this->lang->line('consumer_secret'); ?></label>
-            <input type="text" class="form-control" id="consumer_secret" name="consumer_secret" value="<?php print $live_person[$product]["consumer_secret"]; ?>" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled required>
+            <input type="text" class="form-control" id="consumer_secret" name="consumer_secret" value="<?php print $live_person[$product]["consumer_secret"]; ?>" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled>
           </div>
           <div class="form-group col-md-6">
             <label for="Access Token Secret"><?php print $this->lang->line('access_token_secret'); ?></label>
-            <input type="text" class="form-control" id="access_token_secret" name="access_token_secret" value="<?php print $live_person[$product]["access_token_secret"]; ?>" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled required>
+            <input type="text" class="form-control" id="access_token_secret" name="access_token_secret" value="<?php print $live_person[$product]["access_token_secret"]; ?>" data-parsley-trigger="focusout" data-parsley-errors-messages-disabled>
           </div>
         </div>
         <div class="form-group">

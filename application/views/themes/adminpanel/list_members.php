@@ -45,12 +45,23 @@
                 </div>
                 <div class="col-sm-3">
                     <div class="form-group">
-                        <label for="email"><?php print $this->lang->line('status'); ?></label>
+                        <label for="role"><?php print $this->lang->line('role'); ?></label>
+                        <select name="role" id="role" class="form-control">
+                            <option value=""><?php print $this->lang->line('all'); ?></option>
+                            <?php foreach($roles as $role) {?>
+                            <option value="<?php print $role->role_name; ?>"><?php print $role->role_name; ?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label for="status"><?php print $this->lang->line('status'); ?></label>
                         <select name="status" id="status" class="form-control">
                             <option value="active"><?php print $this->lang->line('active'); ?></option>
                             <option value="inactive"><?php print $this->lang->line('inactive'); ?></option>
                             <option value="pending"><?php print $this->lang->line('pending'); ?></option>
-                            <option value="all"><?php print $this->lang->line('all'); ?></option>
+                            <option value=""><?php print $this->lang->line('all'); ?></option>
                         </select>
                     </div>
                 </div>
@@ -108,6 +119,7 @@
 <script>
 var permission = <?php echo json_encode($permission, true); ?>;
 
+
 $(document).ready(function($){
 
 
@@ -128,12 +140,16 @@ var new_real_name = $('#real_name').val();
 var new_email = $('#email').val();
 var new_leader = $('#leader').val();
 var new_status = $('#status').val();
+var new_role = $('#role').val();
+
 paging.search_data = {
     username : new_username,
     real_name : new_real_name,
     email : new_email,
     leader : new_leader,
     status : new_status,
+    role : new_role,
+
 };
 paging.search_data;
 getNewData();
@@ -152,15 +168,14 @@ if (data.length != 0) {
 }
 var count = paging.offset+1;
 $.each( data, function( key, value ) {
+    var date = new Date(value['last_login']) ;
+    var dateYMD = date.getFullYear() + '/' + (date.getMonth() + 1) + '/' + date.getDate();
 
-
-    var date = new Date(value['last_login'].substr(0, 4), value['last_login'].substr(5, 2), value['last_login'].substr(8, 2), value['last_login'].substr(11, 2), value['last_login'].substr(14, 2), value['last_login'].substr(17, 2));
-    var dateYMD = date.toISOString().slice(0, 10).replace(/-/g, '/');
     var dateHSi = (date.getHours() % 12) + ':' + date.getMinutes() + ' ' + ( ( date.getHours() >= 12 ) ? 'PM' : 'AM' );
 
     for (var k in value){
         if (value.hasOwnProperty(k)) {
-            if(value[k]=="0" ){
+            if(value[k]=="0" || value[k]=="+60"){
                 value[k] ="";
             }
         }
@@ -172,30 +187,46 @@ $.each( data, function( key, value ) {
     html +='<td>' + value['username'] + '</td>';
     html +='<td>' + value['real_name'] + '</td>';
     html +='<td>' + value['role'] + '</td>';
-    html +='<td>' + value['phone'] + '</td>';
+    if ( permission.data_mask &&  value['phone']!=="") {
+        value['phone'] = value['phone'].slice(0, -4) + "xxxx";
+        html +='<td>' + value['phone'] + '</td>';
+
+    } else {
+        html +='<td>' + value['phone'] + '</td>';
+
+    }
     html +='<td>' + value['leader'] + '</td>';
     html +='<td>' + dateYMD + '<br />' + dateHSi+'</td>';
 
     if(value['status'] == "Active"){
-        html +='<td><label class="label label-success">' + value['status'] + '</label></td>';
+        html +='<td><label class="label label-success"><?php print $this->lang->line('active'); ?></label></td>';
 
     } else if(value['status'] == "Pending") {
-        html +='<td><label class="label label-pending">' + value['status'] + '</label></td>';
+        html +='<td><label class="label label-pending"><?php print $this->lang->line('pending'); ?></label></td>';
 
     }
     else if(value['status'] == "Inactive") {
-        html +='<td><label class="label label-danger">' + value['status'] + '</label></td>';
+        html +='<td><label class="label label-danger"><?php print $this->lang->line('inactive'); ?></label></td>';
 
     }
     html +='<td >';
-    html +='<a href="<?php print base_url(); ?>adminpanel/member_detail/'+value['user_id']+'" class="btn btn-success btn-circle" title="" data-toggle="tooltip" data-placement="top" data-original-title="View User"><i class="fa fa-eye"></i></a>'
+    html +='<a href="<?php print base_url(); ?>adminpanel/member_detail/'+value['user_id']+'" class="btn btn-success btn-circle" title="" data-toggle="tooltip" data-placement="top" data-original-title="<?php print $this->lang->line('details'); ?>"><i class="fa fa-eye"></i></a>'
 
     if ( permission.edit ) {
-        html +='<a href="<?php print base_url(); ?>adminpanel/Edit_member_detail/'+value['user_id']+'" class="btn btn-primary btn-circle edit" title="" data-toggle="tooltip" data-placement="top" data-original-title="Edit User"><i class="fa fa-pencil-square"></i></a>'
+        html +='<a href="<?php print base_url(); ?>adminpanel/Edit_member_detail/'+value['user_id']+'" class="btn btn-primary btn-circle edit" title="" data-toggle="tooltip" data-placement="top" data-original-title="<?php print $this->lang->line('edit'); ?>"><i class="fa fa-pencil-square"></i></a>'
     }
     if ( permission.delete ) {
-        html +='<a href="#" onclick="inactiveUser(&quot;' +value['username'] + '&quot;,&quot;'+ value['status']+'&quot; )" class="btn btn-danger btn-circle" title="" data-toggle="tooltip" data-placement="top" data-original-title="Inactive User"><i class="fa fa-power-off"></i></a></td>';
+        if(status == "Active"){
+            html +='<a href="#" onclick="inactiveUser(&quot;' +value['username'] + '&quot;,&quot;'+ value['status']+'&quot; )" class="btn btn-danger btn-circle" title="" data-toggle="tooltip" data-placement="top" data-original-title="<?php print $this->lang->line('inactive_user'); ?>"><i class="fa fa-power-off"></i></a>';
+        }else {
+            html +='<a href="#" onclick="inactiveUser(&quot;' +value['username'] + '&quot;,&quot;'+ value['status']+'&quot; )" class="btn btn-danger btn-circle" title="" data-toggle="tooltip" data-placement="top" data-original-title="<?php print $this->lang->line('activate_user'); ?>"><i class="fa fa-power-off"></i></a>';
+        }
     }
+    if ( value['status'] == "Pending" && permission.add) {
+        html +='<a href="#" onclick="resend_activation_mail(&quot;' +value['email'] +'&quot; )" class="btn btn-info btn-circle" title="" data-toggle="tooltip" data-placement="top" data-original-title="<?php print $this->lang->line('resend_activation'); ?>"><i class="fa fa-envelope"></i></a>';
+    }
+
+
     html +='</td>';
     html +='</tr>';
     count++
@@ -205,7 +236,7 @@ $('#table-data').html(html);
 }
 
 var inactiveUser = function(username, current_status) {
-    bootbox.confirm('Are you sure to change '+username+' status?', function(confirmed){
+    bootbox.confirm( '<?php print $this->lang->line('change_status_msg'); ?>', function(confirmed){
         if (confirmed) {
             data = {'username' : username, 'current_status' : current_status};
             $.ajax({
@@ -213,7 +244,28 @@ var inactiveUser = function(username, current_status) {
                 data: data,
                 type: "post",
                 success: function(data) {
-                        bootbox.alert(data);
+                    bootbox.alert(data);
+                    getNewData();
+                },
+                error: function(data) {
+                    console.log(data);
+                    bootbox.alert('Invalid Action.');
+                }
+            });
+        }
+    });
+}
+
+var resend_activation_mail = function(email) {
+    bootbox.confirm('Are you sure to resend activation mail?', function(confirmed){
+        if (confirmed) {
+            data = {'email' : email};
+            $.ajax({
+                url: "<?php print base_url('adminpanel/list_members/resend_link_ajax'); ?>",
+                data: data,
+                type: "post",
+                success: function(data) {
+                    bootbox.alert(data);
                     getNewData();
                 },
                 error: function(data) {

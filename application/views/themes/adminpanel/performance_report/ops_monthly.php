@@ -12,7 +12,7 @@
         <button type="button" name="delete_import" id="delete_import" class="btn btn-danger btn-md" style="display:none;" ><i class="fa fa-ban"></i> &nbsp; <?php print $this->lang->line('delete_import'); ?></button>
         <?php endif; ?>
         <button id="js-search" type="button" class="btn btn-default" data-toggle="collapse" data-target="#search_wrapper">
-            <span id="js-search-text"><i class="fa fa-compress pd-r-6"></i> <?php print $this->lang->line('collapse'); ?></span> <i class="fa fa-search pd-l-5"></i>
+            <span id="js-search-text"><i class="fa fa-expand pd-r-5"></i> <?php print $this->lang->line('expand'); ?></span> <?php print $this->lang->line('search'); ?> <i class="fa fa-search pd-l-5"></i>
         </button>
     </div>
     <div class="col-md-8" style="text-align: right;">
@@ -69,7 +69,7 @@
         <div class="row">
             <div class="col-xs-7">
                 <h4 class="text-uppercase f900">
-                    <?php print $this->lang->line('total_record'); ?> : <span id="total-rows"></span>
+                    <?php print $this->lang->line('total_record'); ?> : <span id="total-rows"></span><span id="pending_confirm_status"></span>
                 </h4>
             </div>
         </div>
@@ -78,8 +78,8 @@
                 <thead>
                 <tr>
                     <th><a href="javascript:void(0)" onclick="chgOrder('ops_monthly_id')"><i dataname="ops_monthly_id" class="table-th"></i> <?php print $this->lang->line('id'); ?></a></th>
-                    <th><a href="javascript:void(0)" onclick="chgOrder('month')"><i dataname="month" class="table-th"></i> <?php print $this->lang->line('month'); ?></a></th>
                     <th><a href="javascript:void(0)" onclick="chgOrder('username')"><i dataname="username" class="table-th"></i> <?php print $this->lang->line('username'); ?></a></th>
+                    <th><a href="javascript:void(0)" onclick="chgOrder('month')"><i dataname="month" class="table-th"></i> <?php print $this->lang->line('month'); ?></a></th>
                     <th><a href="javascript:void(0)" onclick="chgOrder('al')"><i dataname="al" class="table-th"></i>AL</a></th>
                     <th><a href="javascript:void(0)" onclick="chgOrder('ml')"><i dataname="ml" class="table-th"></i>ML</a></th>
                     <th><a href="javascript:void(0)" onclick="chgOrder('el')"><i dataname="el" class="table-th"></i>EL</a></th>
@@ -103,7 +103,7 @@
 
         <div id="pager" class="col-xs-12 pull-right">
         </div>
-        <p id="no_result" style="">No results found.</p>
+        <p id="no_result" style=""><?php print $this->lang->line('no_result'); ?></p>
     </div>
 </div>
 
@@ -140,7 +140,6 @@
 
 <script type="text/javascript">
 
-var permission = <?php echo json_encode($permission, true); ?>;
 var paging = {
     offset : 0,
     order_by : 'import_date',
@@ -295,7 +294,7 @@ $('#confirm_import').click(function() {
 })
 
 var confirmImport = function () {
-    var requestData = { import_by: paging.search_data.import_by };
+    var requestData = { import_by: '<?php print $this->session->userdata('username'); ?>' };
 
     $.ajax({
         url: '<?php print base_url('adminpanel/ops_monthly/confirm_pending'); ?>',
@@ -381,6 +380,13 @@ var deleteData = function(data_id) {
 }
 
 var drawTable = function (data) {
+
+    if ( paging.ajaxUrl == '<?php print base_url('adminpanel/ops_monthly/get_report'); ?>' ) {
+        $("#pending_confirm_status").html(" (<?php print $this->lang->line('confirmed'); ?>)");
+    } else {
+        $("#pending_confirm_status").html(" (<?php print $this->lang->line('pending'); ?>)");
+    }
+
     var html = '';
     if (data.length != 0) {
         $('#content_data_table').css('display', 'block');
@@ -401,8 +407,8 @@ var drawTable = function (data) {
         var importHSi = (importDate.getHours() % 12 || 12) + ':' + importDate.getMinutes() + ' ' + p ;
         html +='<tr data_id="' + value['ops_monthly_id'] + '">';
         html +='<td>' + value['ops_monthly_id'] + '</td>';
-        html +='<td>' + value['month'] + '</td>';
         html +='<td>' + value['username'] + '</td>';
+        html +='<td>' + value['month'] + '</td>';
         html +='<td>' + value['al'] + '</td>';
         html +='<td>' + value['ml'] + '</td>';
         html +='<td>' + value['el'] + '</td>';
@@ -410,8 +416,8 @@ var drawTable = function (data) {
         html +='<td>' + value['vw'] + '</td>';
         html +='<td>' + value['fw'] + '</td>';
         html +='<td>' + value['leader'] + '</td>';
-        html +='<td>' + value['import_by'] + '</td>';
         html +='<td>' + importYMD + '<br />' + importHSi + '</td>';
+        html +='<td>' + value['import_by'] + '</td>';
         <?php if( isset( $permission['delete'] ) ): ?>
         html +='<td style="white-space: nowrap;"><a href="#" onclick="deleteData(' + value['ops_monthly_id'] + ')" class="btn btn-danger btn-circle" title="<?php print $this->lang->line('delete')?>" data-toggle="tooltip" data-placement="top" data-original-title="" data-method="DELETE"><i class="fa fa-trash"></i></a></td>';
         <?php endif; ?>
